@@ -1,12 +1,7 @@
 open Satzart.Ast
-open Satzart.Types
 open Satzart.Interpreter
 open Satzart.Bachend
-
-let ctx : type_context = {
-  vctx = [];
-  fctx = []
-}
+open Satzart.Solver
 
 let env : dynamic_environment = {
   voices_declared = false;
@@ -28,20 +23,27 @@ let program = [
   statement with each concrete value substituted in. this makes sense because "require" semantically
   means that this predicate is always true
   *)
-  SpecificationStmt (RequireStmt (EqualsExpr (Var "x", Var "v")));
+  (* SpecificationStmt (RequireStmt (Equals (Var "x", Var "v"))); *)
   (* this example req ensures all voices start at the same pitch *)
-  SpecificationStmt (RequireStmt (EqualsExpr 
+  SpecificationStmt (RequireStmt (Equals 
     (ElementAt (Pitches (Var "s"), TimeStepLit 0), 
     ElementAt (Pitches (Var "v"), TimeStepLit 0))));
 
   (* requires tenor[t] = tenor[t+1] *)
-  SpecificationStmt (RequireStmt (EqualsExpr
+  SpecificationStmt (RequireStmt (Equals
     (ElementAt (Pitches (Var "t"), Var "time"),
-    ElementAt (Pitches (Var "t"), PlusExpr (Var "time", TimeStepLit 1)))
+    ElementAt (Pitches (Var "t"), Plus (Var "time", TimeStepLit 1)))
   ))
+  (* requires *)
 ]
 
-let smt = interpret env program
+let solve_print program = 
+  let smt = interpret env program in
+  List.iter print_endline smt;
+  solve smt
 
-let () = List.iter print_endline smt
+let () = 
+solve_print program;
+print_endline "\nnext test\n";
+solve_print Test_major_scale.program
 (* require pitches(v1)[0] = C3 *)

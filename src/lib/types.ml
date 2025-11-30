@@ -89,15 +89,15 @@ let rec type_check (ctx : type_context)
     (* boolean ops *)
 
     (* operations where lhs and rhs must be the same type but o/w unknown *)
-    | PlusExpr (e1, e2)
-    | MinusExpr (e1, e2) -> begin
+    | Plus (e1, e2)
+    | Minus (e1, e2) -> begin
       try let (lhs_t, new_inferred) = type_check ctx inferred e1 None
         in lhs_t, (accumulate_check new_inferred e2 (Some lhs_t))
       with TypeError _ -> let (rhs_t, new_inferred) = type_check ctx inferred e2 None
         in rhs_t, (accumulate_check new_inferred e1 (Some rhs_t))
     end
-    | EqualsExpr (e1, e2) 
-    | NotEqualsExpr (e1, e2) -> begin
+    | Equals (e1, e2) 
+    | NotEquals (e1, e2) -> begin
       try let (lhs_t, new_inferred) = type_check ctx inferred e1 None
         in BooleanType, (accumulate_check new_inferred e2 (Some lhs_t))
       with TypeError _ -> let (rhs_t, new_inferred) = type_check ctx inferred e2 None
