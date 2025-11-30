@@ -1,0 +1,4 @@
+(library
+ (name satzart)
+ (preprocess
+  (pps ppx_deriving.show)))

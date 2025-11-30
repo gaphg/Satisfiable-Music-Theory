@@ -1,0 +1,23 @@
+; comments: opened with a semicolon
+; everything is case-insensitive?
+
+voices: v1 v2 v3 v4   ; voice declaration, required
+time unit:            ; dunno exactly how this'll work, gotta explore midi a bit more
+key: C                ; key declaration, not required
+
+require: pitches(v1) at start = C3
+
+definition: suspension(v1, v2, t) = 
+    is-consonant(pitches(v1) at t, pitches(v2) at t) and
+    is-dissonant(pitches(v1) at t + 1, pitches(v2) at t + 1) and
+    pitches(v1) at t = pitches(v1) at t + 1
+
+definition: is-step(p1, p2) = interval(p1, p2) = 1 or interval(p1, p2) = 2
+
+prefer: if suspension(v1, v2, t) 
+    then is-step(pitches(v1) at t+1, pitches(v1) at t+2)
+    and is-consonant(pitches(v1) at t+2, pitches(v2) at t+2)
+
+; the variables v1, v2, t in the expression above are free; the interpreter will
+; infer that the types are voice, voice, time-step, and create sat clauses for each
+; possible value (symbolic variables? for int-like types, and brute-force enumeration for voices)

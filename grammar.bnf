@@ -1,0 +1,19 @@
+<program> ::= 
+    <voice declaration> <time unit declaration> <key declaration>? <stmt>*
+
+<voice declaration> ::= "declare voices:"
+
+<stmt> ::= <specification> | <definition>
+
+<definition> ::= "definition:" <id> "=" <expr>
+
+<specification> ::= 
+    <requirement stmt> <expr> # type must be a predicate 
+    | <objective stmt> <expr> # type must be a predicate
+    # "free" variables in these predicates will be treated as such:
+    # for requirements, a sat clause for each value that the variable can take
+    # for objectives, a max/min sat clause for each value the variable can take
+
+<requirement stmt> ::= "require:" | "disallow:"
+<objective stmt> ::= "prefer:" | "avoid:"
+

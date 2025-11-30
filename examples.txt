@@ -1,0 +1,102 @@
+here are some ideas on how syntax might look to specify music theory rules
+
+ - voices/instruments/tracks
+    - specific degree of the scale
+    - contour
+ - intervals
+ - chords
+ - time
+    - quantified in discrete units?
+ - suspensions
+ - dissonance/consonance resolution
+    - how to resolve each kind of dissonance
+
+
+.rules file
+    - racket-like?
+.midi file
+and an executable that takes in the two files
+
+example .rules synatx
+
+declare-voices name1 name2 ...
+
+prefer
+
+disallow interval [list of pairs] => construct implies for pairs of voices, default all pairs
+disallow interval-adj => equiv to disallow interval [(a b) (b c) (c d)] where [a b c d] sorted by pitch
+
+
+program := declare-voices
+disallowStmt := disallow pred
+pred := interval | range | begin
+
+
+
+
+interval? pair interval => true iff the pair is the interval
+disallow <thing> interval (v1 v2) p5 => requiring for all pairs in pairs NOT interval? pair interval
+<thing> does a for loop over each time step, replaces each voice id v with v[t]
+
+declare-key (concrete | fixed |)
+require 
+
+range voice => the range of the voice
+
+
+.rules file => rules interpreter \\
+.midi file => midi interpreter =====> common bachend encoding
+
+- starting notes
+require (begin (pitches v) in [1, 3, 5]) => will only work if the key is declared
+- suspension
+
+begin := list-ref 0
+end := list-ref -1
+
+
+v1 = [1 2 3 ...]
+v2 = [4 5 6 ...]
+
+
+interval (v1[0] v1[1]) = 2
+interval (contour v1)
+
+interval (vertical v1 v2)
+
+contour voice := list of intervals between pitches in voice
+
+disallow (contour v1 trange) has P5
+disallow (diads v1 v2 trange) has Tritone
+
+tritone := (interval 4+)
+m7 := (interval 7-)
+A6 := (interval 7-)
+
+(chords v1 v2 v3) = (diads v1 v2), (diads v1 v3), (diads v2 v3)
+
+define suspension (v1 v2 t)
+    v1[t] == v1[t+1] and (interval v1[t] v2[t]) consonant and (interval v1[t+1] v2[t+1]) dissonant
+    
+require if suspension (v1 v2 t) then ...
+
+
+values:
+| pitch : int
+| interval : int (* represents distance in half-steps *)
+| timestep : int (* represents a step in the smallest common unit of time *)
+
+functions:
+| pitches v : list pitch
+| contour v : list interval
+| diads v1 v2 : list interval
+| begin (list T) : T
+| interval p1 p2 : interval
+
+std repertoir:
+some basic intervals
+ - unison = (interval 0)
+ - maj2
+ - min2 
+ - aug2
+ - dim
