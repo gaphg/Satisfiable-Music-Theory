@@ -24,7 +24,7 @@ let initialize_smt (env : dynamic_environment) : string list =
              let t = n mod song_length_units in
              let const_name = const_name_of_voice_time v t in
              s_expr_of [ "declare-const"; const_name; "(_ BitVec 8)" ])
-  | _ -> raise (Failure "declare_symbols: not yet implemented")
+  | _ -> raise (Failure "initialize_smt: not yet implemented")
 
 (* expects v to only have values that are predicates *)
 let rec smt_of_predicate (v : value) : string =
@@ -51,3 +51,16 @@ let rec smt_of_predicate (v : value) : string =
         (Failure
            ("smt_of_predicate: not yet implemented or impossible "
           ^ show_value v))
+let asserts_of_tracks (tracks : int list list) =
+  tracks
+  |> List.mapi (fun v track ->
+         List.mapi
+           (fun t pitch ->
+             s_expr_of
+               [
+                 "assert";
+                 s_expr_of
+                   [ "="; const_name_of_voice_time v t; bv_decimal pitch ];
+               ])
+           track)
+  |> List.concat
