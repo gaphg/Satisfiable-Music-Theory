@@ -5,8 +5,16 @@ open Errors
 open Type_checker
 open Smt_lib
 
+type expr_or_wrapped_value =
+| Expression of expr
+| Wrapped of value
+
 let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
   match e with
+  | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
+  | SymbolicIntervalExpr ((v1, t1), (v2, t2)) -> 
+    SymbolicInterval (SymbolicPitch (v1, t1), SymbolicPitch (v2, t2))
+
   (* literals *)
   | PitchLit p -> Pitch p
   | IntervalLit (i, d) -> Interval (i, d)
@@ -20,14 +28,19 @@ let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
     | Some v -> v
     | None -> raise (RuntimeError ("unbound variable " ^ name))
   end
-
-  | ListExpr l -> SzList (List.map (interpret_expr env) l)
+  | FuncCall (fname, args) -> begin
+    let arg_names, body = List.assoc fname env.fenv in
+    let scoped_venv = List.combine arg_names (List.map (interpret_expr env) args) in
+    let scoped_env = {env with venv = scoped_venv @ env.venv} in
+    interpret_expr scoped_env body
+  end
+  | ListExpr l -> SzList l
 
   (* builtin functions on voices *)
   | Pitches v -> begin
     match interpret_expr env v, env.song_length_units with
     | Voice v, Some song_length_units -> 
-      TimeSeries (List.init song_length_units (fun t -> SymbolicPitch (v, t)))
+      TimeSeries (List.init song_length_units (fun t -> SymbolicPitchExpr (v, t)))
     | Voice _, None -> raise (RuntimeError "Song length units has not been configured/cannot be determined")
     | _ -> raise (Failure "interpret_expr: impossible")
   end
@@ -36,9 +49,8 @@ let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
     match interpret_expr env v, env.song_length_units with
     | Voice v, Some song_length_units ->
       TimeSeries (List.init (song_length_units - 1) 
-                            (fun t -> SymbolicInterval 
-                              (SymbolicPitch (v, t), 
-                              SymbolicPitch (v, t + 1))))
+                            (fun t -> SymbolicIntervalExpr 
+                              ((v, t), (v, t + 1))))
     | Voice _, None -> raise (RuntimeError "Song length units has not been configured/cannot be determined")
     | _ -> raise (Failure "interpret_expr: impossible")
   end
@@ -65,9 +77,15 @@ let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
     | TimeSeries l, TimeStep i | SzList l, Integer i ->
       if i < 0 || List.length l <= i
         then raise (InvalidIndexError i)
-      else List.nth l i
+      else interpret_expr env (List.nth l i)
     | _ -> raise (Failure "interpret_expr: impossible")
-
+  end
+  | Contains (list, elt) -> begin
+    match interpret_expr env list with
+    | SzList es | TimeSeries es -> 
+      SymbolicOr (List.map (fun e -> 
+        interpret_expr env (Equals (e, elt))) es)
+    | _ -> raise (Failure "interpret_expr: impossible")
   end
   | _ -> raise (Failure ("interpret_expr: not yet implemented " ^ (show_expr e)))
 

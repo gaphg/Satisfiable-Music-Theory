@@ -14,13 +14,14 @@ type value =
 | Integer of int
 | Boolean of bool
 (* indexed via TimeStep *)
-| TimeSeries of (* sz_type *? *) value list (* element type?, values *)
-| SzList of value list
+| TimeSeries of (* sz_type *? *) expr list (* element type?, values *)
+| SzList of expr list
 (* logical/symbolic elements for solver *)
 | SymbolicPitch of int * int (* voice id, time step *)
 | SymbolicInterval of value * value (* pitch 1, pitch 2 *)
 | SymbolicEquals of value * value
 | SymbolicAbs of value
+| SymbolicOr of value list (* list of predicates/booleans *)
 [@@deriving show]  
 
 (* functions are not first-order? *)

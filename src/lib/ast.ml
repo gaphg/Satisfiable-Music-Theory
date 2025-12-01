@@ -46,6 +46,9 @@ e.g 1p 1i 1t *)
 | Contains of expr * expr (* list, element -> bool *)
 | EqualsModuloOctaveExpr of expr * expr  (* pitch, pitch -> bool *)
 
+(* for internal implementation *)
+| SymbolicPitchExpr of int * int
+| SymbolicIntervalExpr of (int * int) * (int * int)
 [@@deriving show]
 
 type configuration_statement =

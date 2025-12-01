@@ -45,4 +45,5 @@ let rec smt_of_predicate (v : value) : string =
   | SymbolicInterval (v1, v2) -> s_expr_of ["bvsub"; smt_of_predicate v2; smt_of_predicate v1]
   | SymbolicEquals (v1, v2) -> s_expr_of ["="; smt_of_predicate v1; smt_of_predicate v2]
   | SymbolicAbs v -> s_expr_of["bvabs"; smt_of_predicate v]
+  | SymbolicOr l -> s_expr_of ("or" :: List.map smt_of_predicate l)
   | _ -> raise (Failure ("smt_of_predicate: not yet implemented or impossible " ^ (show_value v)))
