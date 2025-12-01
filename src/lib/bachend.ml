@@ -21,7 +21,9 @@ type value =
 | SymbolicInterval of value * value (* pitch 1, pitch 2 *)
 | SymbolicEquals of value * value
 | SymbolicAbs of value
+| SymbolicAnd of value list
 | SymbolicOr of value list (* list of predicates/booleans *)
+| SymbolicImplies of value * value
 [@@deriving show]  
 
 (* functions are not first-order? *)

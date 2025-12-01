@@ -61,7 +61,7 @@ let solve_print program =
   List.iter print_endline (solve smt)
 
 let () = 
-(* solve_print Test_suspension.program; *)
+solve_print Test_suspension.program;
 (* print_endline "\nnext test\n"; *)
-solve_print program
+(* solve_print program *)
 (* require pitches(v1)[0] = C3 *)

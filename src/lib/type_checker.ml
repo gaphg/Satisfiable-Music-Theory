@@ -68,6 +68,9 @@ let rec type_check (ctx : type_context)
     | IntervalBetween (e1, e2) -> IntervalType, (accumulate_check (accumulate_check inferred e1 (Some PitchType)) e2 (Some PitchType))
 
     (* boolean ops *)
+    | And (e1, e2) 
+    | Or (e1, e2)
+    | Implies (e1, e2) -> BooleanType, (accumulate_check (accumulate_check inferred e1 (Some BooleanType)) e2 (Some BooleanType))
 
     (* operations where lhs and rhs must be the same type but o/w unknown *)
     | Plus (e1, e2)

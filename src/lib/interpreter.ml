@@ -55,6 +55,14 @@ let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
     | _ -> raise (Failure "interpret_expr: impossible")
   end
 
+  | Diads (v1, v2) -> begin
+    match interpret_expr env v1, interpret_expr env v2, env.song_length_units with
+    | Voice v1, Voice v2, Some song_length_units ->
+      TimeSeries (List.init song_length_units (fun t -> SymbolicIntervalExpr ((v1, t), (v2, t))))
+    | Voice _, Voice _, None -> raise (RuntimeError "Song length units has not been configured/cannot be determined")
+    | _ -> raise (Failure "interpret_expr: impossible")
+  end
+
   | IntervalBetween (p1, p2) -> SymbolicInterval (interpret_expr env p1, interpret_expr env p2)
 
   | Plus (e1, e2) -> begin
@@ -62,6 +70,10 @@ let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
     | TimeStep t1, TimeStep t2 -> TimeStep (t1 + t2)
     | _ -> raise (Failure "interpret_expr: not yet implemented")
   end
+
+  | And (e1, e2) -> SymbolicAnd [interpret_expr env e1; interpret_expr env e2]
+  | Or (e1, e2) -> SymbolicOr [interpret_expr env e1; interpret_expr env e2]
+  | Implies (e1, e2) -> SymbolicImplies (interpret_expr env e1, interpret_expr env e2)
 
   (* comparisons *)
   | Equals (e1, e2) -> begin
