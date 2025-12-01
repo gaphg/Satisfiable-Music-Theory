@@ -69,6 +69,18 @@ let () =
 (* require pitches(v1)[0] = C3 *)
 
 
-Printf.printf "CWD = %s\n" (Sys.getcwd ());
+  let print_int_list lst =
+    List.iter (fun x -> Printf.printf "%d " x) lst;
+    print_newline ()
 
-process_file "";
+  in
+
+  let print_int_list_list lsts =
+    List.iteri (fun i lst ->
+      Printf.printf "Track %d: " i;
+      print_int_list lst
+    ) lsts
+
+    in
+let tracks = process_file "" in
+print_int_list_list tracks;
