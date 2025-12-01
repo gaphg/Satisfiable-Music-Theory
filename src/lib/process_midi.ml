@@ -34,7 +34,7 @@ let print_int_list lst =
 let process_file (filename: string) =
   let ic = File_reader.of_path "../../../../examples/Correct4PartHarmony.mid"  (* TODO make it actually use the filename*)
   in let data = File_reader.read ic 
-  in let num_voices = process_header data.header
+  (* in let num_voices = process_header data.header *)
   in let tracks = data.tracks
   in List.map process_track tracks;;
 

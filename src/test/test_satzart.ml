@@ -72,15 +72,13 @@ let () =
   let print_int_list lst =
     List.iter (fun x -> Printf.printf "%d " x) lst;
     print_newline ()
-
   in
-
   let print_int_list_list lsts =
     List.iteri (fun i lst ->
       Printf.printf "Track %d: " i;
       print_int_list lst
     ) lsts
-
-    in
-let tracks = process_file "" in
-print_int_list_list tracks;
+  in
+  let tracks = process_file "" 
+  in
+  print_int_list_list tracks;
