@@ -1,24 +1,27 @@
 open Bachend
 open Ast
-open Errors
 open Types
+open Errors
+open Type_checker
 open Smt_lib
 
 let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
-  (* print_endline (show_dynamic_environment env); *)
   match e with
   (* literals *)
   | PitchLit p -> Pitch p
   | IntervalLit (i, d) -> Interval (i, d)
   | TimeStepLit t -> TimeStep t
   | BooleanLit b -> Boolean b
+  | IntegerLit i -> Integer i
 
   (* variables/functions *)
   | Var name -> begin
-    match lookup env.venv name with
+    match List.assoc_opt name env.venv with
     | Some v -> v
-    | None -> raise (RuntimeError ("unbound variable" ^ name))
+    | None -> raise (RuntimeError ("unbound variable " ^ name))
   end
+
+  | ListExpr l -> SzList (List.map (interpret_expr env) l)
 
   (* builtin functions on voices *)
   | Pitches v -> begin
@@ -39,6 +42,8 @@ let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
     | Voice _, None -> raise (RuntimeError "Song length units has not been configured/cannot be determined")
     | _ -> raise (Failure "interpret_expr: impossible")
   end
+
+  | IntervalBetween (p1, p2) -> SymbolicInterval (interpret_expr env p1, interpret_expr env p2)
 
   | Plus (e1, e2) -> begin
     match interpret_expr env e1, interpret_expr env e2 with
@@ -64,7 +69,7 @@ let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
     | _ -> raise (Failure "interpret_expr: impossible")
 
   end
-  | _ -> raise (Failure "interpret_expr: not yet implemented")
+  | _ -> raise (Failure ("interpret_expr: not yet implemented " ^ (show_expr e)))
 
 let all_pitches = List.init 128 (fun n -> Pitch n)
 let possible_values_of_type (env : dynamic_environment)
@@ -124,7 +129,30 @@ let interpret_def_stmt (ctx : type_context)
     let v = interpret_expr env e in
     {ctx with vctx = (name, t) :: ctx.vctx}, {env with venv = (name, v) :: env.venv}
   end
-  | _ -> raise (Failure "interpret_defn_stmt: not yet implemented")
+  | FuncDefStmt (name, params, body) -> begin
+    (* first add annotated types to context *)
+    let annotated = 
+      params 
+      |> List.filter_map (fun (param, t) -> Option.map (fun tconcrete -> (param, tconcrete)) t) in
+    let scoped_ctx = {ctx with vctx = annotated @ ctx.vctx} in
+    let t, inferred = type_check scoped_ctx [] body None in
+    (* should be no unbound variables; all inferred types should be a parameter *)
+    match List.find_opt (fun (name, _) -> not (List.mem_assoc name params)) inferred with
+    | Some (varname, _) -> raise (TypeError ("Unbound variable " ^ varname))
+    | None -> 
+      let param_names = fst (List.split params) in
+      let param_types = 
+        param_names 
+        |> List.map (fun param_name -> match List.assoc param_name params with
+          | Some param_type -> param_type
+          | None -> 
+            try List.assoc param_name inferred 
+            with Not_found -> raise (TypeError ("Unable to infer type of parameter " ^ param_name))
+        )
+      in
+      {ctx with fctx = (name, (param_types, t)) :: ctx.fctx}, 
+      {env with fenv = (name, (param_names, body)) :: env.fenv}
+  end
 
 let interpret_cfg_stmt (ctx : type_context)
                        (env : dynamic_environment)

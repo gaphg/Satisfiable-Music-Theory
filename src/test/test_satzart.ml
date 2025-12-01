@@ -15,8 +15,19 @@ let env : dynamic_environment = {
 }
 
 let program = [
-  ConfigurationStmt (VoiceCfgStmt ["s"; "a"; "t"; "b"]);
-  ConfigurationStmt (SongLengthUnitsCfgStmt 3);
+  ConfigurationStmt (VoiceCfgStmt ["soprano"; "alto"; "tenor"; "bass"]);
+  ConfigurationStmt (SongLengthUnitsCfgStmt 2);
+  (* (DefinitionStmt (FuncDefStmt ("foo", [], Equals (Var "x", BooleanLit true)))); *)
+  DefinitionStmt (FuncDefStmt ("isConsonant", ["p1", None; "p2", None; "i", None],
+    Contains (ListExpr [Var "i"], IntervalBetween (Var "p1", Var "p2"))
+  ));
+
+  DefinitionStmt (ConstDefStmt ("c", IntervalBetween (ElementAt (ListExpr [PitchLit 3], IntegerLit 0), PitchLit 0)));
+  (* DefinitionStmt (FuncDefStmt ("suspension", ["v1", None; "v2", None; "t", None],
+    BooleanLit true
+  )) *)
+
+(*   
   DefinitionStmt (ConstDefStmt ("x", Var "s"));
   (* idea of the require statement: any unbounded variables will have their types inferred
   then the interpreter will range over all possible values of that variable, and output an assert
@@ -33,17 +44,18 @@ let program = [
   SpecificationStmt (RequireStmt (Equals
     (ElementAt (Pitches (Var "t"), Var "time"),
     ElementAt (Pitches (Var "t"), Plus (Var "time", TimeStepLit 1)))
-  ))
+  )) *)
   (* requires *)
 ]
 
 let solve_print program = 
   let smt = interpret env program in
   List.iter print_endline smt;
-  solve smt
+  print_endline "\noutput:";
+  List.iter print_endline (solve smt)
 
 let () = 
 solve_print program;
-print_endline "\nnext test\n";
-solve_print Test_major_scale.program
+(* print_endline "\nnext test\n"; *)
+(* solve_print Test_major_scale.program *)
 (* require pitches(v1)[0] = C3 *)

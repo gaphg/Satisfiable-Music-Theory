@@ -1,9 +1,12 @@
+open Types
+
 type expr =
 (* literals *)
 | PitchLit of int 
 | IntervalLit of int * bool option (* user may specify direction, true -> up*)
 | TimeStepLit of int
 | BooleanLit of bool
+| IntegerLit of int
 | DirectionLit of bool (* only can specify concrete direction, not unspecified *)
 (* this means in syntax we need a way of differentiating literals for what type they are,
 e.g 1p 1i 1t *)
@@ -16,6 +19,8 @@ e.g 1p 1i 1t *)
 | Pitches of expr (* voice -> pitch list *)
 | Contour of expr (* voice -> interval list *)
 | Diads of expr * expr (* v1, v2 -> interval list *)
+
+| IntervalBetween of expr * expr (* p1, p2 -> interval *)
 
 (* int/timestep maybe can be extend to pitches/intervals too *)
 | Plus of expr * expr
@@ -52,8 +57,8 @@ type configuration_statement =
 type definition_statement = 
 (* const name, const definition *)
 | ConstDefStmt of string * expr 
-(* function name, function arguments, function body *)
-| FuncDefStmt of string * string list * expr
+(* function name, function arguments/type annotations, function body *)
+| FuncDefStmt of string * (string * sz_type option) list * expr
 (* "expr" below should be type predicate *)
 
 type specification_statement = 
@@ -70,10 +75,10 @@ type statement =
 
 type program = statement list
 
-let string_of_expr (e : expr) =
-  match e with
+let string_of_expr = show_expr (* TODO: change *)
+  (* match e with
   | Var name -> name
-  | _ -> "<not yet implemented>"
+  | _ -> "<not yet implemented>" *)
 
   (* TODO: change *)
 let string_of_spec_stmt =

@@ -9,10 +9,12 @@ let solve (smt : string list) =
             smt;
   close_out solver_in;
   (* TODO: change *)
-  print_endline "output:";
-  let lines = (In_channel.input_lines solver_out) in List.iter print_endline lines;
-  match Unix.close_process (solver_out, solver_in) with
-  | Unix.WEXITED 0 -> ()
-  | Unix.WEXITED code -> Printf.eprintf "Solver exited with code %d\n" code
-  | Unix.WSIGNALED s -> Printf.eprintf "Solver killed by signal %d\n" s
-  | Unix.WSTOPPED s -> Printf.eprintf "Solver stopped by signal %d\n" s;
+  let output = (In_channel.input_lines solver_out) in 
+  begin
+    match Unix.close_process (solver_out, solver_in) with
+    | Unix.WEXITED 0 -> ()
+    | Unix.WEXITED code -> Printf.eprintf "Solver exited with code %d\n" code
+    | Unix.WSIGNALED s -> Printf.eprintf "Solver killed by signal %d\n" s
+    | Unix.WSTOPPED s -> Printf.eprintf "Solver stopped by signal %d\n" s 
+  end;
+  output
