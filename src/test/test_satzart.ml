@@ -79,6 +79,6 @@ let () =
       print_int_list lst
     ) lsts
   in
-  let tracks = process_file "" 
+  let tracks = process_file "../../../../examples/Correct4PartHarmony.mid"
   in
   print_int_list_list tracks;
