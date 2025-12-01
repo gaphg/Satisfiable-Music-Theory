@@ -1,53 +1,105 @@
 open Bachend
 open Ast
-open Errors
 open Types
+open Errors
+open Type_checker
 open Smt_lib
 
+type expr_or_wrapped_value =
+| Expression of expr
+| Wrapped of value
+
 let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
-  (* print_endline (show_dynamic_environment env); *)
   match e with
+  | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
+  | SymbolicIntervalExpr ((v1, t1), (v2, t2)) -> 
+    SymbolicInterval (SymbolicPitch (v1, t1), SymbolicPitch (v2, t2))
+
   (* literals *)
   | PitchLit p -> Pitch p
-  | IntervalLit i -> Interval i
+  | IntervalLit (i, d) -> Interval (i, d)
   | TimeStepLit t -> TimeStep t
   | BooleanLit b -> Boolean b
+  | IntegerLit i -> Integer i
 
   (* variables/functions *)
   | Var name -> begin
-    match lookup env.venv name with
+    match List.assoc_opt name env.venv with
     | Some v -> v
-    | None -> raise (RuntimeError ("unbound variable" ^ name))
+    | None -> raise (RuntimeError ("unbound variable " ^ name))
   end
+  | FuncCall (fname, args) -> begin
+    let arg_names, body = List.assoc fname env.fenv in
+    let scoped_venv = List.combine arg_names (List.map (interpret_expr env) args) in
+    let scoped_env = {env with venv = scoped_venv @ env.venv} in
+    interpret_expr scoped_env body
+  end
+  | ListExpr l -> SzList l
 
   (* builtin functions on voices *)
   | Pitches v -> begin
     match interpret_expr env v, env.song_length_units with
     | Voice v, Some song_length_units -> 
-      TimeSeries (List.init song_length_units (fun t -> SymbolicPitch (v, t)))
+      TimeSeries (List.init song_length_units (fun t -> SymbolicPitchExpr (v, t)))
     | Voice _, None -> raise (RuntimeError "Song length units has not been configured/cannot be determined")
     | _ -> raise (Failure "interpret_expr: impossible")
   end
 
-  | PlusExpr (e1, e2) -> begin
+  | Contour v -> begin
+    match interpret_expr env v, env.song_length_units with
+    | Voice v, Some song_length_units ->
+      TimeSeries (List.init (song_length_units - 1) 
+                            (fun t -> SymbolicIntervalExpr 
+                              ((v, t), (v, t + 1))))
+    | Voice _, None -> raise (RuntimeError "Song length units has not been configured/cannot be determined")
+    | _ -> raise (Failure "interpret_expr: impossible")
+  end
+
+  | Diads (v1, v2) -> begin
+    match interpret_expr env v1, interpret_expr env v2, env.song_length_units with
+    | Voice v1, Voice v2, Some song_length_units ->
+      TimeSeries (List.init song_length_units (fun t -> SymbolicIntervalExpr ((v1, t), (v2, t))))
+    | Voice _, Voice _, None -> raise (RuntimeError "Song length units has not been configured/cannot be determined")
+    | _ -> raise (Failure "interpret_expr: impossible")
+  end
+
+  | IntervalBetween (p1, p2) -> SymbolicInterval (interpret_expr env p1, interpret_expr env p2)
+
+  | Plus (e1, e2) -> begin
     match interpret_expr env e1, interpret_expr env e2 with
     | TimeStep t1, TimeStep t2 -> TimeStep (t1 + t2)
     | _ -> raise (Failure "interpret_expr: not yet implemented")
   end
 
-  (* comparisons *)
-  | EqualsExpr (e1, e2) -> Equals (interpret_expr env e1, interpret_expr env e2)
+  | And (e1, e2) -> SymbolicAnd [interpret_expr env e1; interpret_expr env e2]
+  | Or (e1, e2) -> SymbolicOr [interpret_expr env e1; interpret_expr env e2]
+  | Implies (e1, e2) -> SymbolicImplies (interpret_expr env e1, interpret_expr env e2)
 
+  (* comparisons *)
+  | Equals (e1, e2) -> begin
+    let v1, v2 = interpret_expr env e1, interpret_expr env e2 in
+    (* deal with some wiggle room for equality *)
+    match v1, v2 with
+    | Interval (_, None), _
+    | _, Interval (_, None) -> SymbolicEquals (SymbolicAbs v1, SymbolicAbs v2)
+    | _ -> SymbolicEquals (v1, v2)
+  end
   | ElementAt (list, idx) -> begin
     match interpret_expr env list, interpret_expr env idx with
     | TimeSeries l, TimeStep i | SzList l, Integer i ->
       if i < 0 || List.length l <= i
         then raise (InvalidIndexError i)
-      else List.nth l i
+      else interpret_expr env (List.nth l i)
     | _ -> raise (Failure "interpret_expr: impossible")
-
   end
-  | _ -> raise (Failure "interpret_expr: not yet implemented")
+  | Contains (list, elt) -> begin
+    match interpret_expr env list with
+    | SzList es | TimeSeries es -> 
+      SymbolicOr (List.map (fun e -> 
+        interpret_expr env (Equals (e, elt))) es)
+    | _ -> raise (Failure "interpret_expr: impossible")
+  end
+  | _ -> raise (Failure ("interpret_expr: not yet implemented " ^ (show_expr e)))
 
 let all_pitches = List.init 128 (fun n -> Pitch n)
 let possible_values_of_type (env : dynamic_environment)
@@ -92,6 +144,7 @@ let interpret_spec_stmt (ctx : type_context)
   | RequireStmt e -> begin
     let (_, inferred) = type_check ctx [] e (Some BooleanType) in
     let vs = branch_on_free_vars env inferred e in
+    if debug then vs |> List.map show_value |> List.iter print_endline;
     List.map (fun v -> s_expr_of ["assert"; smt_of_predicate v]) vs
   end
   | _ -> raise (Failure "interpret_spec_stmt: not yet implemented")
@@ -106,7 +159,30 @@ let interpret_def_stmt (ctx : type_context)
     let v = interpret_expr env e in
     {ctx with vctx = (name, t) :: ctx.vctx}, {env with venv = (name, v) :: env.venv}
   end
-  | _ -> raise (Failure "interpret_defn_stmt: not yet implemented")
+  | FuncDefStmt (name, params, body) -> begin
+    (* first add annotated types to context *)
+    let annotated = 
+      params 
+      |> List.filter_map (fun (param, t) -> Option.map (fun tconcrete -> (param, tconcrete)) t) in
+    let scoped_ctx = {ctx with vctx = annotated @ ctx.vctx} in
+    let t, inferred = type_check scoped_ctx [] body None in
+    (* should be no unbound variables; all inferred types should be a parameter *)
+    match List.find_opt (fun (name, _) -> not (List.mem_assoc name params)) inferred with
+    | Some (varname, _) -> raise (TypeError ("Unbound variable " ^ varname))
+    | None -> 
+      let param_names = fst (List.split params) in
+      let param_types = 
+        param_names 
+        |> List.map (fun param_name -> match List.assoc param_name params with
+          | Some param_type -> param_type
+          | None -> 
+            try List.assoc param_name inferred 
+            with Not_found -> raise (TypeError ("Unable to infer type of parameter " ^ param_name))
+        )
+      in
+      {ctx with fctx = (name, (param_types, t)) :: ctx.fctx}, 
+      {env with fenv = (name, (param_names, body)) :: env.fenv}
+  end
 
 let interpret_cfg_stmt (ctx : type_context)
                        (env : dynamic_environment)
@@ -168,23 +244,8 @@ let interpret_stmt (ctx : type_context)
   | DefinitionStmt def -> 
     let (ctx, env) = interpret_def_stmt ctx env def in
     ctx, env, smt
-  | SpecificationStmt spec -> ctx, env, smt @ (interpret_spec_stmt ctx env spec)
-
-let const_name_of_voice_time v t =
- "v" ^ (string_of_int v) ^ "t" ^ (string_of_int t)
-
-let declare_symbols (env : dynamic_environment) : string list =
-  match env.voice_count, env.song_length_units with
-  | Some voice_count, Some song_length_units -> 
-    List.init 
-      (voice_count * song_length_units) 
-      (fun n ->
-        let v = n / song_length_units in
-        let t = n mod song_length_units in
-        let const_name = const_name_of_voice_time v t in
-        s_expr_of ["declare-const"; const_name; "(_ BitVec 7)"])
-  | _ -> raise (Failure "declare_symbols: not yet implemented")
-
+  | SpecificationStmt spec -> 
+    ctx, env, smt @ (("; Specification") :: interpret_spec_stmt ctx env spec)
 
 let interpret (env : dynamic_environment)
               (prog : statement list)
@@ -198,8 +259,8 @@ let interpret (env : dynamic_environment)
       if debug then (* TODO: remove? *)
         print_endline (show_type_context ctx);
         print_endline (show_dynamic_environment env);
-      declare_symbols env @ smt
-    | stmt :: prog -> 
+      initialize_smt env @ smt @ ["(check-sat)"; "(get-model)"]
+    | stmt :: prog ->
       let new_ctx, new_env, new_smt = interpret_stmt ctx env smt stmt in
       aux new_ctx new_env new_smt prog 
   in

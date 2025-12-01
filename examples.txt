@@ -100,3 +100,8 @@ some basic intervals
  - min2 
  - aug2
  - dim
+
+ functions we might define:
+ - suspension(v1, v2, t)
+ - isConsonant
+ - isDissonant

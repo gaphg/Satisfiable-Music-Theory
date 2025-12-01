@@ -8,18 +8,23 @@ type value =
 (* matches midi pitch between 0 and 127 (60 is middle C) *)
 | Pitch of int 
 (* distance between two pitches, in semitones *)
-| Interval of int
+| Interval of int * bool option (* interval, up/down direction *)
 (* | ChordVal of int list *)
 | TimeStep of int
 | Integer of int
 | Boolean of bool
 (* indexed via TimeStep *)
-| TimeSeries of (* sz_type *? *) value list (* element type?, values *)
-| SzList of value list
+| TimeSeries of (* sz_type *? *) expr list (* element type?, values *)
+| SzList of expr list
 (* logical/symbolic elements for solver *)
 | SymbolicPitch of int * int (* voice id, time step *)
-| Equals of value * value
-[@@deriving show]
+| SymbolicInterval of value * value (* pitch 1, pitch 2 *)
+| SymbolicEquals of value * value
+| SymbolicAbs of value
+| SymbolicAnd of value list
+| SymbolicOr of value list (* list of predicates/booleans *)
+| SymbolicImplies of value * value
+[@@deriving show]  
 
 (* functions are not first-order? *)
 type func = string list * expr
