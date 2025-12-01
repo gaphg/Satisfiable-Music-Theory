@@ -47,11 +47,11 @@ let program = [
         FuncCall ("isConsonant", [ElementAt (Pitches (Var "v1"), Plus (Var "t", TimeStepLit 2)); ElementAt (Pitches (Var "v2"), Plus (Var "t", TimeStepLit 2))]),
         Or (
           Equals (
-            ElementAt (Diads (Var "v1", Var "v2"), Plus (Var "t", TimeStepLit 2)),
+            ElementAt (Contour (Var "v1"), Plus (Var "t", TimeStepLit 1)),
             Var "m2"
           ),
           Equals (
-            ElementAt (Diads (Var "v1", Var "v2"), Plus (Var "t", TimeStepLit 2)),
+            ElementAt (Contour (Var "v1"), Plus (Var "t", TimeStepLit 1)),
             Var "M2"
           )
         )

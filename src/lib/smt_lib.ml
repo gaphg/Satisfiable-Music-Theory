@@ -6,7 +6,6 @@ let s_expr_of (symbols : string list) =
   | s :: [] -> s
   | symbols -> "(" ^ (String.concat " " symbols) ^ ")"
 
-
 let const_name_of_voice_time v t =
  "v" ^ (string_of_int v) ^ "t" ^ (string_of_int t)
 

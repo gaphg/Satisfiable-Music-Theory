@@ -3,13 +3,15 @@ open Types
 type expr =
 (* literals *)
 | PitchLit of int 
-| IntervalLit of int * bool option (* user may specify direction, true -> up*)
+| IntervalLit of int * bool option (* user may specify direction, true -> ascending *)
 | TimeStepLit of int
 | BooleanLit of bool
 | IntegerLit of int
 | DirectionLit of bool (* only can specify concrete direction, not unspecified *)
 (* this means in syntax we need a way of differentiating literals for what type they are,
-e.g 1p 1i 1t *)
+e.g 1p 1i 1t 
+ C4 = 60p
+*)
 
 | Var of string
 | FuncCall of string * expr list (* function name, arguments *)

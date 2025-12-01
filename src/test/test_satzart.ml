@@ -2,7 +2,7 @@ open Satzart.Ast
 open Satzart.Interpreter
 open Satzart.Bachend
 open Satzart.Solver
-
+open Satzart.Smt_lib
 open Satzart.Process_midi
 
 let env : dynamic_environment = {
@@ -18,7 +18,12 @@ let env : dynamic_environment = {
 
 let program = [
   ConfigurationStmt (VoiceCfgStmt ["soprano"; "alto"; "tenor"; "bass"]);
-  ConfigurationStmt (SongLengthUnitsCfgStmt 2);
+  ConfigurationStmt (SongLengthUnitsCfgStmt 7);
+
+  SpecificationStmt (RequireStmt (Equals 
+    (ElementAt (Pitches (Var "bass"), TimeStepLit 0),
+    (PitchLit 48)
+  )));
   (* (DefinitionStmt (FuncDefStmt ("foo", [], Equals (Var "x", BooleanLit true)))); *)
   (* DefinitionStmt (FuncDefStmt ("isConsonant", ["p1", None; "p2", None; "i", None],
     Contains (ListExpr [Var "i"], IntervalBetween (Var "p1", Var "p2"))
@@ -39,7 +44,7 @@ let program = [
   *)
   (* SpecificationStmt (RequireStmt (Equals (Var "x", Var "v"))); *)
   (* this example req ensures all voices start at the same pitch *)
-  SpecificationStmt (RequireStmt (Equals 
+  (* SpecificationStmt (RequireStmt (Equals 
     (ElementAt (Pitches (Var "soprano"), TimeStepLit 0), 
     ElementAt (Pitches (Var "v"), TimeStepLit 0))));
 
@@ -47,14 +52,50 @@ let program = [
   SpecificationStmt (RequireStmt (Equals
     (ElementAt (Pitches (Var "tenor"), Var "time"),
     ElementAt (Pitches (Var "tenor"), Plus (Var "time", TimeStepLit 1)))
-  ));
+  )); *)
 
-  SpecificationStmt (RequireStmt (Equals
+  (* SpecificationStmt (RequireStmt (Equals
    (ElementAt (Pitches (Var "bass"), TimeStepLit 0), PitchLit 60)));
   SpecificationStmt (RequireStmt (Equals
-   (ElementAt (Pitches (Var "tenor"), TimeStepLit 1), PitchLit 62)));
+   (ElementAt (Pitches (Var "tenor"), TimeStepLit 1), PitchLit 62))); *)
   (* requires *)
 ]
+
+let asserts_of_tracks (tracks : int list list) =
+  tracks
+  |> List.mapi (fun v track ->
+    List.mapi (fun t pitch ->
+        (* (assert (= vitj  ))*)
+        s_expr_of ["assert"; s_expr_of ["="; const_name_of_voice_time v t; bv_decimal pitch]]
+      ) track
+    )
+  |> List.concat
+
+let process_program program =
+  let filename = "../../../../examples/Correct4PartHarmony.mid" in
+  let tracks = process_file filename in
+  let asserts = asserts_of_tracks tracks in
+  let env = {
+    voices_declared = false;
+    voice_count = Some (List.length tracks);
+    time_unit_ticks = None;
+    song_length_ticks = None;
+    song_length_units = Some (List.length (List.nth tracks 0));
+    key = None;
+    venv = [];
+    fenv = [];
+  } in
+  let smt = interpret env program in
+  let full_smt = smt @ asserts @ ["(check-sat)"; "(get-model)"] in
+
+  List.iter print_endline full_smt;
+
+  let output = solve full_smt in
+
+  List.iter print_endline output;
+  ()
+
+  
 
 let solve_print program = 
   let smt = interpret env program in
@@ -62,14 +103,14 @@ let solve_print program =
   print_endline "\noutput:";
   List.iter print_endline (solve smt)
 
-let () = 
+let () = solve_print Test_major_scale.program
 (* solve_print Test_suspension.program; *)
 (* print_endline "\nnext test\n"; *)
 (* solve_print program *)
 (* require pitches(v1)[0] = C3 *)
 
 
-  let print_int_list lst =
+  (* let print_int_list lst =
     List.iter (fun x -> Printf.printf "%d " x) lst;
     print_newline ()
   in
@@ -82,3 +123,5 @@ let () =
   let tracks = process_file "../../../../examples/Correct4PartHarmony.mid"
   in
   print_int_list_list tracks;
+  let asserts = process_piece tracks in
+  List.iter print_endline asserts *)
