@@ -60,13 +60,11 @@ let program =
         (ElementAt (Pitches (Var "tenor"), TimeStepLit 1), PitchLit 62))); *)
     (* requires *)
   ]
-
 let asserts_of_tracks (tracks : int list list) =
   tracks
   |> List.mapi (fun v track ->
          List.mapi
            (fun t pitch ->
-             (* (assert (= vitj  ))*)
              s_expr_of
                [
                  "assert";
@@ -75,7 +73,6 @@ let asserts_of_tracks (tracks : int list list) =
                ])
            track)
   |> List.concat
-
 let process_program program =
   let filename = "../../../../examples/Correct4PartHarmony.mid" in
   let tracks = process_file filename in

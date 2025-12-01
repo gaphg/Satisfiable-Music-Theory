@@ -5,8 +5,6 @@ open Errors
 open Type_checker
 open Smt_lib
 
-type expr_or_wrapped_value = Expression of expr | Wrapped of value
-
 let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
   match e with
   | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)

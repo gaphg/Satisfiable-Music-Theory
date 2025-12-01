@@ -2,6 +2,9 @@ open Unix
 
 let z3_path = "/Users/gaphg/Library/Racket/8.18/pkgs/rosette/bin/z3"
 
+(* pre: smt is a smt-lib script without the check-sat/get-model commands
+at the end
+*)
 let solve (smt : string list) =
   let solver_out, solver_in =
     Unix.open_process_args z3_path [| "-smt2"; "-in" |]
