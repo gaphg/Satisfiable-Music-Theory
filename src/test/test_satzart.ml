@@ -4,6 +4,8 @@ open Satzart.Bachend
 open Satzart.Solver
 open Satzart.Smt_lib
 open Satzart.Process_midi
+open Satzart.Parser
+open Satzart.Lexer
 
 let env : dynamic_environment =
   {
@@ -106,7 +108,25 @@ let solve_print program =
   print_endline "\noutput:";
   List.iter print_endline (solve smt)
 
-let () = solve_print Test_major_scale.program
+let () =
+  let filename = "../../../../example_rules/test.txt" in
+  let chan = open_in filename in
+  let lexbuf = Lexing.from_channel chan in
+
+  let rec collect acc =
+    try
+      let result = Satzart.Parser.main Satzart.Lexer.token lexbuf in
+      collect (result::acc)
+    with
+    | Satzart.Lexer.Eof -> List.rev acc
+  in
+
+  let results = collect [] in
+  List.iter (fun r -> Printf.printf "Parsed result: %s\n" r) results;
+
+  close_in chan
+
+(* let () = solve_print Test_major_scale.program *)
 (* solve_print Test_suspension.program; *)
 (* print_endline "\nnext test\n"; *)
 (* solve_print program *)

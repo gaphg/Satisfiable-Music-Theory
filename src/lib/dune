@@ -3,3 +3,6 @@
  (libraries unix llama_midi)
  (preprocess
   (pps ppx_deriving.show)))
+
+(ocamllex (modules lexer))
+(ocamlyacc (modules parser))
