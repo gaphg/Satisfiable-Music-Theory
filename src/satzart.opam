@@ -12,7 +12,7 @@ bug-reports: "https://github.com/username/reponame/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.12"}
-  "mm" {= "0.8.2"}
+  "llama_midi"
   "odoc" {with-doc}
 ]
 build: [

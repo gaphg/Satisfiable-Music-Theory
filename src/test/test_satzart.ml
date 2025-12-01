@@ -3,6 +3,8 @@ open Satzart.Interpreter
 open Satzart.Bachend
 open Satzart.Solver
 
+open Satzart.Process_midi
+
 let env : dynamic_environment = {
   voices_declared = false;
   voice_count = None;
@@ -61,7 +63,12 @@ let solve_print program =
   List.iter print_endline (solve smt)
 
 let () = 
-solve_print Test_suspension.program;
+(* solve_print Test_suspension.program; *)
 (* print_endline "\nnext test\n"; *)
 (* solve_print program *)
 (* require pitches(v1)[0] = C3 *)
+
+
+Printf.printf "CWD = %s\n" (Sys.getcwd ());
+
+process_file "";

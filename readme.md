@@ -1,7 +1,7 @@
 ## Build
 Opam installations:
 - dune
-- mm (`opam install mm.0.8.2`)
+- llama_midi (`opam install llama_midi`)
 
 Use ocaml 5.1.1 or greater.
 

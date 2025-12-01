@@ -19,7 +19,7 @@
  (name satzart)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune (mm (= 0.8.2)))
+ (depends ocaml dune llama_midi)
  (tags
   (topics "to describe" your project)))
 
