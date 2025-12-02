@@ -149,6 +149,9 @@ let solve_print program =
   | Satzart.Parser.I -> "I"
   | Satzart.Parser.T -> "T"
   | Satzart.Parser.P -> "P"
+  | Satzart.Parser.LBRACK -> "LBRACK"
+  | Satzart.Parser.RBRACK -> "RBRACK"
+  | Satzart.Parser.BETWEEN -> "BETWEEN"
 
 
 

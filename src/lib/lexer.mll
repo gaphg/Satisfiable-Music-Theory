@@ -23,10 +23,11 @@ rule tokenize = parse
     | "AVOID:"                      { AVOID }
     | "("                           { LPAREN }
     | ")"                           { RPAREN }
-    | "pitches of"                  { PITCHES }
-    | "contour of"                  { CONTOUR }
-    | "diads of"                    { DIADS }
-    | "interval between "           { INTERVAL }
+    | "pitches"                     { PITCHES }
+    | "contour"                     { CONTOUR }
+    | "diads"                       { DIADS }
+    | "interval"                    { INTERVAL }
+    | "between"                     { BETWEEN }
     | "+"                           { PLUS }
     | "-"                           { MINUS }
     | "not"                         { NOT }
@@ -59,6 +60,8 @@ rule tokenize = parse
     | "true"                        { TRUE_TOKEN }
     | "false"                       { FALSE_TOKEN }
     | ","                           { COMMA }
+    | "["                           { LBRACK }
+    | "]"                           { RBRACK }
     | ['p''P']                      { P }
     | ['i''I']                      { I }
     | ['t''T']                      { T }

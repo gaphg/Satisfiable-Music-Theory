@@ -55,6 +55,10 @@
 %token I
 %token T
 %token D
+%token LBRACK
+%token RBRACK
+%token INTERVAL
+%token BETWEEN
 %token <string> ID
 %token <int> INTLIT
 %start prog
@@ -97,7 +101,14 @@ specificationStmt:
 
 (* EXPRESSIONS! *)
 expr:
-    literal                 { $1 }
+    literal                                     { $1 }
+    | ID LPAREN literalList RPAREN              { FuncCall ($1, $3) }
+    | LBRACK exprList RBRACK                    { ListExpr $2 }
+    | LPAREN expr RPAREN                        { $2 }
+    | PITCHES OF expr                           { Pitches $3 }
+    | CONTOUR OF expr                           { Contour $3 }
+    | DIADS OF LPAREN expr COMMA expr RPAREN    { Diads ($4, $6) }
+    | INTERVAL BETWEEN LPAREN expr COMMA expr RPAREN    { IntervalBetween ($4, $6) }
 ;
 literal:
     INTLIT P                { PitchLit $1 }
@@ -126,7 +137,13 @@ varList:
 formalList:
   formal                      { [$1] }  
   | formal COMMA formalList   { $1 :: $3}  
-
+literalList:
+  literal                     { [$1] }  
+  | literal COMMA literalList { $1 :: $3 }
+;
+exprList:
+  expr                        { [$1] }  
+  | expr COMMA exprList       { $1 :: $3 }  
 
 (* TYPES *)
 sz_type:

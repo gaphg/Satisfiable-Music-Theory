@@ -24,10 +24,10 @@ AvoidStmt := "AVOID:" Expr
 Expr := Literal
         | FuncCall
         | ListExpr
-        | "pitches of" Expr
-        | "contour of" Expr
-        | "diads of" Expr
-        | "interval between" of Expr
+        | "pitches" "of" Expr
+        | "contour" "of" Expr
+        | "diads" "of" "(" Expr "," Expr ")"
+        | "interval between" "(" Expr "," Expr ")"
         | Expr "+" Expr
         | Expr "-" Expr
         | "not" Expr
@@ -56,8 +56,8 @@ Literal := Int "p"                      ; PitchLit
         | Boolean "d"                   ; DirectionLit
         | Id                            ; Var
 
-FuncCall := Id Id*
-ListExpr := Expr+
+FuncCall := Id "(" Literal ("," Literal)* ")"
+ListExpr := "[" Expr ("," Expr)* "]"
 
 -- Basic Types -- 
 Type := "Voice" 
