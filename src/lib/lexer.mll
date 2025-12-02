@@ -7,8 +7,8 @@
 let alphanumeric = ['0'-'9''a'-'z''A'-'Z']+
 let digit = ['0'-'9']
 let number = digit+
-let note_name = ['a'-'g''A'-'G']['#''b']?
-let note_lit = note_name digit? | number
+(* let note_name = ['a'-'g''A'-'G']['#''b']?
+let note_lit = note_name digit? | number *)
 
 rule tokenize = parse
     [' ' '\t' '\n']                 { tokenize lexbuf }
@@ -41,8 +41,8 @@ rule tokenize = parse
     | ">="                          { GEQ }
     | "at"                          { AT }
     | "contains"                    { CONTAINS }
-    | "is"                          { IS }
     | "is not"                      { IS_NOT }
+    | "is"                          { IS }
     | "flatten"                     { FLATTEN }
     | "Voice"                       { VOICE_TYPE }
     | "Pitch"                       { PITCH_TYPE }
@@ -55,7 +55,6 @@ rule tokenize = parse
     | "minor"                       { MINOR }
     | "true"                        { TRUE }
     | "false"                       { FALSE }
-    | alphanumeric as s             { ID s }
     | number as n                   { INTLIT (int_of_string n)}
-    | note_lit as n                 { NOTELIT n }
+    | alphanumeric as s             { ID s }
     | eof                           { EOF }

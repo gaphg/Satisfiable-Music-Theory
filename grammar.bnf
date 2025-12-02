@@ -1,4 +1,4 @@
-Program := ConfigurationStmt+ DefinitionStmt* SpecificationStmt*
+Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
 
 -- Configurations --
 ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl

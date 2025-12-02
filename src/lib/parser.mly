@@ -48,22 +48,27 @@
 %token FALSE
 %token <string> ID
 %token <int> INTLIT
-%token <string> NOTELIT
 %start prog
 %type <Ast.program> prog
 %%
-prog:
-    stmt EOF       { [$1] }
-    | prog stmt  { $1 @ [$2] }
+prog: 
+    stmtList EOF  { $1}
 ;
-stmt:
-    configurationStmt       { ConfigurationStmt $1 }
-configurationStmt:
-    VOICE_DECL varList    { VoiceCfgStmt $2 }
 
+stmtList:
+    stmt                    { [$1] }
+  | stmt stmtList           { $1 :: $2 }
+
+stmt:
+    configurationStmt      { ConfigurationStmt $1 }
+;
+configurationStmt:
+    VOICE_DECL varList          { VoiceCfgStmt $2 }
+    | TIME_UNIT_DECL INTLIT     { TimeUnitTicksCfgStmt $2 }
+    | MEASURE_DECL INTLIT       { SongLengthUnitsCfgStmt $2 }
+    // | KEY_DECL INTLIT           { KeyCfgStmt (PitchLit $2) }     TODO fix
+;
 varList:
     ID                    { [$1] }
-    | varList ID          { $1 @ [$2] }
-expr:
-    FALSE   { BooleanLit false }
+  | ID varList            { $1 :: $2 }
 ;
