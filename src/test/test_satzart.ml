@@ -141,10 +141,15 @@ let solve_print program =
   | Satzart.Parser.LIST_TYPE -> "LIST_TYPE"
   | Satzart.Parser.MAJOR -> "MAJOR"
   | Satzart.Parser.MINOR -> "MINOR"
-  | Satzart.Parser.TRUE -> "TRUE"
-  | Satzart.Parser.FALSE -> "FALSE"
+  | Satzart.Parser.TRUE_TOKEN -> "TRUE_TOKEN"
+  | Satzart.Parser.FALSE_TOKEN -> "FALSE_TOKEN"
   | Satzart.Parser.ID s -> "ID(" ^ s ^ ")"
   | Satzart.Parser.INTLIT n -> "INTLIT(" ^ string_of_int n ^ ")"
+  | Satzart.Parser.D -> "D"
+  | Satzart.Parser.I -> "I"
+  | Satzart.Parser.T -> "T"
+  | Satzart.Parser.P -> "P"
+
 
 
 let () =

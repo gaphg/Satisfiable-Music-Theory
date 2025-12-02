@@ -8,3 +8,5 @@ DEFINE: func (foo Pitch) = true
 DEFINE: func2 (foo) = true
 DEFINE: func3 (foo Pitch, baz, bar Voice) = true
 DEFINE: func3 (foo TimeSeries of Pitch) = true
+
+REQUIRE: 4p

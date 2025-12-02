@@ -46,11 +46,15 @@
 %token LIST_TYPE
 %token MAJOR
 %token MINOR
-%token TRUE
-%token FALSE
+%token TRUE_TOKEN
+%token FALSE_TOKEN
 %token COMMA
 %token DEFINE
 %token OF
+%token P
+%token I
+%token T
+%token D
 %token <string> ID
 %token <int> INTLIT
 %start prog
@@ -93,7 +97,21 @@ specificationStmt:
 
 (* EXPRESSIONS! *)
 expr:
-    TRUE                    { BooleanLit true }
+    literal                 { $1 }
+;
+literal:
+    INTLIT P                { PitchLit $1 }
+    | INTLIT I              { IntervalLit ($1, None) }
+    | INTLIT I bool_lit     { IntervalLit ($1, Some $3)}
+    | INTLIT T              { TimeStepLit $1 }
+    | bool_lit              { BooleanLit $1 }
+    | INTLIT                { IntegerLit $1 }
+    | bool_lit D            { DirectionLit $1 }
+    | ID                    { Var $1 }
+;
+bool_lit:
+    TRUE_TOKEN            { true }
+    | FALSE_TOKEN         { false }
 ;
 
 (* LISTS *)

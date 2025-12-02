@@ -21,10 +21,7 @@ PreferStmt := "PREFER:" Expr
 AvoidStmt := "AVOID:" Expr
 
 -- The expressions! --
-Expr := Int                     ; could be PitchLit, IntervalLit, TimeStepLit
-        | Int Boolean           ; could be IntervalLit
-        | Boolean               ; could be BooleanLit, DirectionLit
-        | Id                    ; could be Var
+Expr := Literal
         | FuncCall
         | ListExpr
         | "pitches of" Expr
@@ -50,6 +47,14 @@ Expr := Int                     ; could be PitchLit, IntervalLit, TimeStepLit
         | Expr "is not" Expr
         | "flatten" Expr
         | "(" Expr ")"
+
+Literal := Int "p"                      ; PitchLit
+        | Int "i" Bool?                 ; IntervalLit
+        | Int "t"                       ; TimeStepLit
+        | Boolean                       ; BooleanLit
+        | Int                           ; IntegerLit
+        | Boolean "d"                   ; DirectionLit
+        | Id                            ; Var
 
 FuncCall := Id Id*
 ListExpr := Expr+

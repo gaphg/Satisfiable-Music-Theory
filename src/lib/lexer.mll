@@ -56,9 +56,13 @@ rule tokenize = parse
     | "List"                        { LIST_TYPE }
     | "major"                       { MAJOR }
     | "minor"                       { MINOR }
-    | "true"                        { TRUE }
-    | "false"                       { FALSE }
+    | "true"                        { TRUE_TOKEN }
+    | "false"                       { FALSE_TOKEN }
     | ","                           { COMMA }
+    | ['p''P']                      { P }
+    | ['i''I']                      { I }
+    | ['t''T']                      { T }
+    | ['d''D']                      { D }
     | number as n                   { INTLIT (int_of_string n)}
     | alphanumeric as s             { ID s }
     | eof                           { EOF }
