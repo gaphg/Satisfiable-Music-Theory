@@ -6,7 +6,7 @@ let process_header (h : Header.t) =
   match h.format_ with
   | Format.Single_track -> 1
   | Format.Simultaneous_tracks n -> n
-  | Format.Sequential_tracks n ->
+  | Format.Sequential_tracks _ ->
       raise (UnsupportedMidiFormat "Sequential tracks not supported")
 
 (* processes an event, assuming we only care about Note_ons (with nonzero velocity) *)
