@@ -2,7 +2,7 @@ open Satzart.Ast
 open Satzart.Interpreter
 open Satzart.Bachend
 open Satzart.Solver
-open Satzart.Smt_lib
+open Satzart.Smt_lib_v2_utils
 open Satzart.Process_midi
 open Satzart.Parser
 open Satzart.Lexer
@@ -85,14 +85,14 @@ let process_program program =
 
   let output = get_model full_smt in
 
-  List.iter print_endline (Option.get output);
+  print_endline (Option.get output);
   ()
 
 let solve_print program =
   let smt, _ = interpret env program in
   List.iter print_endline smt;
   print_endline "\noutput:";
-  List.iter print_endline (Option.get (get_model smt))
+  print_endline (Option.get (get_model smt))
 
 (* let () =
   let filename = "../../../../example_rules/test.txt" in
@@ -111,9 +111,44 @@ let solve_print program =
   List.iter (fun r -> Printf.printf "Parsed result: %s\n" r) results;
 
   close_in chan *)
+let model = "(
+  (define-fun v0t6 () (_ BitVec 8)
+    #x3c)
+  (define-fun v0t7 () (_ BitVec 8)
+    #x3b)
+  (define-fun v0t5 () (_ BitVec 8)
+    #x3a)
+  (define-fun v0t2 () (_ BitVec 8)
+    #x37)
+  (define-fun v0t3 () (_ BitVec 8)
+    #x36)
+  (define-fun v0t0 () (_ BitVec 8)
+    #x33)
+  (define-fun v0t1 () (_ BitVec 8)
+    #x35)
+  (define-fun v0t4 () (_ BitVec 8)
+    #x38)
+)"
 
-let () = 
-solve_print Test_major_scale.program;
+let whitespace = Re.(alt [space; char '\n'])
+let match_model = Re.(
+  compile (seq [
+        str "(define-fun ";
+        char 'v';
+        group ~name:"voice_id" (rep1 digit);
+        char 't';
+        group ~name:"time_step" (rep1 digit);
+        str " () (_ BitVec 8)"; rep whitespace;
+        str "#x"; group ~name:"pitch" (seq [xdigit; xdigit]); char ')'
+      ]))
+     
+
+
+let () = (Re.all match_model model) 
+|> List.map Re.Group.all
+|> List.iter (Array.iter print_endline)
+
+(* let () = solve_print Test_major_scale.program; *)
 
 (* let print_int_list lst =
      List.iter (fun x -> Printf.printf "%d " x) lst;
