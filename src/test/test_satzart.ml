@@ -153,10 +153,10 @@ let solve_print program =
   | Satzart.Parser.IS_NOT   -> "IS_NOT"
 
 let () =
-let rec print_tokens lexbuf = 
-  let token = Satzart.Lexer.tokenize lexbuf in
-  print_endline (string_of_token token);
-  if token <> Satzart.Parser.EOF then print_tokens lexbuf
+  let rec print_tokens lexbuf = 
+    let token = Satzart.Lexer.tokenize lexbuf in
+    print_endline (string_of_token token);
+    if token <> Satzart.Parser.EOF then print_tokens lexbuf
   in 
 
   let filename = "../../../../example_rules/test.txt" in
