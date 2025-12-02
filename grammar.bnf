@@ -47,7 +47,7 @@ Expr := Literal
         | Expr "at" Expr
         | Expr "contains" Expr
         | Expr "is" Expr            ; loose equality (mod octave)
-        | Expr "is not" Expr        ; must be exactly one space!
+        | Expr "is-not" Expr
         | "flatten" Expr
         | "(" Expr ")"
 

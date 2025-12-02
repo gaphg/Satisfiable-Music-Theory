@@ -9,7 +9,7 @@ DEFINE: func2 (foo) = true
 DEFINE: func3 (foo Pitch, baz, bar Voice) = true
 DEFINE: func3 (foo TimeSeries of Pitch) = true
 
-REQUIRE: 4p
+REQUIRE: 4p is-not 6p
 REQUIRE: func2(true)
 REQUIRE: func3(50p, vvar, soprano)
 REQUIRE: [45p, 4i, 5]
