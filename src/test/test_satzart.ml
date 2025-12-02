@@ -2,7 +2,7 @@ open Satzart.Ast
 open Satzart.Interpreter
 open Satzart.Bachend
 open Satzart.Solver
-open Satzart.Smt_lib
+open Satzart.Smt_lib_v2_utils
 open Satzart.Process_midi
 open Satzart.Parser
 open Satzart.Lexer
@@ -85,7 +85,7 @@ let process_program program =
 
   let output = get_model full_smt in
 
-  List.iter print_endline (Option.get output);
+  print_endline (Option.get output);
   ()
 
 let solve_print program =

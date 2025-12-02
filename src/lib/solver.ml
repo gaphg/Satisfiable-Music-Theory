@@ -1,7 +1,8 @@
 open Unix
 open Bachend
+open Smt_lib_v2_utils
 
-let z3_path = "/Users/gaphg/Library/Racket/8.18/pkgs/rosette/bin/z3"
+let z3_path = "z3"
 
 (* pre: smt is a smt-lib script without the check-sat/get-model commands
 at the end
@@ -9,7 +10,9 @@ post: None if not sat, Some model if sat
 *)
 let get_model (smt : string list) : string option =
   let solver_out, solver_in =
+  try
     Unix.open_process_args z3_path [| "-smt2"; "-in" |]
+  with Unix.Unix_error (Unix.ENOENT, _, _) -> raise (Failure "Z3 not found. Make sure to install Z3 and add it to your PATH.")
   in
   let close_solver () = (
     match Unix.close_process (solver_out, solver_in) with
@@ -37,13 +40,6 @@ let get_model (smt : string list) : string option =
   )
   | Some "unsat" -> close_solver (); None
   | _ -> raise (Failure ("unexpected output from solver after (check-sat)")))
-
-let parse_model (model : string)
-                (num_voices : int)
-                (song_length : int)
-                : int list list =
-  print_endline model;
-  [[1]]
 
 let solve (smt : string list)
           (env : dynamic_environment)

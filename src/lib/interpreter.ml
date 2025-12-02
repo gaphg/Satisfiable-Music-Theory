@@ -3,7 +3,7 @@ open Ast
 open Types
 open Errors
 open Type_checker
-open Smt_lib
+open Smt_lib_v2_utils
 
 let rec interpret_expr (env : dynamic_environment) (e : expr) : value =
   match e with

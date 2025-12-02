@@ -21,7 +21,7 @@ let main (rules_file : string)
          (output_midi : string)
          (smt_only : bool) =
   (* TODO: change below to instead parse rules file into program *)
-  let program = Test_major_scale.program in
+  let program = Test_suspension.program in
   let tracks_opt = if !midi_filename = ""
     then None
   else Some (Process_midi.process_file input_midi) in
@@ -30,7 +30,7 @@ let main (rules_file : string)
     {Bachend.empty_env with
       voice_count = Some (List.length tracks);
       song_length_units = Some (List.length (List.nth tracks 0));
-    }, Smt_lib.asserts_of_tracks tracks
+    }, Smt_lib_v2_utils.asserts_of_tracks tracks
   | None -> Bachend.empty_env, []
   in
   (* interpret the program! *)
