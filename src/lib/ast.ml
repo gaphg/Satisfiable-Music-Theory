@@ -54,6 +54,7 @@ type configuration_statement =
   | TimeUnitTicksCfgStmt of int
   | SongLengthUnitsCfgStmt of int
   | KeyCfgStmt of expr (* type: pitch *)
+[@@deriving show]
 
 type definition_statement =
   (* const name, const definition *)
@@ -61,6 +62,7 @@ type definition_statement =
   (* function name, function arguments/type annotations, function body *)
   | FuncDefStmt of string * (string * sz_type option) list * expr
 (* "expr" below should be type predicate *)
+[@@deriving show]
 
 type specification_statement =
   | RequireStmt of expr
@@ -73,8 +75,10 @@ type statement =
   | ConfigurationStmt of configuration_statement
   | DefinitionStmt of definition_statement
   | SpecificationStmt of specification_statement
+[@@deriving show]
 
 type program = statement list
+[@@deriving show]
 
 let string_of_expr = show_expr
 

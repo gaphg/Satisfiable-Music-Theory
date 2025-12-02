@@ -48,6 +48,7 @@ Expr := Int                     ; could be PitchLit, IntervalLit, TimeStepLit
         | Expr "is" Expr            ; loose equality (mod octave)
         | Expr "is not" Expr
         | "flatten" Expr
+        | "(" Expr ")"
 
 FuncCall := Id Id*
 ListExpr := Expr+

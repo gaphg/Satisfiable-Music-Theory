@@ -61,7 +61,7 @@ let program =
         (ElementAt (Pitches (Var "tenor"), TimeStepLit 1), PitchLit 62))); *)
     (* requires *)
   ]
-
+(* 
 let process_program program =
   let filename = "../../../../examples/Correct4PartHarmony.mid" in
   let tracks = process_file filename in
@@ -92,63 +92,77 @@ let solve_print program =
   let smt, _ = interpret env program in
   List.iter print_endline smt;
   print_endline "\noutput:";
-  print_endline (Option.get (get_model smt))
+  List.iter print_endline (Option.get (get_model smt)) *)
 
-(* let () =
+  let string_of_token = function
+  | Satzart.Parser.EOF -> "EOF"
+  | Satzart.Parser.VOICE_DECL -> "VOICE_DECL"
+  | Satzart.Parser.TIME_UNIT_DECL -> "TIME_UNIT_DECL"
+  | Satzart.Parser.MEASURE_DECL -> "MEASURE_DECL"
+  | Satzart.Parser.KEY_DECL -> "KEY_DECL"
+  | Satzart.Parser.REQUIRE -> "REQUIRE"
+  | Satzart.Parser.DISALLOW -> "DISALLOW"
+  | Satzart.Parser.PREFER -> "PREFER"
+  | Satzart.Parser.AVOID -> "AVOID"
+  | Satzart.Parser.LPAREN -> "LPAREN"
+  | Satzart.Parser.RPAREN -> "RPAREN"
+  | Satzart.Parser.PITCHES -> "PITCHES"
+  | Satzart.Parser.CONTOUR -> "CONTOUR"
+  | Satzart.Parser.DIADS -> "DIADS"
+  | Satzart.Parser.INTERVAL -> "INTERVAL"
+  | Satzart.Parser.PLUS -> "PLUS"
+  | Satzart.Parser.MINUS -> "MINUS"
+  | Satzart.Parser.NOT -> "NOT"
+  | Satzart.Parser.AND -> "AND"
+  | Satzart.Parser.OR -> "OR"
+  | Satzart.Parser.IMPLIES -> "IMPLIES"
+  | Satzart.Parser.IFF -> "IFF"
+  | Satzart.Parser.EQUALS -> "EQUALS"
+  | Satzart.Parser.NOT_EQUALS -> "NOT_EQUALS"
+  | Satzart.Parser.LESS -> "LESS"
+  | Satzart.Parser.LEQ -> "LEQ"
+  | Satzart.Parser.GREATER -> "GREATER"
+  | Satzart.Parser.GEQ -> "GEQ"
+  | Satzart.Parser.AT -> "AT"
+  | Satzart.Parser.CONTAINS -> "CONTAINS"
+  | Satzart.Parser.IS -> "IS"
+  | Satzart.Parser.IS_NOT -> "IS_NOT"
+  | Satzart.Parser.FLATTEN -> "FLATTEN"
+  | Satzart.Parser.VOICE_TYPE -> "VOICE_TYPE"
+  | Satzart.Parser.PITCH_TYPE -> "PITCH_TYPE"
+  | Satzart.Parser.INTERVAL_TYPE -> "INTERVAL_TYPE"
+  | Satzart.Parser.TIMESTEP_TYPE -> "TIMESTEP_TYPE"
+  | Satzart.Parser.BOOLEAN_TYPE -> "BOOLEAN_TYPE"
+  | Satzart.Parser.TIMESERIES_TYPE -> "TIMESERIES_TYPE"
+  | Satzart.Parser.LIST_TYPE -> "LIST_TYPE"
+  | Satzart.Parser.MAJOR -> "MAJOR"
+  | Satzart.Parser.MINOR -> "MINOR"
+  | Satzart.Parser.TRUE -> "TRUE"
+  | Satzart.Parser.FALSE -> "FALSE"
+  | Satzart.Parser.ID s -> "ID(" ^ s ^ ")"
+  | Satzart.Parser.INTLIT n -> "INTLIT(" ^ string_of_int n ^ ")"
+
+
+let () =
+let rec print_tokens lexbuf = 
+  let token = Satzart.Lexer.tokenize lexbuf in
+  print_endline (string_of_token token);
+  if token <> Satzart.Parser.EOF then print_tokens lexbuf
+  in 
+
   let filename = "../../../../example_rules/test.txt" in
   let chan = open_in filename in
   let lexbuf = Lexing.from_channel chan in
 
-  let rec collect acc =
-    try
-      let result = Satzart.Parser.main Satzart.Lexer.token lexbuf in
-      collect (result::acc)
-    with
-    | Satzart.Lexer.Eof -> List.rev acc
-  in
+  (* print_tokens lexbuf; *)
 
-  let results = collect [] in
-  List.iter (fun r -> Printf.printf "Parsed result: %s\n" r) results;
+  let results = prog tokenize lexbuf in
+  Printf.printf "%s\n" (Satzart.Ast.show_program results);
 
-  close_in chan *)
-let model = "(
-  (define-fun v0t6 () (_ BitVec 8)
-    #x3c)
-  (define-fun v0t7 () (_ BitVec 8)
-    #x3b)
-  (define-fun v0t5 () (_ BitVec 8)
-    #x3a)
-  (define-fun v0t2 () (_ BitVec 8)
-    #x37)
-  (define-fun v0t3 () (_ BitVec 8)
-    #x36)
-  (define-fun v0t0 () (_ BitVec 8)
-    #x33)
-  (define-fun v0t1 () (_ BitVec 8)
-    #x35)
-  (define-fun v0t4 () (_ BitVec 8)
-    #x38)
-)"
+  close_in chan
 
-let whitespace = Re.(alt [space; char '\n'])
-let match_model = Re.(
-  compile (seq [
-        str "(define-fun ";
-        char 'v';
-        group ~name:"voice_id" (rep1 digit);
-        char 't';
-        group ~name:"time_step" (rep1 digit);
-        str " () (_ BitVec 8)"; rep whitespace;
-        str "#x"; group ~name:"pitch" (seq [xdigit; xdigit]); char ')'
-      ]))
-     
-
-
-let () = (Re.all match_model model) 
-|> List.map Re.Group.all
-|> List.iter (Array.iter print_endline)
-
-(* let () = solve_print Test_major_scale.program; *)
+(* let () = 
+solve_print Test_major_scale.program; *)
 
 (* let print_int_list lst =
      List.iter (fun x -> Printf.printf "%d " x) lst;
