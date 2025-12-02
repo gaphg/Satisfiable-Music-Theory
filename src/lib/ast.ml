@@ -36,7 +36,7 @@ type expr =
   | NotEquals of expr * expr
   | LessThan of expr * expr
   | LessThanEq of expr * expr
-  | GreaterThan of expr * expr * expr
+  | GreaterThan of expr * expr
   | GreaterThanEq of expr * expr
   (* other builtins *)
   | ElementAt of expr * expr (* list, index -> element *)

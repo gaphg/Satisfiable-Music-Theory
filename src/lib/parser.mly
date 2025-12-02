@@ -34,7 +34,6 @@
 %token AT
 %token CONTAINS
 %token IS
-%token IS_NOT
 %token FLATTEN
 %token VOICE_TYPE
 %token PITCH_TYPE
@@ -50,17 +49,23 @@
 %token FALSE_TOKEN
 %token COMMA
 %token DEFINE
-%token OF
-%token P
-%token I
-%token T
 %token D
 %token LBRACK
 %token RBRACK
-%token INTERVAL
-%token BETWEEN
+%token OF
 %token <string> ID
+%token <int> PITCHLIT
+%token <int> INTERVALLIT
+%token <int> TIMESTEPLIT
 %token <int> INTLIT
+%right IMPLIES IFF
+%left OR
+%left AND
+%left EQUALS NOT_EQUALS
+%left LESS LEQ GREATER GEQ
+%left PLUS MINUS
+%right NOT
+%nonassoc PITCHES CONTOUR DIADS INTERVAL
 %start prog
 %type <Ast.program> prog
 %%
@@ -85,11 +90,9 @@ configurationStmt:
 definitionStmt:
     DEFINE ID EQUALS expr                               { ConstDefStmt ($2, $4) }
     | DEFINE ID LPAREN formalList RPAREN EQUALS expr    { FuncDefStmt ($2, $4, $7) }
-;
 formal:
     ID                              { ($1, None) }
     | ID sz_type                    { ($1, Some $2) }
-;
 
 (* SPECIFICATION STATEMENTS *)
 specificationStmt:
@@ -97,50 +100,73 @@ specificationStmt:
     | DISALLOW expr                 { DisallowStmt $2 }
     | PREFER expr                   { PreferStmt $2 }
     | AVOID expr                    { AvoidStmt $2 }
-;
 
 (* EXPRESSIONS! *)
 expr:
+    LBRACK exprList RBRACK  { ListExpr $2 }
+    | LPAREN expr RPAREN    { $2 }
+    | expr IMPLIES expr     { Implies ($1, $3) }
+    | expr IFF expr         { Iff ($1, $3) }
+    | or_exp                { $1 }
+or_exp:
+    or_exp OR or_exp        { Or ($1, $3) }
+    | and_exp               { $1 }
+and_exp:
+    and_exp AND and_exp     { And ($1, $3) }
+    | cmpeq_expr            { $1 }
+cmpeq_expr:
+    cmpeq_expr EQUALS cmpeq_expr        { Equals ($1, $3) }  
+    | cmpeq_expr NOT_EQUALS cmpeq_expr  { NotEquals ($1, $3) }
+    | cmp_expr                          { $1 }
+cmp_expr:
+    cmp_expr LESS cmp_expr          { LessThan ($1, $3) }
+    | cmp_expr LEQ cmp_expr         { LessThanEq ($1, $3) }
+    | cmp_expr GREATER cmp_expr     { GreaterThan ($1, $3) }
+    | cmp_expr GEQ cmp_expr         { GreaterThanEq ($1, $3) }
+    | arith_expr                    { $1 }
+arith_expr:
+    arith_expr PLUS arith_expr    { Plus ($1, $3) }
+    | arith_expr MINUS arith_expr   { Minus ($1, $3) }
+    | prefix_ops                    { $1 }
+prefix_ops:
+    PITCHES prefix_ops                              { Pitches $2 }
+    | CONTOUR prefix_ops                              { Contour $2 }
+    | DIADS LPAREN prefix_ops COMMA prefix_ops RPAREN       { Diads ($3, $5) }
+    | INTERVAL LPAREN prefix_ops COMMA prefix_ops RPAREN    { IntervalBetween ($3, $5) }
+    | NOT prefix_ops                            { Not $2 }
+    | atom                                      { $1 }
+atom:
     literal                                     { $1 }
-    | ID LPAREN literalList RPAREN              { FuncCall ($1, $3) }
-    | LBRACK exprList RBRACK                    { ListExpr $2 }
-    | LPAREN expr RPAREN                        { $2 }
-    | PITCHES OF expr                           { Pitches $3 }
-    | CONTOUR OF expr                           { Contour $3 }
-    | DIADS OF LPAREN expr COMMA expr RPAREN    { Diads ($4, $6) }
-    | INTERVAL BETWEEN LPAREN expr COMMA expr RPAREN    { IntervalBetween ($4, $6) }
-;
+    | ID                                        { Var $1 }
+    | ID LPAREN valueList RPAREN                { FuncCall ($1, $3) }
+value:
+    literal                 { $1 }
+    | ID                    { Var $1 }
 literal:
-    INTLIT P                { PitchLit $1 }
-    | INTLIT I              { IntervalLit ($1, None) }
-    | INTLIT I bool_lit     { IntervalLit ($1, Some $3)}
-    | INTLIT T              { TimeStepLit $1 }
-    | bool_lit              { BooleanLit $1 }
+    PITCHLIT                { PitchLit $1 }
+    | INTERVALLIT           { IntervalLit ($1, None) }
+    | INTERVALLIT bool_lit  { IntervalLit ($1, Some $2)}
+    | TIMESTEPLIT           { TimeStepLit $1 }
     | INTLIT                { IntegerLit $1 }
     | bool_lit D            { DirectionLit $1 }
-    | ID                    { Var $1 }
-;
+    | bool_lit              { BooleanLit $1 }
 bool_lit:
     TRUE_TOKEN            { true }
     | FALSE_TOKEN         { false }
-;
 
 (* LISTS *)
 stmtList:
     stmt                    { [$1] }
   | stmt stmtList           { $1 :: $2 }
-;
 varList:
     ID                      { [$1] }
   | ID COMMA varList        { $1 :: $3 }
-;
 formalList:
   formal                      { [$1] }  
   | formal COMMA formalList   { $1 :: $3}  
-literalList:
-  literal                     { [$1] }  
-  | literal COMMA literalList { $1 :: $3 }
-;
+valueList:
+  value                     { [$1] }  
+  | value COMMA valueList { $1 :: $3 }
 exprList:
   expr                        { [$1] }  
   | expr COMMA exprList       { $1 :: $3 }  

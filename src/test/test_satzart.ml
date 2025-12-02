@@ -126,7 +126,6 @@ let solve_print program =
   | Satzart.Parser.AT -> "AT"
   | Satzart.Parser.CONTAINS -> "CONTAINS"
   | Satzart.Parser.IS -> "IS"
-  | Satzart.Parser.IS_NOT -> "IS_NOT"
   | Satzart.Parser.FLATTEN -> "FLATTEN"
   | Satzart.Parser.VOICE_TYPE -> "VOICE_TYPE"
   | Satzart.Parser.PITCH_TYPE -> "PITCH_TYPE"
@@ -146,13 +145,11 @@ let solve_print program =
   | Satzart.Parser.ID s -> "ID(" ^ s ^ ")"
   | Satzart.Parser.INTLIT n -> "INTLIT(" ^ string_of_int n ^ ")"
   | Satzart.Parser.D -> "D"
-  | Satzart.Parser.I -> "I"
-  | Satzart.Parser.T -> "T"
-  | Satzart.Parser.P -> "P"
   | Satzart.Parser.LBRACK -> "LBRACK"
   | Satzart.Parser.RBRACK -> "RBRACK"
-  | Satzart.Parser.BETWEEN -> "BETWEEN"
-
+  | Satzart.Parser.PITCHLIT p -> "PITCHLIT(" ^ string_of_int p ^ ")"
+  | Satzart.Parser.INTERVALLIT p -> "INTERVALLIT(" ^ string_of_int p ^ ")"
+  | Satzart.Parser.TIMESTEPLIT p -> "TIMESTEPLIT(" ^ string_of_int p ^ ")"
 
 
 let () =

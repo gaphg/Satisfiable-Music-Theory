@@ -7,6 +7,7 @@
 let alphanumeric = ['0'-'9''a'-'z''A'-'Z']+
 let digit = ['0'-'9']
 let number = digit+
+let pitchlit = number ['p''P']
 (* let note_name = ['a'-'g''A'-'G']['#''b']?
 let note_lit = note_name digit? | number *)
 
@@ -23,11 +24,10 @@ rule tokenize = parse
     | "AVOID:"                      { AVOID }
     | "("                           { LPAREN }
     | ")"                           { RPAREN }
-    | "pitches"                     { PITCHES }
-    | "contour"                     { CONTOUR }
-    | "diads"                       { DIADS }
-    | "interval"                    { INTERVAL }
-    | "between"                     { BETWEEN }
+    | "pitches-of"                  { PITCHES }
+    | "contour-of"                  { CONTOUR }
+    | "diads-of"                    { DIADS }
+    | "interval-bt"                 { INTERVAL }
     | "+"                           { PLUS }
     | "-"                           { MINUS }
     | "not"                         { NOT }
@@ -44,7 +44,6 @@ rule tokenize = parse
     | ">="                          { GEQ }
     | "at"                          { AT }
     | "contains"                    { CONTAINS }
-    | "is not"                      { IS_NOT }
     | "is"                          { IS }
     | "flatten"                     { FLATTEN }
     | "Voice"                       { VOICE_TYPE }
@@ -62,10 +61,10 @@ rule tokenize = parse
     | ","                           { COMMA }
     | "["                           { LBRACK }
     | "]"                           { RBRACK }
-    | ['p''P']                      { P }
-    | ['i''I']                      { I }
-    | ['t''T']                      { T }
     | ['d''D']                      { D }
+    | number as n ('p' | 'P')       { PITCHLIT (int_of_string n) }
+    | number as n ('i' | 'I')       { INTERVALLIT (int_of_string n) }                                    
+    | number as n ('t' | 'T')       { TIMESTEPLIT (int_of_string n) }                                    
     | number as n                   { INTLIT (int_of_string n)}
     | alphanumeric as s             { ID s }
     | eof                           { EOF }
