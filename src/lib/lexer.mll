@@ -12,10 +12,11 @@ let note_lit = note_name digit? | number *)
 
 rule tokenize = parse
     [' ' '\t' '\n']                 { tokenize lexbuf }
-    | "DECLARE VOICES:"             { VOICE_DECL }
     | "DECLARE TIME UNIT TICKS:"    { TIME_UNIT_DECL }
     | "DECLARE MEASURES:"           { MEASURE_DECL }
-    | "DECLARE KEY:"                { KEY_DECL } 
+    | "DECLARE VOICES:"             { VOICE_DECL }
+    | "DECLARE KEY:"                { KEY_DECL }
+    | "DEFINE:"                     { DEFINE }
     | "REQUIRE:"                    { REQUIRE }
     | "DISALLOW:"                   { DISALLOW }
     | "PREFER:"                     { PREFER }
@@ -31,6 +32,7 @@ rule tokenize = parse
     | "not"                         { NOT }
     | "and"                         { AND }
     | "or"                          { OR }
+    | "of"                          { OF }
     | "=>"                          { IMPLIES }
     | "if"                          { IFF }
     | "="                           { EQUALS }
@@ -48,6 +50,7 @@ rule tokenize = parse
     | "Pitch"                       { PITCH_TYPE }
     | "Interval"                    { INTERVAL_TYPE }
     | "TimeStep"                    { TIMESTEP_TYPE }
+    | "Integer"                     { INTEGER_TYPE }
     | "Boolean"                     { BOOLEAN_TYPE }
     | "TimeSeries"                  { TIMESERIES_TYPE }
     | "List"                        { LIST_TYPE }
@@ -55,6 +58,7 @@ rule tokenize = parse
     | "minor"                       { MINOR }
     | "true"                        { TRUE }
     | "false"                       { FALSE }
+    | ","                           { COMMA }
     | number as n                   { INTLIT (int_of_string n)}
     | alphanumeric as s             { ID s }
     | eof                           { EOF }

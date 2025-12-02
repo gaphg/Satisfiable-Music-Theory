@@ -2,15 +2,16 @@ Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
 
 -- Configurations --
 ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl
-VoiceDecl := "DECLARE VOICES:" Id+
+VoiceDecl := "DECLARE VOICES:" Id ("," Id)*
 TimeUnitDecl := "DECLARE TIME UNIT TICKS:" Int
 SongLengthDecl := "DECLARE MEASURES:" Int
 KeyDecl := "DECLARE KEY:" PitchClass Mode
 
 -- Definitions --
 DefinitionStmt := ConstDef | FuncDef
-ConstDef := Id Expr
-FuncDef := Id (Type Id)* Expr
+ConstDef := "DEFINE:" Id "=" Expr
+FuncDef := "DEFINE:" Id "(" Formal ("," Formal)* ")" "=" Expr
+Formal := Id Type?
 
 -- Specifications --
 SpecificationStmt := RequireStmt | DisallowStmt | PreferStmt | AvoidStmt
@@ -60,8 +61,8 @@ Type := "Voice"
         | "TimeStep" 
         | "Integer" 
         | "Boolean" 
-        | Type "TimeSeries" 
-        | Type "List"
+        | "TimeSeries" "of" Type 
+        | "List" "of" Type
 
 -- Literals --
 Id := <any alphanumeric string>
