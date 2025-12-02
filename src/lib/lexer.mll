@@ -5,11 +5,7 @@
 
 (* helper regex definitions *)
 let alphanumeric = ['0'-'9''a'-'z''A'-'Z']+
-let digit = ['0'-'9']
-let number = digit+
-let pitchlit = number ['p''P']
-(* let note_name = ['a'-'g''A'-'G']['#''b']?
-let note_lit = note_name digit? | number *)
+let number = ['0'-'9']+
 
 rule tokenize = parse
     [' ' '\t' '\n']                 { tokenize lexbuf }
@@ -45,7 +41,7 @@ rule tokenize = parse
     | "at"                          { AT }
     | "contains"                    { CONTAINS }
     | "is"                          { IS }
-    | "is not"                      { IS_NOT }
+    | "is-not"                      { IS_NOT }
     | "flatten"                     { FLATTEN }
     | "Voice"                       { VOICE_TYPE }
     | "Pitch"                       { PITCH_TYPE }
@@ -55,8 +51,8 @@ rule tokenize = parse
     | "Boolean"                     { BOOLEAN_TYPE }
     | "TimeSeries"                  { TIMESERIES_TYPE }
     | "List"                        { LIST_TYPE }
-    | "major"                       { MAJOR }
-    | "minor"                       { MINOR }
+    (* | "major"                       { MAJOR } *)
+    (* | "minor"                       { MINOR } *)
     | "true"                        { TRUE_TOKEN }
     | "false"                       { FALSE_TOKEN }
     | ","                           { COMMA }
