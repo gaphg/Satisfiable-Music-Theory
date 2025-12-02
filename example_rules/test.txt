@@ -1,2 +1,1 @@
-test-token
-test-token
+DECLARE VOICES: soprano alto tenor bass

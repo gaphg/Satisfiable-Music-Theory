@@ -110,16 +110,8 @@ let () =
   let chan = open_in filename in
   let lexbuf = Lexing.from_channel chan in
 
-  let rec collect acc =
-    try
-      let result = Satzart.Parser.main Satzart.Lexer.token lexbuf in
-      collect (result::acc)
-    with
-    | Satzart.Lexer.Eof -> List.rev acc
-  in
-
-  let results = collect [] in
-  List.iter (fun r -> Printf.printf "Parsed result: %s\n" r) results;
+  let results = prog tokenize lexbuf in
+  Printf.printf "%s\n" (Satzart.Ast.show_program results);
 
   close_in chan
 

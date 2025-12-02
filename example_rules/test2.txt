@@ -1,0 +1,4 @@
+DECLARE VOICES: soprano altor tenor bass
+DECLARE MEASURES: 7
+
+REQUIRE: pitches of soprano at 0 = E5
