@@ -85,7 +85,7 @@ configurationStmt:
     VOICE_DECL varList          { VoiceCfgStmt $2 }
     | TIME_UNIT_DECL INTLIT     { TimeUnitTicksCfgStmt $2 }
     | MEASURE_DECL INTLIT       { SongLengthUnitsCfgStmt $2 }
-    | KEY_DECL INTLIT           { KeyCfgStmt (PitchLit $2) }    (* TODO allow 'C' instead of '60' *)
+    | KEY_DECL PITCHLIT         { KeyCfgStmt (PitchLit $2) }    (* TODO allow 'C' instead of '60' *)
 ;
 
 (* DEFINITION STATEMENTS *)

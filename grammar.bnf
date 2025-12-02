@@ -1,4 +1,6 @@
 Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
+        TODO: this is not quite accurate -- as of right now there must be at least
+        one of each
 
 -- Configurations --
 ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl
@@ -6,6 +8,7 @@ VoiceDecl := "DECLARE VOICES:" Id ("," Id)*
 TimeUnitDecl := "DECLARE TIME UNIT TICKS:" Int
 SongLengthDecl := "DECLARE MEASURES:" Int
 KeyDecl := "DECLARE KEY:" PitchClass Mode
+        TODO: KeyDecl does not work like this, it's just an int rn 
 
 -- Definitions --
 DefinitionStmt := ConstDef | FuncDef
