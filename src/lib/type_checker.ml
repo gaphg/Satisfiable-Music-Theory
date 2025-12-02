@@ -28,7 +28,7 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
           (List.assoc_opt name ctx.vctx, List.assoc_opt name inferred, expected)
         with
         | None, None, None ->
-            raise (TypeError ("Unable to infer type of variable " ^ name))
+            raise (TypeInferenceError ("Unable to infer type of variable " ^ name))
         | None, None, Some t -> (t, (name, t) :: inferred)
         | Some t, _, _ | _, Some t, _ -> (t, inferred))
     | FuncCall (name, args) -> (
@@ -103,14 +103,14 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
         try
           let lhs_t, new_inferred = type_check ctx inferred e1 None in
           (lhs_t, accumulate_check new_inferred e2 (Some lhs_t))
-        with TypeError _ ->
+        with TypeInferenceError _ ->
           let rhs_t, new_inferred = type_check ctx inferred e2 None in
           (rhs_t, accumulate_check new_inferred e1 (Some rhs_t)))
     | Equals (e1, e2) | NotEquals (e1, e2) -> (
         try
           let lhs_t, new_inferred = type_check ctx inferred e1 None in
           (BooleanType, accumulate_check new_inferred e2 (Some lhs_t))
-        with TypeError _ ->
+        with TypeInferenceError _ ->
           let rhs_t, new_inferred = type_check ctx inferred e2 None in
           (BooleanType, accumulate_check new_inferred e1 (Some rhs_t)))
     (* TODO: refactor code above (checking left and right) *)
@@ -127,7 +127,7 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
                 (TypeError
                    ("Expected " ^ string_of_expr list
                   ^ " to be of type TimeSeries or List"))
-        with TypeError _ -> (
+        with TypeInferenceError e -> (
           let rhs_type, new_inferred = type_check ctx inferred idx None in
           let collection =
             match rhs_type with
@@ -157,7 +157,7 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
                 (TypeError
                    ("Expected " ^ string_of_expr e1
                   ^ " to be of type TimeSeries or List"))
-        with TypeError _ ->
+        with TypeInferenceError _ ->
           let rhs_type, new_inferred = type_check ctx inferred e2 None in
           ( BooleanType,
             accumulate_check new_inferred e1 (Some (ListType rhs_type)) ))

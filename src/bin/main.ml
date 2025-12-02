@@ -20,11 +20,13 @@ let main (rules_file : string)
          (input_midi : string)
          (output_midi : string)
          (smt_only : bool) =
-  (* TODO: change below to instead parse rules file into program *)
   (* 1. parse rules file *)
   let channel = open_in rules_file in
   let lexbuf = Lexing.from_channel channel in
   let program = Parser.prog Lexer.tokenize lexbuf in 
+
+  if Bachend.debug then print_endline (Ast.show_program program);
+  (* 2. process midi file *)
   let tracks_opt = if !midi_filename = ""
     then None
   else Some (Process_midi.process_file input_midi) in
