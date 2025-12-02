@@ -2,6 +2,7 @@
 Opam installations:
 - dune
 - llama_midi (`opam install llama_midi`)
+- re
 
 Use ocaml 5.1.1 or greater.
 
