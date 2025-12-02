@@ -54,19 +54,27 @@
 prog: 
     stmtList EOF  { $1}
 ;
-
-stmtList:
-    stmt                    { [$1] }
-  | stmt stmtList           { $1 :: $2 }
-
 stmt:
     configurationStmt      { ConfigurationStmt $1 }
 ;
+
+// CONFIGURATION STATEMENTS
 configurationStmt:
     VOICE_DECL varList          { VoiceCfgStmt $2 }
     | TIME_UNIT_DECL INTLIT     { TimeUnitTicksCfgStmt $2 }
     | MEASURE_DECL INTLIT       { SongLengthUnitsCfgStmt $2 }
-    // | KEY_DECL INTLIT           { KeyCfgStmt (PitchLit $2) }     TODO fix
+    | KEY_DECL INTLIT           { KeyCfgStmt (PitchLit $2) }    (* TODO allow 'C' instead of '60' *)
+;
+
+// DEFINITION STATEMENTS
+
+
+// SPECIFICATION STATEMENTS
+
+// LISTS
+stmtList:
+    stmt                    { [$1] }
+  | stmt stmtList           { $1 :: $2 }
 ;
 varList:
     ID                    { [$1] }
