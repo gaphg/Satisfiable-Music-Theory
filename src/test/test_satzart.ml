@@ -6,6 +6,7 @@ open Satzart.Smt_lib
 open Satzart.Process_midi
 open Satzart.Parser
 open Satzart.Lexer
+open Satzart
 
 let env : dynamic_environment =
   {
@@ -60,19 +61,7 @@ let program =
         (ElementAt (Pitches (Var "tenor"), TimeStepLit 1), PitchLit 62))); *)
     (* requires *)
   ]
-let asserts_of_tracks (tracks : int list list) =
-  tracks
-  |> List.mapi (fun v track ->
-         List.mapi
-           (fun t pitch ->
-             s_expr_of
-               [
-                 "assert";
-                 s_expr_of
-                   [ "="; const_name_of_voice_time v t; bv_decimal pitch ];
-               ])
-           track)
-  |> List.concat
+
 let process_program program =
   let filename = "../../../../examples/Correct4PartHarmony.mid" in
   let tracks = process_file filename in
@@ -89,23 +78,23 @@ let process_program program =
       fenv = [];
     }
   in
-  let smt = interpret env program in
-  let full_smt = smt @ asserts @ [ "(check-sat)"; "(get-model)" ] in
+  let smt, _ = interpret env program in
+  let full_smt = smt @ asserts in
 
   List.iter print_endline full_smt;
 
-  let output = solve full_smt in
+  let output = get_model full_smt in
 
-  List.iter print_endline output;
+  List.iter print_endline (Option.get output);
   ()
 
 let solve_print program =
-  let smt = interpret env program in
+  let smt, _ = interpret env program in
   List.iter print_endline smt;
   print_endline "\noutput:";
-  List.iter print_endline (solve smt)
+  List.iter print_endline (Option.get (get_model smt))
 
-let () =
+(* let () =
   let filename = "../../../../example_rules/test.txt" in
   let chan = open_in filename in
   let lexbuf = Lexing.from_channel chan in
@@ -113,13 +102,10 @@ let () =
   let results = prog tokenize lexbuf in
   Printf.printf "%s\n" (Satzart.Ast.show_program results);
 
-  close_in chan
+  close_in chan *)
 
-(* let () = solve_print Test_major_scale.program *)
-(* solve_print Test_suspension.program; *)
-(* print_endline "\nnext test\n"; *)
-(* solve_print program *)
-(* require pitches(v1)[0] = C3 *)
+let () = 
+solve_print Test_major_scale.program;
 
 (* let print_int_list lst =
      List.iter (fun x -> Printf.printf "%d " x) lst;

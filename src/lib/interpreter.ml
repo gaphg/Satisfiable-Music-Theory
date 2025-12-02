@@ -246,16 +246,22 @@ let interpret_stmt (ctx : type_context) (env : dynamic_environment)
   | SpecificationStmt spec ->
       (ctx, env, smt @ ("; Specification" :: interpret_spec_stmt ctx env spec))
 
-let interpret (env : dynamic_environment) (prog : statement list) : string list
+(* returns an smt-lib program and the final dynamic environment *)
+let interpret (env : dynamic_environment) (prog : statement list) : string list * dynamic_environment
     =
   let rec aux (ctx : type_context) (env : dynamic_environment)
       (smt : string list) (prog : statement list) =
     match prog with
     | [] ->
         if debug then (* TODO: remove? *)
-          print_endline (show_type_context ctx);
-        print_endline (show_dynamic_environment env);
-        initialize_smt env @ smt @ [ "(check-sat)"; "(get-model)" ]
+          (print_endline (show_type_context ctx);
+          print_endline (show_dynamic_environment env));
+        (* check all necessary configurations were present *)
+        if Option.is_none env.voice_count then 
+          raise (RuntimeError "Voice count was not configured");
+        if Option.is_none env.song_length_units then
+          raise (RuntimeError "Song length units was not configured");
+        initialize_smt env @ smt, env
     | stmt :: prog ->
         let new_ctx, new_env, new_smt = interpret_stmt ctx env smt stmt in
         aux new_ctx new_env new_smt prog
