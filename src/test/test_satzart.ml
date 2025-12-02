@@ -150,7 +150,7 @@ let solve_print program =
   | Satzart.Parser.PITCHLIT p -> "PITCHLIT(" ^ string_of_int p ^ ")"
   | Satzart.Parser.INTERVALLIT p -> "INTERVALLIT(" ^ string_of_int p ^ ")"
   | Satzart.Parser.TIMESTEPLIT p -> "TIMESTEPLIT(" ^ string_of_int p ^ ")"
-
+  | Satzart.Parser.IS_NOT   -> "IS_NOT"
 
 let () =
 let rec print_tokens lexbuf = 

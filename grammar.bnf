@@ -24,10 +24,10 @@ AvoidStmt := "AVOID:" Expr
 Expr := Literal
         | FuncCall
         | ListExpr
-        | "pitches" "of" Expr
-        | "contour" "of" Expr
-        | "diads" "of" "(" Expr "," Expr ")"
-        | "interval between" "(" Expr "," Expr ")"
+        | "pitches-of" Expr
+        | "contour-of" Expr
+        | "diads-of" "(" Expr "," Expr ")"
+        | "interval-bt" "(" Expr "," Expr ")"
         | Expr "+" Expr
         | Expr "-" Expr
         | "not" Expr
@@ -44,16 +44,16 @@ Expr := Literal
         | Expr "at" Expr
         | Expr "contains" Expr
         | Expr "is" Expr            ; loose equality (mod octave)
-        | Expr "is not" Expr
+        | Expr "is not" Expr        ; must be exactly one space!
         | "flatten" Expr
         | "(" Expr ")"
 
-Literal := Int "p"                      ; PitchLit
-        | Int "i" Bool?                 ; IntervalLit
-        | Int "t"                       ; TimeStepLit
+Literal := Int ("p"|"P")                ; PitchLit
+        | Int ("i"|"I") Bool?           ; IntervalLit
+        | Int ("t"|"T")                 ; TimeStepLit
         | Boolean                       ; BooleanLit
         | Int                           ; IntegerLit
-        | Boolean "d"                   ; DirectionLit
+        | Boolean ("d"|"D")             ; DirectionLit
         | Id                            ; Var
 
 FuncCall := Id "(" Literal ("," Literal)* ")"

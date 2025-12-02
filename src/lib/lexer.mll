@@ -45,6 +45,7 @@ rule tokenize = parse
     | "at"                          { AT }
     | "contains"                    { CONTAINS }
     | "is"                          { IS }
+    | "is not"                      { IS_NOT }
     | "flatten"                     { FLATTEN }
     | "Voice"                       { VOICE_TYPE }
     | "Pitch"                       { PITCH_TYPE }

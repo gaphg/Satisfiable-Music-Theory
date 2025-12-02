@@ -53,6 +53,7 @@
 %token LBRACK
 %token RBRACK
 %token OF
+%token IS_NOT
 %token <string> ID
 %token <int> PITCHLIT
 %token <int> INTERVALLIT
@@ -61,11 +62,12 @@
 %right IMPLIES IFF
 %left OR
 %left AND
-%left EQUALS NOT_EQUALS
+%left EQUALS NOT_EQUALS IS IS_NOT
 %left LESS LEQ GREATER GEQ
 %left PLUS MINUS
+%left CONTAINS AT
 %right NOT
-%nonassoc PITCHES CONTOUR DIADS INTERVAL
+%nonassoc PITCHES CONTOUR DIADS INTERVAL FLATTEN
 %start prog
 %type <Ast.program> prog
 %%
@@ -117,6 +119,8 @@ and_exp:
 cmpeq_expr:
     cmpeq_expr EQUALS cmpeq_expr        { Equals ($1, $3) }  
     | cmpeq_expr NOT_EQUALS cmpeq_expr  { NotEquals ($1, $3) }
+    | cmpeq_expr IS cmpeq_expr          { EqualsModOctave ($1, $3) }
+    | cmpeq_expr IS_NOT cmpeq_expr      { NotEqualsModOctave ($1, $3) }
     | cmp_expr                          { $1 }
 cmp_expr:
     cmp_expr LESS cmp_expr          { LessThan ($1, $3) }
@@ -125,8 +129,12 @@ cmp_expr:
     | cmp_expr GEQ cmp_expr         { GreaterThanEq ($1, $3) }
     | arith_expr                    { $1 }
 arith_expr:
-    arith_expr PLUS arith_expr    { Plus ($1, $3) }
+    arith_expr PLUS arith_expr      { Plus ($1, $3) }
     | arith_expr MINUS arith_expr   { Minus ($1, $3) }
+    | misc_expr                     { $1 }
+misc_expr:
+    misc_expr AT misc_expr          { ElementAt ($1, $3)}
+    | misc_expr CONTAINS misc_expr  { Contains ($1, $3) }
     | prefix_ops                    { $1 }
 prefix_ops:
     PITCHES prefix_ops                              { Pitches $2 }
@@ -134,6 +142,7 @@ prefix_ops:
     | DIADS LPAREN prefix_ops COMMA prefix_ops RPAREN       { Diads ($3, $5) }
     | INTERVAL LPAREN prefix_ops COMMA prefix_ops RPAREN    { IntervalBetween ($3, $5) }
     | NOT prefix_ops                            { Not $2 }
+    | FLATTEN prefix_ops                        { Flatten $2 }
     | atom                                      { $1 }
 atom:
     literal                                     { $1 }
@@ -166,7 +175,7 @@ formalList:
   | formal COMMA formalList   { $1 :: $3}  
 valueList:
   value                     { [$1] }  
-  | value COMMA valueList { $1 :: $3 }
+  | value COMMA valueList   { $1 :: $3 }
 exprList:
   expr                        { [$1] }  
   | expr COMMA exprList       { $1 :: $3 }  
