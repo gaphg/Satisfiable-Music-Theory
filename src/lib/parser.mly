@@ -50,6 +50,8 @@
 %token COMMA
 %token DEFINE
 %token D
+%token UP
+%token DOWN
 %token LBRACK
 %token RBRACK
 %token OF
@@ -154,10 +156,12 @@ value:
 literal:
     PITCHLIT                { PitchLit $1 }
     | INTERVALLIT           { IntervalLit ($1, None) }
-    | INTERVALLIT bool_lit  { IntervalLit ($1, Some $2)}
+    | INTERVALLIT UP        { IntervalLit ($1, Some true) }
+    | INTERVALLIT DOWN      { IntervalLit ($1, Some false) }
     | TIMESTEPLIT           { TimeStepLit $1 }
     | INTLIT                { IntegerLit $1 }
-    | bool_lit D            { DirectionLit $1 }
+    | UP                    { DirectionLit true }
+    | DOWN                  { DirectionLit false }
     | bool_lit              { BooleanLit $1 }
 bool_lit:
     TRUE_TOKEN            { true }

@@ -1,4 +1,4 @@
-open Ast
+open Satzart.Ast
 
 let program =
   [

@@ -1,11 +1,11 @@
 DECLARE VOICES: voice
 DECLARE MEASURES: 8
 
-REQUIRE: contour-of voice at 0 = 2i
-REQUIRE: contour-of voice at 1 = 2i
-REQUIRE: contour-of voice at 2 = 1i
-REQUIRE: contour-of voice at 3 = 2i
-REQUIRE: contour-of voice at 4 = 2i
-REQUIRE: contour-of voice at 5 = 2i
-REQUIRE: contour-of voice at 6 = 1i
-REQUIRE: contour-of voice at 7 = 2i
+REQUIRE: contour-of voice at 0t = 2i up
+REQUIRE: contour-of voice at 1t = 2i up
+REQUIRE: contour-of voice at 2t = 1i up
+REQUIRE: contour-of voice at 3t = 2i up
+REQUIRE: contour-of voice at 4t = 2i up
+REQUIRE: contour-of voice at 5t = 2i up
+REQUIRE: contour-of voice at 6t = 1i up
+REQUIRE: contour-of voice at 7t = 2i up
