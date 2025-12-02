@@ -1,19 +1,70 @@
-<program> ::= 
-    <voice declaration> <time unit declaration> <key declaration>? <stmt>*
+Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
 
-<voice declaration> ::= "declare voices:"
+-- Configurations --
+ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl
+VoiceDecl := "DECLARE VOICES:" Id+
+TimeUnitDecl := "DECLARE TIME UNIT TICKS:" Int
+SongLengthDecl := "DECLARE MEASURES:" Int
+KeyDecl := "DECLARE KEY:" PitchClass Mode
 
-<stmt> ::= <specification> | <definition>
+-- Definitions --
+DefinitionStmt := ConstDef | FuncDef
+ConstDef := Id Expr
+FuncDef := Id (Type Id)* Expr
 
-<definition> ::= "definition:" <id> "=" <expr>
+-- Specifications --
+SpecificationStmt := RequireStmt | DisallowStmt | PreferStmt | AvoidStmt
+RequireStmt := "REQUIRE:" Expr
+DisallowStmt := "DISALLOW:" Expr
+PreferStmt := "PREFER:" Expr
+AvoidStmt := "AVOID:" Expr
 
-<specification> ::= 
-    <requirement stmt> <expr> # type must be a predicate 
-    | <objective stmt> <expr> # type must be a predicate
-    # "free" variables in these predicates will be treated as such:
-    # for requirements, a sat clause for each value that the variable can take
-    # for objectives, a max/min sat clause for each value the variable can take
+-- The expressions! --
+Expr := Int                     ; could be PitchLit, IntervalLit, TimeStepLit
+        | Int Boolean           ; could be IntervalLit
+        | Boolean               ; could be BooleanLit, DirectionLit
+        | Id                    ; could be Var
+        | FuncCall
+        | ListExpr
+        | "pitches of" Expr
+        | "contour of" Expr
+        | "diads of" Expr
+        | "interval between" of Expr
+        | Expr "+" Expr
+        | Expr "-" Expr
+        | "not" Expr
+        | Expr "and" Expr
+        | Expr "or" Expr
+        | Expr "=>" Expr
+        | Expr "if" Expr
+        | Expr "=" Expr
+        | Expr "!=" Expr
+        | Expr "<" Expr
+        | Expr "<=" Expr
+        | Expr ">" Expr
+        | Expr ">=" Expr
+        | Expr "at" Expr
+        | Expr "contains" Expr
+        | Expr "is" Expr            ; loose equality (mod octave)
+        | Expr "is not" Expr
+        | "flatten" Expr
 
-<requirement stmt> ::= "require:" | "disallow:"
-<objective stmt> ::= "prefer:" | "avoid:"
+FuncCall := Id Id*
+ListExpr := Expr+
 
+-- Basic Types -- 
+Type := "Voice" 
+        | "Pitch" 
+        | "Interval" 
+        | "TimeStep" 
+        | "Integer" 
+        | "Boolean" 
+        | Type "TimeSeries" 
+        | Type "List"
+
+-- Literals --
+Id := <any alphanumeric string>
+Int := <any nonnegative integer literal>
+PitchClass := <a note name>                       ([a-gA-G][#b]?)
+Mode := <"major" or "minor">                      (TODO : add other capitalization/modes?)
+Bool := <"TRUE" or "FALSE">
