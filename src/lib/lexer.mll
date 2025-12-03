@@ -6,9 +6,11 @@
 (* helper regex definitions *)
 let alphanumeric = ['0'-'9''a'-'z''A'-'Z']+
 let number = ['0'-'9']+
+let comment = ";" [^'\n']* ('\n' | eof)
 
 rule tokenize = parse
     [' ' '\t' '\n']                 { tokenize lexbuf }
+    | comment                       { tokenize lexbuf }
     | "DECLARE TIME UNIT TICKS:"    { TIME_UNIT_DECL }
     | "DECLARE MEASURES:"           { MEASURE_DECL }
     | "DECLARE VOICES:"             { VOICE_DECL }
@@ -31,7 +33,7 @@ rule tokenize = parse
     | "or"                          { OR }
     | "of"                          { OF }
     | "=>"                          { IMPLIES }
-    | "if"                          { IFF }
+    | "<=>"                         { IFF }
     | "="                           { EQUALS }
     | "!="                          { NOT_EQUALS }
     | "<"                           { LESS }

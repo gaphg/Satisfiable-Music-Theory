@@ -1,3 +1,6 @@
+-- Comments --
+Single line comments between with a ";"
+
 Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
         TODO: this is not quite accurate -- as of right now there must be at least
         one of each
@@ -37,7 +40,7 @@ Expr := Literal
         | Expr "and" Expr
         | Expr "or" Expr
         | Expr "=>" Expr
-        | Expr "if" Expr
+        | Expr "<=>" Expr
         | Expr "=" Expr
         | Expr "!=" Expr
         | Expr "<" Expr
