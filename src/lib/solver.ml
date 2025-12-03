@@ -1,4 +1,3 @@
-open Unix
 open Bachend
 open Smt_lib_v2_utils
 

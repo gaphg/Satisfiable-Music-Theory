@@ -6,8 +6,8 @@ type expr =
   | IntervalLit of
       int * bool option (* user may specify direction, true -> ascending *)
   | TimeStepLit of int
-  | BooleanLit of bool
   | IntegerLit of int
+  | BooleanLit of bool
   | DirectionLit of bool
   (* only can specify concrete direction, not unspecified *)
   (* this means in syntax we need a way of differentiating literals for what type they are,
@@ -31,9 +31,8 @@ type expr =
   | Or of expr * expr
   | Implies of expr * expr
   | Iff of expr * expr
-  | Exists of
-      (string * sz_type option) list
-      * expr (* list of quantified variables, predicate *)
+  (* exists/forall: list of quantified variables, predicate *)
+  | Exists of (string * sz_type option) list * expr
   | Forall of (string * sz_type option) list * expr
   (* comparison operations *)
   | Equals of expr * expr
@@ -58,7 +57,6 @@ type configuration_statement =
   | TimeUnitTicksCfgStmt of int
   | SongLengthUnitsCfgStmt of int
   | KeyCfgStmt of expr (* type: pitch *)
-  | IncludeCfgStmt of string (* filename of included script *)
 [@@deriving show]
 
 type definition_statement =
@@ -80,6 +78,7 @@ type statement =
   | ConfigurationStmt of configuration_statement
   | DefinitionStmt of definition_statement
   | SpecificationStmt of specification_statement
+  | IncludeStmt of string (* filename of included script *)
 [@@deriving show]
 
 type program = statement list [@@deriving show]

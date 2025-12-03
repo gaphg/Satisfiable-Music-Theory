@@ -6,6 +6,13 @@ open Type_checker
 open Smt_lib_v2_utils
 
 let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
+  (* helper functions *)
+  let translate_numeric_bin_op op e1 e2 =
+    match (translate_expr env e1, translate_expr env e2) with
+    | TimeStep t1, TimeStep t2 -> TimeStep (op t1 t2)
+    | Integer i1, Integer i2 -> Integer (op i1 i2)
+    | _ -> raise (Failure "interpret_expr: not yet implemented")
+  in
   match e with
   | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
   | SymbolicIntervalExpr ((v1, t1), (v2, t2)) ->
@@ -14,8 +21,9 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   | PitchLit p -> Pitch p
   | IntervalLit (i, d) -> Interval (i, d)
   | TimeStepLit t -> TimeStep t
-  | BooleanLit b -> Boolean b
   | IntegerLit i -> Integer i
+  | BooleanLit b -> Boolean b
+  | DirectionLit d -> Direction d
   (* variables/functions *)
   | Var name -> (
       match List.assoc_opt name env.venv with
@@ -66,10 +74,10 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       | _ -> raise (Failure "interpret_expr: impossible"))
   | IntervalBetween (p1, p2) ->
       SymbolicInterval (translate_expr env p1, translate_expr env p2)
-  | Plus (e1, e2) -> (
-      match (translate_expr env e1, translate_expr env e2) with
-      | TimeStep t1, TimeStep t2 -> TimeStep (t1 + t2)
-      | _ -> raise (Failure "interpret_expr: not yet implemented"))
+  | Plus (e1, e2) -> translate_numeric_bin_op (+) e1 e2
+  | Minus (e1, e2) -> translate_numeric_bin_op (-) e1 e2
+  (* boolean/predicate *)
+  | Not e -> SymbolicNot (translate_expr env e)
   | And (e1, e2) -> SymbolicAnd [ translate_expr env e1; translate_expr env e2 ]
   | Or (e1, e2) -> SymbolicOr [ translate_expr env e1; translate_expr env e2 ]
   | Implies (e1, e2) ->
@@ -231,6 +239,7 @@ let translate_cfg_stmt (ctx : type_context) (env : dynamic_environment)
   | TimeUnitTicksCfgStmt _ | KeyCfgStmt _ ->
       ignore ctx;
       raise (Failure "interpret_cfg_stmt: not yet implemented")
+  | IncludeCfgStmt filename -> raise (Failure "interpret_cfg_stmt: not yet implemented")
 
 (* outputs updated context, environment, and smt program as a list of constraints *)
 let translate_stmt (ctx : type_context) (env : dynamic_environment)

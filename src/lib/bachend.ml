@@ -9,6 +9,7 @@ type vc_term =
   | Pitch of int
   (* distance between two pitches, in semitones *)
   | Interval of int * bool option (* interval, up/down direction *)
+  | Direction of bool (* true:up/false:down *)
   (* | ChordVal of int list *)
   | TimeStep of int
   | Integer of int
@@ -21,9 +22,11 @@ type vc_term =
   | SymbolicInterval of vc_term * vc_term (* pitch 1, pitch 2 *)
   | SymbolicEquals of vc_term * vc_term
   | SymbolicAbs of vc_term
+  | SymbolicNot of vc_term
   | SymbolicAnd of vc_term list
   | SymbolicOr of vc_term list (* list of predicates/booleans *)
   | SymbolicImplies of vc_term * vc_term
+  | SymbolicIff of vc_term * vc_term
 [@@deriving show]
 
 (* functions are not first-order? *)
