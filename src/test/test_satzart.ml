@@ -157,7 +157,9 @@ let string_of_token = function
   | Satzart.Parser.EXISTS -> "EXISTS"
   | Satzart.Parser.WHERE -> "WHERE"
   | Satzart.Parser.FORALL -> "FORALL"
-
+  | Satzart.Parser.INCLUDE -> "INCLUDE"
+  | Satzart.Parser.FILENAME f -> "FILENAME(" ^ f ^ ")"
+ 
 let () =
   let rec print_tokens lexbuf =
     let token = Satzart.Lexer.tokenize lexbuf in

@@ -1,9 +1,12 @@
 -- Comments --
 Single line comments begin with a ";"
 
-Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
+Program := IncludeStmt* ConfigurationStmt* DefinitionStmt* SpecificationStmt*
         TODO: this is not quite accurate -- as of right now there must be at least
         one of each
+
+-- Includes --
+IncludeStmt := "INCLUDE:" Filename
 
 -- Configurations --
 ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl
@@ -85,3 +88,4 @@ Int := <any nonnegative integer literal>
 PitchClass := <a note name>                       ([a-gA-G][#b]?)
 Mode := <"major" or "minor">                      (TODO : add other capitalization/modes?)
 Bool := <"TRUE" or "FALSE">
+Filename := <any non-whitespace string> "." <any non-whitespace string>
