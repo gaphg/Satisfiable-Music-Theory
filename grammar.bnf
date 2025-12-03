@@ -16,7 +16,8 @@ KeyDecl := "DECLARE KEY:" PitchClass Mode
 -- Definitions --
 DefinitionStmt := ConstDef | FuncDef
 ConstDef := "DEFINE:" Id "=" Expr
-FuncDef := "DEFINE:" Id "(" Formal ("," Formal)* ")" "=" Expr
+FuncDef := "DEFINE:" Id "(" FormalList ")" "=" Expr
+FormalList := Formal ("," Formal)*
 Formal := Id Type?
 
 -- Specifications --
@@ -52,8 +53,10 @@ Expr := Literal
         | Expr "in" Expr
         | Expr "is" Expr            ; loose equality (mod octave)
         | Expr "is-not" Expr
-        | "flatten" Expr
+        | "flatten" Expr            ; put everything in same octave    
         | "(" Expr ")"
+        | "forall" "[" FormalList "]" "," Expr
+        | "exists" "[" FormalList "]" "where" Expr
 
 Literal := Int ("p"|"P")                ; PitchLit
         | Int ("i"|"I") Bool?           ; IntervalLit

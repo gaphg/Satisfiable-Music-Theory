@@ -64,6 +64,9 @@ rule tokenize = parse
     | ['d''D']                      { D }
     | "up"                          { UP }
     | "down"                        { DOWN }
+    | "forall"                      { FORALL }
+    | "exists"                      { EXISTS }
+    | "where"                       { WHERE }
     | number as n ('p' | 'P')       { PITCHLIT (int_of_string n) }
     | number as n ('i' | 'I')       { INTERVALLIT (int_of_string n) }                                    
     | number as n ('t' | 'T')       { TIMESTEPLIT (int_of_string n) }                                    

@@ -153,6 +153,10 @@ let string_of_token = function
   | Satzart.Parser.IS_NOT   -> "IS_NOT"
   | Satzart.Parser.UP -> "UP"
   | Satzart.Parser.DOWN -> "DOWN"
+  | Satzart.Parser.IN -> "IN"
+  | Satzart.Parser.EXISTS -> "EXISTS"
+  | Satzart.Parser.WHERE -> "WHERE"
+  | Satzart.Parser.FORALL -> "FORALL"
 
 let () =
   let rec print_tokens lexbuf =

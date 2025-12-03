@@ -57,12 +57,16 @@
 %token RBRACK
 %token OF
 %token IS_NOT
+%token FORALL
+%token EXISTS
+%token WHERE
 %token <string> ID
 %token <int> PITCHLIT
 %token <int> INTERVALLIT
 %token <int> TIMESTEPLIT
 %token <int> INTLIT
 %right IMPLIES IFF
+%nonassoc FORALL EXISTS
 %left OR
 %left AND
 %left EQUALS NOT_EQUALS IS IS_NOT
@@ -108,9 +112,13 @@ specificationStmt:
 
 (* EXPRESSIONS! *)
 expr:
-    expr IMPLIES expr     { Implies ($1, $3) }
-    | expr IFF expr         { Iff ($1, $3) }
-    | or_exp                { $1 }
+    FORALL LBRACK formalList RBRACK COMMA expr     { Forall ($3, $6) }
+    | EXISTS LBRACK formalList RBRACK WHERE expr   { Exists ($3, $6) }
+    | logic_expr                                   { $1 } 
+logic_expr:
+    logic_expr IMPLIES logic_expr       { Implies ($1, $3) }
+    | logic_expr IFF logic_expr         { Iff ($1, $3) }
+    | or_exp                            { $1 }
 or_exp:
     or_exp OR or_exp        { Or ($1, $3) }
     | and_exp               { $1 }
