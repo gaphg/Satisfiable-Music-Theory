@@ -1,11 +1,10 @@
-## Build
-Opam installations:
+## Installations
+Make sure ocaml (> 5.1.1) and Z3 are installed. Z3 should be included in your `$PATH$.
+
+Using `opam`, install:
 - dune
-- llama_midi (`opam install llama_midi`)
+- llama_midi
 - re
 
-Use ocaml 5.1.1 or greater.
-
-
-run `dune build` to build, `dune exec satzart`  to run the code in main.ml, and
-`dune test` to run the code in test_satzart.ml
+## Build
+run `dune build` to build, `dune exec -- satzart`  to run the code in main.ml
