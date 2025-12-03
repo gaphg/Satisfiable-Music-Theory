@@ -16,10 +16,10 @@ DEFINE: M7 = 11i
 DEFINE: octave = 12i
 
 DEFINE: isConsonant(p1, p2) = 
-    [ unison, m3, M3, P5, m6, M6, octave ] contains interval(p1, p2)
+    [ unison, m3, M3, P5, m6, M6, octave ] contains interval-bt(p1, p2)
 
 DEFINE: isDissonant(p1, p2) = 
-    [ m2, M2, tritone, P5, m7, M7 ] contains interval(p1, p2)
+    [ m2, M2, tritone, P5, m7, M7 ] contains interval-bt(p1, p2)
 
 DEFINE: hasSuspension(v1, v2, t) = 
     pitches of v1 at t = pitches of v1 at (t + 1) and

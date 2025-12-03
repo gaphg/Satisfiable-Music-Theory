@@ -2,6 +2,7 @@ type sz_type =
   | VoiceType
   | PitchType
   | IntervalType
+  | DirectionType
   (* | Chord *)
   | TimeStepType
   | IntegerType (* mostly used for indexing into list *)
@@ -16,6 +17,7 @@ let rec string_of_type (t : sz_type) =
   | VoiceType -> "Voice"
   | PitchType -> "Pitch"
   | IntervalType -> "Interval"
+  | DirectionType -> "Direction"
   (* | Chord -> "Chord" *)
   | TimeStepType -> "TimeStep"
   | IntegerType -> "Integer"

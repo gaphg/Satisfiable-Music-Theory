@@ -25,12 +25,14 @@ type expr =
   (* int/timestep maybe can be extend to pitches/intervals too *)
   | Plus of expr * expr
   | Minus of expr * expr (* perhaps pitch - pitch gives interval? *)
-  (* boolean operations *)
+  (* boolean/predicate operations *)
   | Not of expr
   | And of expr * expr
   | Or of expr * expr
   | Implies of expr * expr
   | Iff of expr * expr
+  | Exists of (string * sz_type option) list * expr (* list of quantified variables, predicate *)
+  | Forall of (string * sz_type option) list * expr
   (* comparison operations *)
   | Equals of expr * expr
   | NotEquals of expr * expr
@@ -54,6 +56,7 @@ type configuration_statement =
   | TimeUnitTicksCfgStmt of int
   | SongLengthUnitsCfgStmt of int
   | KeyCfgStmt of expr (* type: pitch *)
+  | IncludeCfgStmt of string (* filename of included script *)
 [@@deriving show]
 
 type definition_statement =

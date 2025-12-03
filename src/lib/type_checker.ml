@@ -21,8 +21,9 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
     | PitchLit _ -> (PitchType, inferred)
     | IntervalLit _ -> (IntervalType, inferred)
     | TimeStepLit _ -> (TimeStepType, inferred)
-    | BooleanLit _ -> (BooleanType, inferred)
     | IntegerLit _ -> (IntegerType, inferred)
+    | BooleanLit _ -> (BooleanType, inferred)
+    | DirectionLit _ -> (DirectionType, inferred)
     | Var name -> (
         match
           (List.assoc_opt name ctx.vctx, List.assoc_opt name inferred, expected)
@@ -93,20 +94,30 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
             (accumulate_check inferred e1 (Some PitchType))
             e2 (Some PitchType) )
     (* boolean ops *)
-    | And (e1, e2) | Or (e1, e2) | Implies (e1, e2) ->
+    | Not e -> (BooleanType, accumulate_check inferred e (Some BooleanType))
+    | And (e1, e2) 
+    | Or (e1, e2) 
+    | Implies (e1, e2) 
+    | Iff (e1, e2) ->
         ( BooleanType,
           accumulate_check
             (accumulate_check inferred e1 (Some BooleanType))
             e2 (Some BooleanType) )
     (* operations where lhs and rhs must be the same type but o/w unknown *)
-    | Plus (e1, e2) | Minus (e1, e2) -> (
+    | Plus (e1, e2) 
+    | Minus (e1, e2) -> (
         try
           let lhs_t, new_inferred = type_check ctx inferred e1 None in
           (lhs_t, accumulate_check new_inferred e2 (Some lhs_t))
         with TypeInferenceError _ ->
           let rhs_t, new_inferred = type_check ctx inferred e2 None in
           (rhs_t, accumulate_check new_inferred e1 (Some rhs_t)))
-    | Equals (e1, e2) | NotEquals (e1, e2) -> (
+    | Equals (e1, e2) 
+    | NotEquals (e1, e2)
+    | LessThan (e1, e2)
+    | LessThanEq (e1, e2)
+    | GreaterThan (e1, e2)
+    | GreaterThanEq (e1, e2) -> (
         try
           let lhs_t, new_inferred = type_check ctx inferred e1 None in
           (BooleanType, accumulate_check new_inferred e2 (Some lhs_t))
