@@ -61,40 +61,40 @@ let program =
         (ElementAt (Pitches (Var "tenor"), TimeStepLit 1), PitchLit 62))); *)
     (* requires *)
   ]
-(* 
-let process_program program =
-  let filename = "../../../../examples/Correct4PartHarmony.mid" in
-  let tracks = process_file filename in
-  let asserts = asserts_of_tracks tracks in
-  let env =
-    {
-      voices_declared = false;
-      voice_count = Some (List.length tracks);
-      time_unit_ticks = None;
-      song_length_ticks = None;
-      song_length_units = Some (List.length (List.nth tracks 0));
-      key = None;
-      venv = [];
-      fenv = [];
-    }
-  in
-  let smt, _ = interpret env program in
-  let full_smt = smt @ asserts in
+(*
+   let process_program program =
+     let filename = "../../../../examples/Correct4PartHarmony.mid" in
+     let tracks = process_file filename in
+     let asserts = asserts_of_tracks tracks in
+     let env =
+       {
+         voices_declared = false;
+         voice_count = Some (List.length tracks);
+         time_unit_ticks = None;
+         song_length_ticks = None;
+         song_length_units = Some (List.length (List.nth tracks 0));
+         key = None;
+         venv = [];
+         fenv = [];
+       }
+     in
+     let smt, _ = interpret env program in
+     let full_smt = smt @ asserts in
 
-  List.iter print_endline full_smt;
+     List.iter print_endline full_smt;
 
-  let output = get_model full_smt in
+     let output = get_model full_smt in
 
-  print_endline (Option.get output);
-  ()
+     print_endline (Option.get output);
+     ()
 
-let solve_print program =
-  let smt, _ = interpret env program in
-  List.iter print_endline smt;
-  print_endline "\noutput:";
-  List.iter print_endline (Option.get (get_model smt)) *)
+   let solve_print program =
+     let smt, _ = interpret env program in
+     List.iter print_endline smt;
+     print_endline "\noutput:";
+     List.iter print_endline (Option.get (get_model smt)) *)
 
-  let string_of_token = function
+let string_of_token = function
   | Satzart.Parser.EOF -> "EOF"
   | Satzart.Parser.VOICE_DECL -> "VOICE_DECL"
   | Satzart.Parser.TIME_UNIT_DECL -> "TIME_UNIT_DECL"
@@ -150,28 +150,27 @@ let solve_print program =
   | Satzart.Parser.PITCHLIT p -> "PITCHLIT(" ^ string_of_int p ^ ")"
   | Satzart.Parser.INTERVALLIT p -> "INTERVALLIT(" ^ string_of_int p ^ ")"
   | Satzart.Parser.TIMESTEPLIT p -> "TIMESTEPLIT(" ^ string_of_int p ^ ")"
-  | Satzart.Parser.IS_NOT   -> "IS_NOT"
+  | Satzart.Parser.IS_NOT -> "IS_NOT"
 
 let () =
-  let rec print_tokens lexbuf = 
+  let rec print_tokens lexbuf =
     let token = Satzart.Lexer.tokenize lexbuf in
     print_endline (string_of_token token);
     if token <> Satzart.Parser.EOF then print_tokens lexbuf
-  in 
+  in
 
   let filename = "../../../../example_rules/test.txt" in
   let chan = open_in filename in
   let lexbuf = Lexing.from_channel chan in
 
   (* print_tokens lexbuf; *)
-
   let results = prog tokenize lexbuf in
   Printf.printf "%s\n" (Satzart.Ast.show_program results);
 
   close_in chan
 
-(* let () = 
-solve_print Test_major_scale.program; *)
+(* let () =
+   solve_print Test_major_scale.program; *)
 
 (* let print_int_list lst =
      List.iter (fun x -> Printf.printf "%d " x) lst;

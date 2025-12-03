@@ -31,7 +31,9 @@ type expr =
   | Or of expr * expr
   | Implies of expr * expr
   | Iff of expr * expr
-  | Exists of (string * sz_type option) list * expr (* list of quantified variables, predicate *)
+  | Exists of
+      (string * sz_type option) list
+      * expr (* list of quantified variables, predicate *)
   | Forall of (string * sz_type option) list * expr
   (* comparison operations *)
   | Equals of expr * expr
@@ -80,8 +82,7 @@ type statement =
   | SpecificationStmt of specification_statement
 [@@deriving show]
 
-type program = statement list
-[@@deriving show]
+type program = statement list [@@deriving show]
 
 let string_of_expr = show_expr
 
