@@ -3,7 +3,7 @@ open Ast
 
 let debug = true
 
-type value =
+type vc_term =
   | Voice of int (* int id of voice *)
   (* matches midi pitch between 0 and 127 (60 is middle C) *)
   | Pitch of int
@@ -18,17 +18,17 @@ type value =
   | SzList of expr list
   (* logical/symbolic elements for solver *)
   | SymbolicPitch of int * int (* voice id, time step *)
-  | SymbolicInterval of value * value (* pitch 1, pitch 2 *)
-  | SymbolicEquals of value * value
-  | SymbolicAbs of value
-  | SymbolicAnd of value list
-  | SymbolicOr of value list (* list of predicates/booleans *)
-  | SymbolicImplies of value * value
+  | SymbolicInterval of vc_term * vc_term (* pitch 1, pitch 2 *)
+  | SymbolicEquals of vc_term * vc_term
+  | SymbolicAbs of vc_term
+  | SymbolicAnd of vc_term list
+  | SymbolicOr of vc_term list (* list of predicates/booleans *)
+  | SymbolicImplies of vc_term * vc_term
 [@@deriving show]
 
 (* functions are not first-order? *)
 type func = string list * expr [@@deriving show]
-type var_env = (string * value) list [@@deriving show]
+type var_env = (string * vc_term) list [@@deriving show]
 type func_env = (string * func) list [@@deriving show]
 
 type dynamic_environment = {

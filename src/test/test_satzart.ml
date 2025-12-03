@@ -1,5 +1,5 @@
 open Satzart.Ast
-open Satzart.Interpreter
+open Satzart.Vcgen
 open Satzart.Bachend
 open Satzart.Solver
 open Satzart.Smt_lib_v2_utils

@@ -12,3 +12,7 @@ e.g.
 if v1 -> [C D F#]
 
 look at readme in satzart for how to build
+
+current issues:
+- support for comments
+- interval(p1, p2) gets parsed as a FuncCall instead of IntervalBetween

@@ -1,5 +1,4 @@
 open Bachend
-open Re
 
 let s_expr_of (symbols : string list) =
   match symbols with
@@ -28,7 +27,7 @@ let initialize_smt (env : dynamic_environment) : string list =
   | _ -> raise (Failure "initialize_smt: not yet implemented")
 
 (* expects v to only have values that are predicates *)
-let rec smt_of_predicate (v : value) : string =
+let rec smt_of_predicate (v : vc_term) : string =
   match v with
   (* | Voice v -> string_of_int v *)
   | Pitch p -> bv_decimal p
@@ -51,7 +50,7 @@ let rec smt_of_predicate (v : value) : string =
       raise
         (Failure
            ("smt_of_predicate: not yet implemented or impossible "
-          ^ show_value v))
+          ^ show_vc_term v))
 let asserts_of_tracks (tracks : int list list) =
   tracks
   |> List.mapi (fun v track ->
