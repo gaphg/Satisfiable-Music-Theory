@@ -151,6 +151,8 @@ let solve_print program =
   | Satzart.Parser.INTERVALLIT p -> "INTERVALLIT(" ^ string_of_int p ^ ")"
   | Satzart.Parser.TIMESTEPLIT p -> "TIMESTEPLIT(" ^ string_of_int p ^ ")"
   | Satzart.Parser.IS_NOT   -> "IS_NOT"
+  | Satzart.Parser.UP -> "UP"
+  | Satzart.Parser.DOWN -> "DOWN"
 
 let () =
   let rec print_tokens lexbuf = 
@@ -159,7 +161,7 @@ let () =
     if token <> Satzart.Parser.EOF then print_tokens lexbuf
   in 
 
-  let filename = "../../../../example_rules/test.txt" in
+  let filename = "../../../../example_rules/suspension_resolution.rules" in
   let chan = open_in filename in
   let lexbuf = Lexing.from_channel chan in
 

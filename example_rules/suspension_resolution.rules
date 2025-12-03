@@ -22,12 +22,12 @@ DEFINE: isDissonant(p1, p2) =
     [ m2, M2, tritone, P5, m7, M7 ] contains interval-bt(p1, p2)
 
 DEFINE: hasSuspension(v1, v2, t) = 
-    pitches of v1 at t = pitches of v1 at (t + 1) and
-    isConsonant(pitches of v1 at t, pitches of v2 at t) and
-    isDissonant(pitches of v1 at (t + 1), pitches of v2 at (t + 1))
+    pitches-of v1 at t = pitches-of v1 at (t + 1) and
+    isConsonant(pitches-of v1 at t, pitches-of v2 at t) and
+    isDissonant(pitches-of v1 at (t + 1), pitches-of v2 at (t + 1))
 
 DEFINE: suspensionResolves(v1, v2, t) =
-    isConsonant(pitches of v1 at (t + 1), pitches of v2 at (t + 2)) and
-    (contour of v1 at t = m2 or contour of v1 at t = M2)
+    isConsonant(pitches-of v1 at (t + 1), pitches-of v2 at (t + 2)) and
+    (contour-of v1 at t = m2 or contour-of v1 at t = M2)
 
 REQUIRE: hasSuspension(v1, v2, t) => suspensionResolves(v1, v2, t + 1)

@@ -107,9 +107,7 @@ specificationStmt:
 
 (* EXPRESSIONS! *)
 expr:
-    LBRACK exprList RBRACK  { ListExpr $2 }
-    | LPAREN expr RPAREN    { $2 }
-    | expr IMPLIES expr     { Implies ($1, $3) }
+    expr IMPLIES expr     { Implies ($1, $3) }
     | expr IFF expr         { Iff ($1, $3) }
     | or_exp                { $1 }
 or_exp:
@@ -149,10 +147,9 @@ prefix_ops:
 atom:
     literal                                     { $1 }
     | ID                                        { Var $1 }
-    | ID LPAREN valueList RPAREN                { FuncCall ($1, $3) }
-value:
-    literal                 { $1 }
-    | ID                    { Var $1 }
+    | ID LPAREN exprList RPAREN                 { FuncCall ($1, $3) }
+    | LBRACK exprList RBRACK                    { ListExpr $2 }
+    | LPAREN expr RPAREN                        { $2 }
 literal:
     PITCHLIT                { PitchLit $1 }
     | INTERVALLIT           { IntervalLit ($1, None) }
@@ -177,9 +174,6 @@ varList:
 formalList:
   formal                      { [$1] }  
   | formal COMMA formalList   { $1 :: $3}  
-valueList:
-  value                     { [$1] }  
-  | value COMMA valueList   { $1 :: $3 }
 exprList:
   expr                        { [$1] }  
   | expr COMMA exprList       { $1 :: $3 }  
