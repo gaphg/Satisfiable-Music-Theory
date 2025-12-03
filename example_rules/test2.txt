@@ -1,4 +1,5 @@
 DECLARE VOICES: soprano, altor, tenor, bass
 DECLARE MEASURES: 7
 
-REQUIRE: pitches-of soprano at 0 = 76p
+REQUIRE: pitches-of soprano at 0t = 76p
+REQUIRE: exists [p Pitch] where p = 60p

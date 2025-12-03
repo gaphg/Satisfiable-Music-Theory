@@ -6,9 +6,11 @@
 (* helper regex definitions *)
 let alphanumeric = ['0'-'9''a'-'z''A'-'Z']+
 let number = ['0'-'9']+
+let comment = ";" [^'\n']* ('\n' | eof)
 
 rule tokenize = parse
     [' ' '\t' '\n']                 { tokenize lexbuf }
+    | comment                       { tokenize lexbuf }
     | "DECLARE TIME UNIT TICKS:"    { TIME_UNIT_DECL }
     | "DECLARE MEASURES:"           { MEASURE_DECL }
     | "DECLARE VOICES:"             { VOICE_DECL }
@@ -31,7 +33,7 @@ rule tokenize = parse
     | "or"                          { OR }
     | "of"                          { OF }
     | "=>"                          { IMPLIES }
-    | "if"                          { IFF }
+    | "<=>"                         { IFF }
     | "="                           { EQUALS }
     | "!="                          { NOT_EQUALS }
     | "<"                           { LESS }
@@ -40,6 +42,7 @@ rule tokenize = parse
     | ">="                          { GEQ }
     | "at"                          { AT }
     | "contains"                    { CONTAINS }
+    | "in"                          { IN }
     | "is"                          { IS }
     | "is-not"                      { IS_NOT }
     | "flatten"                     { FLATTEN }
@@ -61,6 +64,9 @@ rule tokenize = parse
     | ['d''D']                      { D }
     | "up"                          { UP }
     | "down"                        { DOWN }
+    | "forall"                      { FORALL }
+    | "exists"                      { EXISTS }
+    | "where"                       { WHERE }
     | number as n ('p' | 'P')       { PITCHLIT (int_of_string n) }
     | number as n ('i' | 'I')       { INTERVALLIT (int_of_string n) }                                    
     | number as n ('t' | 'T')       { TIMESTEPLIT (int_of_string n) }                                    

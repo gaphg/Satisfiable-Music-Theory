@@ -33,6 +33,7 @@
 %token GEQ
 %token AT
 %token CONTAINS
+%token IN
 %token IS
 %token FLATTEN
 %token VOICE_TYPE
@@ -56,18 +57,22 @@
 %token RBRACK
 %token OF
 %token IS_NOT
+%token FORALL
+%token EXISTS
+%token WHERE
 %token <string> ID
 %token <int> PITCHLIT
 %token <int> INTERVALLIT
 %token <int> TIMESTEPLIT
 %token <int> INTLIT
 %right IMPLIES IFF
+%nonassoc FORALL EXISTS
 %left OR
 %left AND
 %left EQUALS NOT_EQUALS IS IS_NOT
 %left LESS LEQ GREATER GEQ
 %left PLUS MINUS
-%left CONTAINS AT
+%left CONTAINS AT IN
 %right NOT
 %nonassoc PITCHES CONTOUR DIADS INTERVAL FLATTEN
 %start prog
@@ -107,11 +112,13 @@ specificationStmt:
 
 (* EXPRESSIONS! *)
 expr:
-    LBRACK exprList RBRACK  { ListExpr $2 }
-    | LPAREN expr RPAREN    { $2 }
-    | expr IMPLIES expr     { Implies ($1, $3) }
-    | expr IFF expr         { Iff ($1, $3) }
-    | or_exp                { $1 }
+    FORALL LBRACK formalList RBRACK COMMA expr     { Forall ($3, $6) }
+    | EXISTS LBRACK formalList RBRACK WHERE expr   { Exists ($3, $6) }
+    | logic_expr                                   { $1 } 
+logic_expr:
+    logic_expr IMPLIES logic_expr       { Implies ($1, $3) }
+    | logic_expr IFF logic_expr         { Iff ($1, $3) }
+    | or_exp                            { $1 }
 or_exp:
     or_exp OR or_exp        { Or ($1, $3) }
     | and_exp               { $1 }
@@ -137,6 +144,7 @@ arith_expr:
 misc_expr:
     misc_expr AT misc_expr          { ElementAt ($1, $3)}
     | misc_expr CONTAINS misc_expr  { Contains ($1, $3) }
+    | misc_expr IN misc_expr        { Contains ($3, $1) }
     | prefix_ops                    { $1 }
 prefix_ops:
     PITCHES prefix_ops                              { Pitches $2 }
@@ -149,10 +157,9 @@ prefix_ops:
 atom:
     literal                                     { $1 }
     | ID                                        { Var $1 }
-    | ID LPAREN valueList RPAREN                { FuncCall ($1, $3) }
-value:
-    literal                 { $1 }
-    | ID                    { Var $1 }
+    | ID LPAREN exprList RPAREN                 { FuncCall ($1, $3) }
+    | LBRACK exprList RBRACK                    { ListExpr $2 }
+    | LPAREN expr RPAREN                        { $2 }
 literal:
     PITCHLIT                { PitchLit $1 }
     | INTERVALLIT           { IntervalLit ($1, None) }
@@ -177,9 +184,6 @@ varList:
 formalList:
   formal                      { [$1] }  
   | formal COMMA formalList   { $1 :: $3}  
-valueList:
-  value                     { [$1] }  
-  | value COMMA valueList   { $1 :: $3 }
 exprList:
   expr                        { [$1] }  
   | expr COMMA exprList       { $1 :: $3 }  

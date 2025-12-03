@@ -1,3 +1,6 @@
+-- Comments --
+Single line comments begin with a ";"
+
 Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
         TODO: this is not quite accurate -- as of right now there must be at least
         one of each
@@ -13,7 +16,8 @@ KeyDecl := "DECLARE KEY:" PitchClass Mode
 -- Definitions --
 DefinitionStmt := ConstDef | FuncDef
 ConstDef := "DEFINE:" Id "=" Expr
-FuncDef := "DEFINE:" Id "(" Formal ("," Formal)* ")" "=" Expr
+FuncDef := "DEFINE:" Id "(" FormalList ")" "=" Expr
+FormalList := Formal ("," Formal)*
 Formal := Id Type?
 
 -- Specifications --
@@ -37,7 +41,7 @@ Expr := Literal
         | Expr "and" Expr
         | Expr "or" Expr
         | Expr "=>" Expr
-        | Expr "if" Expr
+        | Expr "<=>" Expr
         | Expr "=" Expr
         | Expr "!=" Expr
         | Expr "<" Expr
@@ -46,10 +50,13 @@ Expr := Literal
         | Expr ">=" Expr
         | Expr "at" Expr
         | Expr "contains" Expr
+        | Expr "in" Expr
         | Expr "is" Expr            ; loose equality (mod octave)
         | Expr "is-not" Expr
-        | "flatten" Expr
+        | "flatten" Expr            ; put everything in same octave    
         | "(" Expr ")"
+        | "forall" "[" FormalList "]" "," Expr
+        | "exists" "[" FormalList "]" "where" Expr
 
 Literal := Int ("p"|"P")                ; PitchLit
         | Int ("i"|"I") Bool?           ; IntervalLit
