@@ -4,5 +4,8 @@
  (preprocess
   (pps ppx_deriving.show)))
 
-(ocamllex (modules lexer))
-(ocamlyacc (modules parser))
+(ocamllex
+ (modules lexer))
+
+(ocamlyacc
+ (modules parser))

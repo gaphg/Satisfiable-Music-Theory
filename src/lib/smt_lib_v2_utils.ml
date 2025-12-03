@@ -51,6 +51,7 @@ let rec smt_of_predicate (v : vc_term) : string =
         (Failure
            ("smt_of_predicate: not yet implemented or impossible "
           ^ show_vc_term v))
+
 let asserts_of_tracks (tracks : int list list) =
   tracks
   |> List.mapi (fun v track ->
@@ -65,39 +66,42 @@ let asserts_of_tracks (tracks : int list list) =
            track)
   |> List.concat
 
+let whitespace = Re.(alt [ space; char '\n' ])
 
-let whitespace = Re.(alt [space; char '\n'])
-let match_model = Re.(
-  compile (seq [
-        str "(define-fun ";
-        char 'v';
-        group ~name:"voice_id" (rep1 digit);
-        char 't';
-        group ~name:"time_step" (rep1 digit);
-        str " () (_ BitVec 8)"; rep whitespace;
-        str "#"; group ~name:"pitch" (seq [char 'x'; xdigit; xdigit]); char ')'
-      ]))
+let match_model =
+  Re.(
+    compile
+      (seq
+         [
+           str "(define-fun ";
+           char 'v';
+           group ~name:"voice_id" (rep1 digit);
+           char 't';
+           group ~name:"time_step" (rep1 digit);
+           str " () (_ BitVec 8)";
+           rep whitespace;
+           str "#";
+           group ~name:"pitch" (seq [ char 'x'; xdigit; xdigit ]);
+           char ')';
+         ]))
 
 (* takes in a model string of the form
-(model
-  (define-fun v?t? () (_ BitVec 8)
-    #x??)
-  ...
-)
-and returns a 2d list of pitches
+   (model
+     (define-fun v?t? () (_ BitVec 8)
+       #x??)
+     ...
+   )
+   and returns a 2d list of pitches
 *)
-let parse_model (model : string)
-                (num_voices : int)
-                (song_length : int)
-                : int list list =
+let parse_model (model : string) (num_voices : int) (song_length : int) :
+    int list list =
   let grid = Array.make_matrix num_voices song_length 0 in
   Re.(
-  let matches = all match_model model in
-  matches
-  |> List.iter (fun m ->
-      let v = int_of_string (Group.get m 1) in
-      let t = int_of_string (Group.get m 2) in
-      let pitch = int_of_string ("0" ^ (Group.get m 3)) in
-      grid.(v).(t) <- pitch
-    ));
+    let matches = all match_model model in
+    matches
+    |> List.iter (fun m ->
+           let v = int_of_string (Group.get m 1) in
+           let t = int_of_string (Group.get m 2) in
+           let pitch = int_of_string ("0" ^ Group.get m 3) in
+           grid.(v).(t) <- pitch));
   Array.to_list (Array.map Array.to_list grid)

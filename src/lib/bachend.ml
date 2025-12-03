@@ -44,13 +44,14 @@ type dynamic_environment = {
 }
 [@@deriving show]
 
-let empty_env = {
-  voices_declared = false;
-  voice_count = None;
-  time_unit_ticks = None;
-  song_length_ticks = None;
-  song_length_units = None;
-  key = None;
-  venv = [];
-  fenv = [];
-}
+let empty_env =
+  {
+    voices_declared = false;
+    voice_count = None;
+    time_unit_ticks = None;
+    song_length_ticks = None;
+    song_length_units = None;
+    key = None;
+    venv = [];
+    fenv = [];
+  }
