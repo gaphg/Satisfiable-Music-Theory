@@ -1,5 +1,5 @@
 -- Comments --
-Single line comments between with a ";"
+Single line comments begin with a ";"
 
 Program := ConfigurationStmt* DefinitionStmt* SpecificationStmt*
         TODO: this is not quite accurate -- as of right now there must be at least
@@ -49,6 +49,7 @@ Expr := Literal
         | Expr ">=" Expr
         | Expr "at" Expr
         | Expr "contains" Expr
+        | Expr "in" Expr
         | Expr "is" Expr            ; loose equality (mod octave)
         | Expr "is-not" Expr
         | "flatten" Expr

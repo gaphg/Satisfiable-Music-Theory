@@ -33,6 +33,7 @@
 %token GEQ
 %token AT
 %token CONTAINS
+%token IN
 %token IS
 %token FLATTEN
 %token VOICE_TYPE
@@ -67,7 +68,7 @@
 %left EQUALS NOT_EQUALS IS IS_NOT
 %left LESS LEQ GREATER GEQ
 %left PLUS MINUS
-%left CONTAINS AT
+%left CONTAINS AT IN
 %right NOT
 %nonassoc PITCHES CONTOUR DIADS INTERVAL FLATTEN
 %start prog
@@ -135,6 +136,7 @@ arith_expr:
 misc_expr:
     misc_expr AT misc_expr          { ElementAt ($1, $3)}
     | misc_expr CONTAINS misc_expr  { Contains ($1, $3) }
+    | misc_expr IN misc_expr        { Contains ($3, $1) }
     | prefix_ops                    { $1 }
 prefix_ops:
     PITCHES prefix_ops                              { Pitches $2 }

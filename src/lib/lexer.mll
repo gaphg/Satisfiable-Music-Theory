@@ -42,6 +42,7 @@ rule tokenize = parse
     | ">="                          { GEQ }
     | "at"                          { AT }
     | "contains"                    { CONTAINS }
+    | "in"                          { IN }
     | "is"                          { IS }
     | "is-not"                      { IS_NOT }
     | "flatten"                     { FLATTEN }
