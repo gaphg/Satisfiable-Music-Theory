@@ -5,6 +5,31 @@ open Errors
 open Type_checker
 open Smt_lib_v2_utils
 
+let all_pitches = List.init 128 (fun n -> Pitch n)
+
+let possible_values_of_type (env : dynamic_environment) (t : sz_type) :
+    vc_term list =
+  match t with
+  | VoiceType -> (
+      match env.voice_count with
+      | Some n -> List.init n (fun i -> Voice i)
+      | None ->
+          raise
+            (RuntimeError
+               "Voice count has not been configured/no midi file input"))
+  | PitchType -> all_pitches
+  | TimeStepType -> (
+      match env.song_length_units with
+      | Some n -> List.init n (fun i -> TimeStep i)
+      | None ->
+          raise
+            (RuntimeError
+               "Song length units has not been configured/could not be \
+                determined"))
+  | BooleanType -> [ Boolean true; Boolean false ]
+  | _ -> raise (Failure "possible_values_of_type: not yet implemented")
+
+
 let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   (* helper functions *)
   let translate_numeric_bin_op op e1 e2 =
@@ -13,6 +38,8 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
     | Integer i1, Integer i2 -> Integer (op i1 i2)
     | _ -> raise (Failure "interpret_expr: not yet implemented")
   in
+  (* signed mod *)
+  let smod n d = ((n mod d) + d) mod d in
   match e with
   | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
   | SymbolicIntervalExpr ((v1, t1), (v2, t2)) ->
@@ -80,8 +107,22 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   | Not e -> SymbolicNot (translate_expr env e)
   | And (e1, e2) -> SymbolicAnd [ translate_expr env e1; translate_expr env e2 ]
   | Or (e1, e2) -> SymbolicOr [ translate_expr env e1; translate_expr env e2 ]
-  | Implies (e1, e2) ->
-      SymbolicImplies (translate_expr env e1, translate_expr env e2)
+  | Implies (e1, e2) -> SymbolicImplies (translate_expr env e1, translate_expr env e2)
+  | Iff (e1, e2) -> SymbolicEquals (translate_expr env e1, translate_expr env e2)
+  | Exists (vars, e) -> (
+      let annotated = vars
+        (* should be guaranteed by typechecker *)
+        |> List.map (fun (name, t) -> (name, Option.get !t))
+      in
+      SymbolicOr (branch_on_free_vars env annotated e);
+    )
+  | Forall (vars, e) -> (
+      let annotated = vars
+        (* should be guaranteed by typechecker *)
+        |> List.map (fun (name, t) -> (name, Option.get !t))
+      in
+      SymbolicAnd (branch_on_free_vars env annotated e);
+  )
   (* comparisons *)
   | Equals (e1, e2) -> (
       let v1, v2 = (translate_expr env e1, translate_expr env e2) in
@@ -90,6 +131,21 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       | Interval (_, None), _ | _, Interval (_, None) ->
           SymbolicEquals (SymbolicAbs v1, SymbolicAbs v2)
       | _ -> SymbolicEquals (v1, v2))
+  | NotEquals (e1, e2) -> translate_expr env (Not (Equals (e1, e2)))
+  | LessThan (e1, e2) -> SymbolicLt (translate_expr env e1, translate_expr env e2)
+  | LessThanEq (e1, e2) -> SymbolicLe (translate_expr env e1, translate_expr env e2)
+  | GreaterThan (e1, e2) -> SymbolicGt (translate_expr env e1, translate_expr env e2)
+  | GreaterThanEq (e1, e2) -> SymbolicGe (translate_expr env e1, translate_expr env e2)
+  | Flatten e -> (
+    let v = translate_expr env e in
+    match v with
+    | Pitch p -> Pitch (smod p 12)
+    | Interval (i, d) -> Interval (smod i 12, d)
+    | SymbolicPitch _ -> SymbolicModOct v
+    | _ -> raise (Failure "interpret_expr: flatten should only have interval or pitch")
+  )
+  | EqualsModOctave (e1, e2) -> translate_expr env (Equals (Flatten e1, Flatten e2))
+  | NotEqualsModOctave (e1, e2) -> translate_expr env (Not (EqualsModOctave (e1, e2)))
   | ElementAt (list, idx) -> (
       match (translate_expr env list, translate_expr env idx) with
       | TimeSeries l, TimeStep i | SzList l, Integer i ->
@@ -102,45 +158,22 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
           SymbolicOr
             (List.map (fun e -> translate_expr env (Equals (e, elt))) es)
       | _ -> raise (Failure "interpret_expr: impossible"))
-  | _ -> raise (Failure ("interpret_expr: not yet implemented " ^ show_expr e))
 
-let all_pitches = List.init 128 (fun n -> Pitch n)
 
-let possible_values_of_type (env : dynamic_environment) (t : sz_type) :
-    vc_term list =
-  match t with
-  | VoiceType -> (
-      match env.voice_count with
-      | Some n -> List.init n (fun i -> Voice i)
-      | None ->
-          raise
-            (RuntimeError
-               "Voice count has not been configured/no midi file input"))
-  | PitchType -> all_pitches
-  | TimeStepType -> (
-      match env.song_length_units with
-      | Some n -> List.init n (fun i -> TimeStep i)
-      | None ->
-          raise
-            (RuntimeError
-               "Song length units has not been configured/could not be \
-                determined"))
-  | BooleanType -> [ Boolean true; Boolean false ]
-  | _ -> raise (Failure "possible_values_of_type: not yet implemented")
-
-(* for each free variable, interprets the expression for all possible values of that variable, outputting a list of values TODO: decide whether to use forall smt quantifier (not sure if it's supported as well, gotta research )*)
-let rec branch_on_free_vars (env : dynamic_environment)
-    (inferred : var_type_context) (e : expr) : vc_term list =
-  match inferred with
+(* for each free variable, interprets the expression for all possible values of that variable, outputting a list of values 
+TODO: decide whether to use forall smt quantifier (not sure if it's supported as well, gotta research )*)
+and branch_on_free_vars (env : dynamic_environment)
+    (free_vars : var_type_context) (e : expr) : vc_term list =
+  match free_vars with
   | [] -> (
       (* does this catch too much? might want to restrict this a bit *)
       try [ translate_expr env e ] with InvalidIndexError _ -> [])
-  | (name, t) :: inferred ->
+  | (name, t) :: vs ->
       possible_values_of_type env t
       |> List.map (fun v ->
              branch_on_free_vars
                { env with venv = (name, v) :: env.venv }
-               inferred e)
+               vs e)
       |> List.fold_left ( @ ) []
 
 (* should only take in spec rule statements, outputs a list of smt-lib constraints *)
@@ -166,8 +199,10 @@ let translate_def_stmt (ctx : type_context) (env : dynamic_environment)
       (* first add annotated types to context *)
       let annotated =
         params
-        |> List.filter_map (fun (param, t) ->
-               Option.map (fun tconcrete -> (param, tconcrete)) t)
+        |> List.filter_map (fun (param, tref) ->
+          match !tref with
+          | Some t -> Some (param, t)
+          | None -> None)
       in
       let scoped_ctx = { ctx with vctx = annotated @ ctx.vctx } in
       let t, inferred = type_check scoped_ctx [] body None in
@@ -183,7 +218,7 @@ let translate_def_stmt (ctx : type_context) (env : dynamic_environment)
           let param_types =
             param_names
             |> List.map (fun param_name ->
-                   match List.assoc param_name params with
+                   match !(List.assoc param_name params) with
                    | Some param_type -> param_type
                    | None -> (
                        try List.assoc param_name inferred
@@ -239,21 +274,27 @@ let translate_cfg_stmt (ctx : type_context) (env : dynamic_environment)
   | TimeUnitTicksCfgStmt _ | KeyCfgStmt _ ->
       ignore ctx;
       raise (Failure "interpret_cfg_stmt: not yet implemented")
-  | IncludeCfgStmt filename -> raise (Failure "interpret_cfg_stmt: not yet implemented")
 
-(* outputs updated context, environment, and smt program as a list of constraints *)
+(* outputs 
+more program (in the case included from another file),
+updated context, environment, and smt program as a list of constraints *)
 let translate_stmt (ctx : type_context) (env : dynamic_environment)
     (smt : string list) (stmt : statement) :
-    type_context * dynamic_environment * string list =
+    program * type_context * dynamic_environment * string list =
   match stmt with
   | ConfigurationStmt cfg ->
       let ctx, env = translate_cfg_stmt ctx env cfg in
-      (ctx, env, smt)
+      ([], ctx, env, smt)
   | DefinitionStmt def ->
       let ctx, env = translate_def_stmt ctx env def in
-      (ctx, env, smt)
+      ([], ctx, env, smt)
   | SpecificationStmt spec ->
-      (ctx, env, smt @ ("; Specification" :: translate_spec_stmt ctx env spec))
+      ([], ctx, env, smt @ ("; Specification" :: translate_spec_stmt ctx env spec))
+  | IncludeStmt filename ->
+      let channel = open_in filename in
+      let lexbuf = Lexing.from_channel channel in
+      let prog = Parser.prog Lexer.tokenize lexbuf in
+      (prog, ctx, env, smt)
 
 (* returns an smt-lib program and the final dynamic environment *)
 let translate (env : dynamic_environment) (prog : statement list) :
@@ -273,8 +314,8 @@ let translate (env : dynamic_environment) (prog : statement list) :
           raise (RuntimeError "Song length units was not configured");
         (initialize_smt env @ smt, env)
     | stmt :: prog ->
-        let new_ctx, new_env, new_smt = translate_stmt ctx env smt stmt in
-        aux new_ctx new_env new_smt prog
+        let more_prog, new_ctx, new_env, new_smt = translate_stmt ctx env smt stmt in
+        aux new_ctx new_env new_smt (more_prog @ prog)
   in
   let empty_ctx = { vctx = []; fctx = [] } in
   aux empty_ctx env [] prog

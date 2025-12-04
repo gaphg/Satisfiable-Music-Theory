@@ -20,13 +20,17 @@ type vc_term =
   (* logical/symbolic elements for solver *)
   | SymbolicPitch of int * int (* voice id, time step *)
   | SymbolicInterval of vc_term * vc_term (* pitch 1, pitch 2 *)
+  | SymbolicModOct of vc_term (* mod by 12 *)
   | SymbolicEquals of vc_term * vc_term
+  | SymbolicLt of vc_term * vc_term
+  | SymbolicLe of vc_term * vc_term
+  | SymbolicGt of vc_term * vc_term
+  | SymbolicGe of vc_term * vc_term
   | SymbolicAbs of vc_term
   | SymbolicNot of vc_term
   | SymbolicAnd of vc_term list
   | SymbolicOr of vc_term list (* list of predicates/booleans *)
   | SymbolicImplies of vc_term * vc_term
-  | SymbolicIff of vc_term * vc_term
 [@@deriving show]
 
 (* functions are not first-order? *)

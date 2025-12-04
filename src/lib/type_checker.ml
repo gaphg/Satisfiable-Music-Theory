@@ -23,11 +23,11 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
   *)
   let check_lr_same lhs rhs =
     try
-          let lhs_t, new_inferred = type_check ctx inferred lhs None in
-          (BooleanType, accumulate_check new_inferred rhs (Some lhs_t))
-        with TypeInferenceError _ ->
-          let rhs_t, new_inferred = type_check ctx inferred rhs None in
-          (BooleanType, accumulate_check new_inferred lhs (Some rhs_t))
+      let lhs_t, new_inferred = type_check ctx inferred lhs None in
+      (lhs_t, accumulate_check new_inferred rhs (Some lhs_t))
+    with TypeInferenceError _ ->
+      let rhs_t, new_inferred = type_check ctx inferred rhs None in
+      (rhs_t, accumulate_check new_inferred lhs (Some rhs_t))
   in
   let checked_type, new_inferred =
     match e with
@@ -122,38 +122,39 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
       let annotated =
         vars
         |> List.filter_map (fun (v, t) ->
-               Option.map (fun tconcrete -> (v, tconcrete)) t)
+               Option.map (fun tconcrete -> (v, tconcrete)) !t)
       in
       let scoped_ctx = { ctx with vctx = annotated @ ctx.vctx } in 
       let _, inf = type_check scoped_ctx inferred e (Some BooleanType) in
       (* if types of vars bound by this expr were inferred, remove from final inferred list *)
       let pruned_inf =
       vars
-      |> List.filter (fun p -> Option.is_none (snd p))
+      |> List.filter (fun p -> Option.is_none !(snd p))
       |> List.map fst
       |> List.fold_left (Fun.flip List.remove_assoc) inf in
+      (* update type annotations in expression node *)
+      vars
+      |> List.iter (fun (name, t) ->
+        match !t with
+        | Some _ -> ()
+        | None -> t := Some (List.assoc name inf)
+      );
       (BooleanType, pruned_inf)
     )
     (* operations where lhs and rhs must be the same type but o/w unknown *)
     | Plus (e1, e2) 
-    | Minus (e1, e2) -> (
-        try
-          let lhs_t, new_inferred = type_check ctx inferred e1 None in
-          (lhs_t, accumulate_check new_inferred e2 (Some lhs_t))
-        with TypeInferenceError _ ->
-          let rhs_t, new_inferred = type_check ctx inferred e2 None in
-          (rhs_t, accumulate_check new_inferred e1 (Some rhs_t)))
+    | Minus (e1, e2) -> check_lr_same e1 e2
     | Equals (e1, e2) 
     | NotEquals (e1, e2)
     | LessThan (e1, e2)
     | LessThanEq (e1, e2)
     | GreaterThan (e1, e2)
-    | GreaterThanEq (e1, e2) -> check_lr_same e1 e2
+    | GreaterThanEq (e1, e2) -> (BooleanType, snd (check_lr_same e1 e2))
     | EqualsModOctave (e1, e2)
     | NotEqualsModOctave (e1, e2) ->(
         let t, inferred = check_lr_same e1 e2 in
         (match t with
-        | PitchType | IntervalType -> (t, inferred)
+        | PitchType | IntervalType -> (BooleanType, inferred)
         | _ -> raise (TypeError ("Expected operands of " ^ (string_of_expr e) ^ " to be of type Pitch or Interval"))))
 
     | Flatten e -> (
