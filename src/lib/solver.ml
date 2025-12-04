@@ -41,7 +41,8 @@ let get_model (smt : string list) : string option =
   | Some "unsat" ->
       close_solver ();
       None
-  | _ -> raise (Failure "unexpected output from solver after (check-sat)")
+  | Some s -> raise (Failure ("unexpected output from solver after (check-sat): " ^ s))
+  | None -> raise (Failure "no output from solver after (check-sat)")
 
 let solve (smt : string list) (env : dynamic_environment) : int list list option
     =

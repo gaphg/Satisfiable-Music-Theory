@@ -38,6 +38,8 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
     | Integer i1, Integer i2 -> Integer (op i1 i2)
     | _ -> raise (Failure "interpret_expr: not yet implemented")
   in
+  (* signed mod *)
+  let smod n d = ((n mod d) + d) mod d in
   match e with
   | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
   | SymbolicIntervalExpr ((v1, t1), (v2, t2)) ->
@@ -106,7 +108,7 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   | And (e1, e2) -> SymbolicAnd [ translate_expr env e1; translate_expr env e2 ]
   | Or (e1, e2) -> SymbolicOr [ translate_expr env e1; translate_expr env e2 ]
   | Implies (e1, e2) -> SymbolicImplies (translate_expr env e1, translate_expr env e2)
-  | Iff (e1, e2) -> SymbolicIff (translate_expr env e1, translate_expr env e2)
+  | Iff (e1, e2) -> SymbolicEquals (translate_expr env e1, translate_expr env e2)
   | Exists (vars, e) -> (
       let annotated = vars
         (* should be guaranteed by typechecker *)
@@ -129,6 +131,21 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       | Interval (_, None), _ | _, Interval (_, None) ->
           SymbolicEquals (SymbolicAbs v1, SymbolicAbs v2)
       | _ -> SymbolicEquals (v1, v2))
+  | NotEquals (e1, e2) -> translate_expr env (Not (Equals (e1, e2)))
+  | LessThan (e1, e2) -> SymbolicLt (translate_expr env e1, translate_expr env e2)
+  | LessThanEq (e1, e2) -> SymbolicLe (translate_expr env e1, translate_expr env e2)
+  | GreaterThan (e1, e2) -> SymbolicGt (translate_expr env e1, translate_expr env e2)
+  | GreaterThanEq (e1, e2) -> SymbolicGe (translate_expr env e1, translate_expr env e2)
+  | Flatten e -> (
+    let v = translate_expr env e in
+    match v with
+    | Pitch p -> Pitch (smod p 12)
+    | Interval (i, d) -> Interval (smod i 12, d)
+    | SymbolicPitch _ -> SymbolicModOct v
+    | _ -> raise (Failure "interpret_expr: flatten should only have interval or pitch")
+  )
+  | EqualsModOctave (e1, e2) -> translate_expr env (Equals (Flatten e1, Flatten e2))
+  | NotEqualsModOctave (e1, e2) -> translate_expr env (Not (EqualsModOctave (e1, e2)))
   | ElementAt (list, idx) -> (
       match (translate_expr env list, translate_expr env idx) with
       | TimeSeries l, TimeStep i | SzList l, Integer i ->
@@ -141,7 +158,6 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
           SymbolicOr
             (List.map (fun e -> translate_expr env (Equals (e, elt))) es)
       | _ -> raise (Failure "interpret_expr: impossible"))
-  | _ -> raise (Failure ("interpret_expr: not yet implemented " ^ show_expr e))
 
 
 (* for each free variable, interprets the expression for all possible values of that variable, outputting a list of values 

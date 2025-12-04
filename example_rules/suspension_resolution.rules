@@ -1,33 +1,22 @@
 DECLARE VOICES: soprano, alto, tenor, bass
 DECLARE LENGTH: 4
 
-DEFINE: unison = 0i
-DEFINE: m2 = 1i
-DEFINE: M2 = 2i
-DEFINE: m3 = 3i
-DEFINE: M3 = 4i
-DEFINE: P4 = 5i
-DEFINE: tritone = 6i
-DEFINE: P5 = 7i
-DEFINE: m6 = 8i
-DEFINE: M6 = 9i
-DEFINE: m7 = 10i
-DEFINE: M7 = 11i
-DEFINE: octave = 12i
+INCLUDE: ../example_rules/stdlib.rules
 
 DEFINE: isConsonant(p1, p2) = 
-    [ unison, m3, M3, P5, m6, M6, octave ] contains interval-bt(p1, p2)
+    interval-bt(p1, p2) in [ unison, m3, M3, P5, m6, M6, octave ]
 
 DEFINE: isDissonant(p1, p2) = 
-    [ m2, M2, tritone, P5, m7, M7 ] contains interval-bt(p1, p2)
+    interval-bt(p1, p2) in [ m2, M2, tritone, P5, m7, M7 ]
 
 DEFINE: hasSuspension(v1, v2, t) = 
-    pitches-of v1 at t = pitches-of v1 at (t + 1) and
+    pitches-of v1 at t = pitches-of v1 at (t + 1t) and
     isConsonant(pitches-of v1 at t, pitches-of v2 at t) and
-    isDissonant(pitches-of v1 at (t + 1), pitches-of v2 at (t + 1))
+    isDissonant(pitches-of v1 at (t + 1t), pitches-of v2 at (t + 1t))
 
 DEFINE: suspensionResolves(v1, v2, t) =
-    isConsonant(pitches-of v1 at (t + 1), pitches-of v2 at (t + 2)) and
+    isConsonant(pitches-of v1 at (t + 1t), pitches-of v2 at (t + 2t)) and
     (contour-of v1 at t = m2 or contour-of v1 at t = M2)
 
-REQUIRE: hasSuspension(v1, v2, t) => suspensionResolves(v1, v2, t + 1)
+REQUIRE: exists [v1, v2, t] where hasSuspension(v1, v2, t)
+REQUIRE: hasSuspension(v1, v2, t) => suspensionResolves(v1, v2, t + 1t)

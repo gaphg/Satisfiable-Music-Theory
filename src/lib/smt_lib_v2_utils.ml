@@ -28,6 +28,7 @@ let initialize_smt (env : dynamic_environment) : string list =
 
 (* expects v to only have values that are predicates *)
 let rec smt_of_predicate (v : vc_term) : string =
+  let bin_op name v1 v2 = s_expr_of [ name; smt_of_predicate v1; smt_of_predicate v2 ] in
   match v with
   (* | Voice v -> string_of_int v *)
   | Pitch p -> bv_decimal p
@@ -37,15 +38,19 @@ let rec smt_of_predicate (v : vc_term) : string =
       | Some false -> bv_decimal (-i))
   | Boolean b -> if b then "true" else "false"
   | SymbolicPitch (v, t) -> const_name_of_voice_time v t
-  | SymbolicInterval (v1, v2) ->
-      s_expr_of [ "bvsub"; smt_of_predicate v2; smt_of_predicate v1 ]
-  | SymbolicEquals (v1, v2) ->
-      s_expr_of [ "="; smt_of_predicate v1; smt_of_predicate v2 ]
+  | SymbolicInterval (v1, v2) -> bin_op "bvsub" v2 v1
+  | SymbolicModOct v ->
+      s_expr_of [ "bvsmod"; smt_of_predicate v; bv_decimal 12 ]
+  | SymbolicEquals (v1, v2) -> bin_op "=" v1 v2
+  | SymbolicLt (v1, v2) -> bin_op "bvslt" v1 v2
+  | SymbolicLe (v1, v2) -> bin_op "bvsle" v1 v2
+  | SymbolicGt (v1, v2) -> bin_op "bvsgt" v1 v2
+  | SymbolicGe (v1, v2) -> bin_op "bvsge" v1 v2
   | SymbolicAbs v -> s_expr_of [ "bvabs"; smt_of_predicate v ]
+  | SymbolicNot v -> s_expr_of [ "not"; smt_of_predicate v ]
   | SymbolicAnd l -> s_expr_of ("and" :: List.map smt_of_predicate l)
   | SymbolicOr l -> s_expr_of ("or" :: List.map smt_of_predicate l)
-  | SymbolicImplies (v1, v2) ->
-      s_expr_of [ "=>"; smt_of_predicate v1; smt_of_predicate v2 ]
+  | SymbolicImplies (v1, v2) -> bin_op "=>" v1 v2
   | _ ->
       raise
         (Failure

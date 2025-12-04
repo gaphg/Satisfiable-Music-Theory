@@ -44,9 +44,9 @@ type expr =
   (* other builtins *)
   | ElementAt of expr * expr (* list, index -> element *)
   | Contains of expr * expr (* list, element -> bool *)
+  | Flatten of expr
   | EqualsModOctave of expr * expr (* pitch, pitch -> bool *)
   | NotEqualsModOctave of expr * expr
-  | Flatten of expr
   (* for internal implementation *)
   | SymbolicPitchExpr of int * int
   | SymbolicIntervalExpr of (int * int) * (int * int)
