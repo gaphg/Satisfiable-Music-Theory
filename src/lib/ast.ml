@@ -32,8 +32,8 @@ type expr =
   | Implies of expr * expr
   | Iff of expr * expr
   (* exists/forall: list of quantified variables, predicate *)
-  | Exists of (string * sz_type option) list * expr
-  | Forall of (string * sz_type option) list * expr
+  | Exists of (string * sz_type option ref) list * expr
+  | Forall of (string * sz_type option ref) list * expr
   (* comparison operations *)
   | Equals of expr * expr
   | NotEquals of expr * expr
@@ -63,7 +63,7 @@ type definition_statement =
   (* const name, const definition *)
   | ConstDefStmt of string * expr
   (* function name, function arguments/type annotations, function body *)
-  | FuncDefStmt of string * (string * sz_type option) list * expr
+  | FuncDefStmt of string * (string * sz_type option ref) list * expr
 (* "expr" below should be type predicate *)
 [@@deriving show]
 

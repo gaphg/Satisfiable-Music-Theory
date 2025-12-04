@@ -100,8 +100,8 @@ definitionStmt:
     DEFINE ID EQUALS expr                               { ConstDefStmt ($2, $4) }
     | DEFINE ID LPAREN formalList RPAREN EQUALS expr    { FuncDefStmt ($2, $4, $7) }
 formal:
-    ID                              { ($1, None) }
-    | ID sz_type                    { ($1, Some $2) }
+    ID                              { ($1, ref None) }
+    | ID sz_type                    { ($1, ref (Some $2)) }
 
 (* SPECIFICATION STATEMENTS *)
 specificationStmt:

@@ -122,16 +122,23 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
       let annotated =
         vars
         |> List.filter_map (fun (v, t) ->
-               Option.map (fun tconcrete -> (v, tconcrete)) t)
+               Option.map (fun tconcrete -> (v, tconcrete)) !t)
       in
       let scoped_ctx = { ctx with vctx = annotated @ ctx.vctx } in 
       let _, inf = type_check scoped_ctx inferred e (Some BooleanType) in
       (* if types of vars bound by this expr were inferred, remove from final inferred list *)
       let pruned_inf =
       vars
-      |> List.filter (fun p -> Option.is_none (snd p))
+      |> List.filter (fun p -> Option.is_none !(snd p))
       |> List.map fst
       |> List.fold_left (Fun.flip List.remove_assoc) inf in
+      (* update type annotations in expression node *)
+      vars
+      |> List.iter (fun (name, t) ->
+        match !t with
+        | Some _ -> ()
+        | None -> t := Some (List.assoc name inf)
+      );
       (BooleanType, pruned_inf)
     )
     (* operations where lhs and rhs must be the same type but o/w unknown *)
