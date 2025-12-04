@@ -295,9 +295,13 @@ let translate_stmt (ctx : type_context) (env : dynamic_environment)
       let prog = Parser.prog Lexer.tokenize lexbuf in
       (prog, ctx, env, smt)
 
-(* returns an smt-lib program and the final dynamic environment *)
-let translate (env : dynamic_environment) (prog : statement list) :
-    string list * dynamic_environment =
+(* returns an smt-lib program and the final dynamic environment 
+if synth is true, adds necessary constraints to synthesize
+*)
+let translate (env : dynamic_environment) 
+              (prog : statement list) 
+              (synth : bool)
+              : string list * dynamic_environment =
   let rec aux (ctx : type_context) (env : dynamic_environment)
       (smt : string list) (prog : statement list) =
     match prog with
@@ -311,7 +315,11 @@ let translate (env : dynamic_environment) (prog : statement list) :
           raise (RuntimeError "Voice count was not configured");
         if Option.is_none env.song_length_units then
           raise (RuntimeError "Song length units was not configured");
-        (initialize_smt env @ smt, env)
+        let pitch_bounds = 
+            if synth then assert_pitch_bounds (Option.get env.voice_count) (Option.get env.song_length_units)
+            else []
+        in
+        (initialize_smt env @ smt @ pitch_bounds, env)
     | stmt :: prog ->
         let more_prog, new_ctx, new_env, new_smt = translate_stmt ctx env smt stmt in
         aux new_ctx new_env new_smt (more_prog @ prog)

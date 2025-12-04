@@ -26,6 +26,16 @@ let initialize_smt (env : dynamic_environment) : string list =
              s_expr_of [ "declare-const"; const_name; "(_ BitVec 8)" ])
   | _ -> raise (Failure "initialize_smt: not yet implemented")
 
+let assert_pitch_bounds (num_voices : int) (song_length : int) : string list =
+  List.init num_voices (fun v ->
+    List.init song_length (fun t ->
+      let pitch_const = const_name_of_voice_time v t in
+      s_expr_of [ "assert"; 
+        s_expr_of [ "and";
+          s_expr_of [ "bvuge"; pitch_const; bv_decimal 0];
+          s_expr_of [ "bvult"; pitch_const; bv_decimal 128]]]))
+  |> List.concat
+
 (* expects v to only have values that are predicates *)
 let rec smt_of_predicate (v : vc_term) : string =
   let bin_op name v1 v2 = s_expr_of [ name; smt_of_predicate v1; smt_of_predicate v2 ] in

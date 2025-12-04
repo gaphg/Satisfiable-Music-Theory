@@ -42,7 +42,7 @@ let main (rules_file : string) (input_midi : string option)
   in
 
   (* translate the program into smt-lib-v2! *)
-  let rules_smt, env = Vcgen.translate env program in
+  let rules_smt, env = Vcgen.translate env program (Option.is_none input_midi) in
   let full_smt = rules_smt @ asserts in
 
   (* if smt_only, just print smt to stdout *)
