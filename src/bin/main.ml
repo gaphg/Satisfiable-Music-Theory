@@ -50,15 +50,14 @@ let main (rules_file : string) (input_midi : string option)
     (* otherwise, solve and synthesize *)
   else
     let synthesized = Solver.solve full_smt env in
-    match (synthesized, input_midi) with
-    | None, Some im_file ->
+    match (synthesized, input_midi, output_midi) with
+    | None, Some im_file, _ ->
         print_endline
           ("music in " ^ im_file ^ " does not satisfy specification in "
          ^ rules_file)
-    | None, None ->
+    | None, None, _ ->
         print_endline ("specification in " ^ rules_file ^ " is not satisfiable")
-    | Some synth_tracks, _ ->
-        (* TODO: change this *)
+    | Some synth_tracks, _, None ->
         print_endline
           ("specification in " ^ rules_file
          ^ " is satisfied with below assignment");
@@ -68,6 +67,8 @@ let main (rules_file : string) (input_midi : string option)
                track
                |> List.iter (fun p -> print_string (" " ^ string_of_int p));
                print_newline ())
+    | Some synth_tracks, _, Some fname ->
+      Write_midi.write_file synth_tracks fname
 
 let () =
   Arg.parse speclist anon_fun usage_msg;

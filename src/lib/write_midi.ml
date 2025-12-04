@@ -43,8 +43,4 @@ let write_file (voices : int list list) (f_out : string) =
     tracks = List.mapi generate_track voices
   } in
   let chan = File_writer.of_path f_out in
-  File_writer.write chan midi_file;
-
-  (* TODO remove print *)
-  Printf.printf "%s\n" (Data.to_string midi_file)
-
+  File_writer.write chan midi_file
