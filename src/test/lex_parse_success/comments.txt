@@ -2,7 +2,7 @@
 ; ; comment in a comment
 ; DECLARE VOICES: soprano
 
-DECLARE MEASURES: 7
+DECLARE LENGTH: 7
 REQUIRE: contour-of voice at 0t = 2i up  ; discard me!
 
 ; end no newline

@@ -12,7 +12,7 @@ IncludeStmt := "INCLUDE:" Filename
 ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl
 VoiceDecl := "DECLARE VOICES:" Id ("," Id)*
 TimeUnitDecl := "DECLARE TIME UNIT TICKS:" Int
-SongLengthDecl := "DECLARE MEASURES:" Int
+SongLengthDecl := "DECLARE LENGTH:" Int
 KeyDecl := "DECLARE KEY:" PitchClass Mode
         TODO: KeyDecl does not work like this, it's just an int rn 
 

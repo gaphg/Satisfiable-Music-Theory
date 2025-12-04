@@ -14,7 +14,7 @@ rule tokenize = parse
     whitespace                      { tokenize lexbuf }
     | comment                       { tokenize lexbuf }
     | "DECLARE TIME UNIT TICKS:"    { TIME_UNIT_DECL }
-    | "DECLARE MEASURES:"           { MEASURE_DECL }
+    | "DECLARE LENGTH:"           { MEASURE_DECL }
     | "DECLARE VOICES:"             { VOICE_DECL }
     | "DECLARE KEY:"                { KEY_DECL }
     | "DEFINE:"                     { DEFINE }

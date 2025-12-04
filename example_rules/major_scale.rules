@@ -1,5 +1,5 @@
 DECLARE VOICES: voice
-DECLARE MEASURES: 8
+DECLARE LENGTH: 8
 
 REQUIRE: contour-of voice at 0t = 2i up
 REQUIRE: contour-of voice at 1t = 2i up
