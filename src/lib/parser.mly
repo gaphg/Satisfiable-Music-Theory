@@ -12,6 +12,7 @@
 %token DISALLOW
 %token PREFER
 %token AVOID
+%token INCLUDE
 %token LPAREN
 %token RPAREN
 %token PITCHES
@@ -65,6 +66,7 @@
 %token <int> INTERVALLIT
 %token <int> TIMESTEPLIT
 %token <int> INTLIT
+%token <string> FILENAME
 %right IMPLIES IFF
 %nonassoc FORALL EXISTS
 %left OR
@@ -85,6 +87,7 @@ stmt:
     configurationStmt       { ConfigurationStmt $1 }
     | definitionStmt        { DefinitionStmt $1}
     | specificationStmt     { SpecificationStmt $1}
+    | INCLUDE FILENAME      { IncludeStmt $2 }
 ;
 
 (* CONFIGURATION STATEMENTS *)

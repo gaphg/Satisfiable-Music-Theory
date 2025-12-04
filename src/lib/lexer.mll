@@ -4,15 +4,17 @@
 }
 
 (* helper regex definitions *)
+let whitespace = [' ''\t''\n']
 let alphanumeric = ['0'-'9''a'-'z''A'-'Z']+
 let number = ['0'-'9']+
 let comment = ";" [^'\n']* ('\n' | eof)
+let filename = [^' ''\t''\n']+ '.' [^' ''\t''\n']+
 
 rule tokenize = parse
-    [' ' '\t' '\n']                 { tokenize lexbuf }
+    whitespace                      { tokenize lexbuf }
     | comment                       { tokenize lexbuf }
     | "DECLARE TIME UNIT TICKS:"    { TIME_UNIT_DECL }
-    | "DECLARE MEASURES:"           { MEASURE_DECL }
+    | "DECLARE LENGTH:"           { MEASURE_DECL }
     | "DECLARE VOICES:"             { VOICE_DECL }
     | "DECLARE KEY:"                { KEY_DECL }
     | "DEFINE:"                     { DEFINE }
@@ -20,6 +22,7 @@ rule tokenize = parse
     | "DISALLOW:"                   { DISALLOW }
     | "PREFER:"                     { PREFER }
     | "AVOID:"                      { AVOID }
+    | "INCLUDE:"                    { INCLUDE }
     | "("                           { LPAREN }
     | ")"                           { RPAREN }
     | "pitches-of"                  { PITCHES }
@@ -71,5 +74,6 @@ rule tokenize = parse
     | number as n ('i' | 'I')       { INTERVALLIT (int_of_string n) }                                    
     | number as n ('t' | 'T')       { TIMESTEPLIT (int_of_string n) }                                    
     | number as n                   { INTLIT (int_of_string n)}
+    | filename as f                 { FILENAME f }
     | alphanumeric as s             { ID s }
     | eof                           { EOF }
