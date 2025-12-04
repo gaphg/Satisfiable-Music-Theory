@@ -198,7 +198,8 @@ let string_of_token = function
    List.iter print_endline asserts *)
 
 let () =
-  let voices = [[0; 2; 4; 5; 7; 9; 11; 12]; [0; 0; 0; 0; 0; 0; 0; 0]] in
+  let voices = [[60; 62; 64; 65; 67; 69; 71; 72]; [60; 60; 60; 60; 60; 60; 60; 60]] in
   let fname = "xxxx.mid" in
   write_file voices fname;
-  
+    
+  (* process_file "../../../../examples/Correct4PartHarmony.mid"; *)
