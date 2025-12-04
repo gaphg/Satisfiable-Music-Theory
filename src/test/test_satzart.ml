@@ -7,6 +7,7 @@ open Satzart.Process_midi
 open Satzart.Parser
 open Satzart.Lexer
 open Satzart
+open Satzart.Write_midi
 
 let env : dynamic_environment =
   {
@@ -160,7 +161,7 @@ let string_of_token = function
   | Satzart.Parser.INCLUDE -> "INCLUDE"
   | Satzart.Parser.FILENAME f -> "FILENAME(" ^ f ^ ")"
  
-let () =
+(* let () =
   let rec print_tokens lexbuf =
     let token = Satzart.Lexer.tokenize lexbuf in
     print_endline (string_of_token token);
@@ -175,7 +176,7 @@ let () =
   let results = prog tokenize lexbuf in
   Printf.printf "%s\n" (Satzart.Ast.show_program results);
 
-  close_in chan
+  close_in chan *)
 
 (* let () =
    solve_print Test_major_scale.program; *)
@@ -195,3 +196,10 @@ let () =
    print_int_list_list tracks;
    let asserts = process_piece tracks in
    List.iter print_endline asserts *)
+
+let () =
+  let voices = [[60; 62; 64; 65; 67; 69; 71; 72]; [60; 60; 60; 60; 60; 60; 60; 60]] in
+  let fname = "xxxx.mid" in
+  write_file voices fname;
+    
+  (* process_file "../../../../examples/Correct4PartHarmony.mid"; *)

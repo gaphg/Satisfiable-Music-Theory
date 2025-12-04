@@ -1,6 +1,7 @@
 DECLARE VOICES: voice
 DECLARE LENGTH: 8
 
+REQUIRE: pitches-of voice at 0t = 60p
 REQUIRE: contour-of voice at 0t = 2i up
 REQUIRE: contour-of voice at 1t = 2i up
 REQUIRE: contour-of voice at 2t = 1i up
