@@ -62,13 +62,15 @@ Expr := Literal
         | "exists" "[" FormalList "]" "where" Expr
 
 Literal := Int ("p"|"P")                ; PitchLit
-        | Int ("i"|"I") Bool?           ; IntervalLit
+        | Int ("i"|"I") DirectionLit?   ; IntervalLit
         | Int ("t"|"T")                 ; TimeStepLit
         | Boolean                       ; BooleanLit
         | Int                           ; IntegerLit
-        | Boolean ("d"|"D")             ; DirectionLit
+        | DirectionLit                  ; DirectionLit
         | Id                            ; Var
 
+DirectionLit := "up"
+        | "down"
 FuncCall := Id "(" Literal ("," Literal)* ")"
 ListExpr := "[" Expr ("," Expr)* "]"
 
@@ -87,5 +89,5 @@ Id := <any alphanumeric string>
 Int := <any nonnegative integer literal>
 PitchClass := <a note name>                       ([a-gA-G][#b]?)
 Mode := <"major" or "minor">                      (TODO : add other capitalization/modes?)
-Bool := <"TRUE" or "FALSE">
+Boolean := <"true" or "false">
 Filename := <any non-whitespace string> "." <any non-whitespace string>

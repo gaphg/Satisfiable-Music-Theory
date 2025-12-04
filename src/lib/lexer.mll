@@ -64,7 +64,6 @@ rule tokenize = parse
     | ","                           { COMMA }
     | "["                           { LBRACK }
     | "]"                           { RBRACK }
-    | ['d''D']                      { D }
     | "up"                          { UP }
     | "down"                        { DOWN }
     | "forall"                      { FORALL }
