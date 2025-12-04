@@ -29,7 +29,6 @@ let possible_values_of_type (env : dynamic_environment) (t : sz_type) :
   | BooleanType -> [ Boolean true; Boolean false ]
   | _ -> raise (Failure "possible_values_of_type: not yet implemented")
 
-
 let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   (* helper functions *)
   let translate_numeric_bin_op op e1 e2 =
@@ -149,7 +148,8 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   | ElementAt (list, idx) -> (
       match (translate_expr env list, translate_expr env idx) with
       | TimeSeries l, TimeStep i | SzList l, Integer i ->
-          if i < 0 || List.length l <= i then raise (InvalidIndexError i)
+          if i < 0 || List.length l <= i then (print_endline ("length: " ^ (string_of_int (List.length l)) ^ ", i: " ^ (string_of_int i));
+          raise (InvalidIndexError i))
           else translate_expr env (List.nth l i)
       | _ -> raise (Failure "interpret_expr: impossible"))
   | Contains (list, elt) -> (
@@ -159,7 +159,6 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
             (List.map (fun e -> translate_expr env (Equals (e, elt))) es)
       | _ -> raise (Failure "interpret_expr: impossible"))
 
-
 (* for each free variable, interprets the expression for all possible values of that variable, outputting a list of values 
 TODO: decide whether to use forall smt quantifier (not sure if it's supported as well, gotta research )*)
 and branch_on_free_vars (env : dynamic_environment)
@@ -167,7 +166,7 @@ and branch_on_free_vars (env : dynamic_environment)
   match free_vars with
   | [] -> (
       (* does this catch too much? might want to restrict this a bit *)
-      try [ translate_expr env e ] with InvalidIndexError _ -> [])
+      try [ translate_expr env e ] with InvalidIndexError i -> print_endline (string_of_int i); [])
   | (name, t) :: vs ->
       possible_values_of_type env t
       |> List.map (fun v ->

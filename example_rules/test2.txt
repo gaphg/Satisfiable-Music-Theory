@@ -1,6 +1,9 @@
-DECLARE VOICES: soprano, altor, tenor, bass
+DECLARE VOICES: soprano, alto, tenor, bass
 DECLARE LENGTH: 7
 
-REQUIRE: pitches-of soprano at 0t is 76p
-REQUIRE: exists [v, t] where pitches-of v at t is 60p
-; REQUIRE: 1p is 61p
+; REQUIRE: pitches-of soprano at 0t is 76p
+; REQUIRE: exists [t] where pitches-of v at t is 60p
+REQUIRE: pitches-of v at t >= 0p
+REQUIRE: pitches-of v at t <= 127p
+REQUIRE: pitches-of alto at (t + 1t) > pitches-of alto at t
+REQUIRE: contour-of alto at t > 2i
