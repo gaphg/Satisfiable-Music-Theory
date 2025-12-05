@@ -7,3 +7,4 @@ REQUIRE: pitches-of v at t >= 0p
 REQUIRE: pitches-of v at t <= 127p
 REQUIRE: pitches-of alto at (t + 1t) > pitches-of alto at t
 REQUIRE: contour-of alto at t > 2i
+
