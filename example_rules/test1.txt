@@ -1,7 +1,7 @@
 DECLARE VOICES: soprano, alto, tenor, bass
 DECLARE LENGTH: 7
 
-INCLUDE: ../example_rules/stdlib/stdscales.rules
+INCLUDE: ../example_rules/stdlib/stdkey.rules
 INCLUDE: ../example_rules/stdlib/stdpitch.rules
 
 REQUIRE: isDiatonic(D, dorian, x)
