@@ -27,8 +27,8 @@ Formal := Id Type?
 SpecificationStmt := RequireStmt | DisallowStmt | PreferStmt | AvoidStmt
 RequireStmt := "REQUIRE:" Expr
 DisallowStmt := "DISALLOW:" Expr
-PreferStmt := "PREFER:" Expr
-AvoidStmt := "AVOID:" Expr
+PreferStmt := "PREFER:" ("weight" Int ",")? Expr
+AvoidStmt := "AVOID:" ("weight" Int ",")? Expr
 
 -- The expressions! --
 Expr := Literal
@@ -85,7 +85,7 @@ Type := "Voice"
         | "List" "of" Type
 
 -- Literals --
-Id := <any alphanumeric string>
+Id := <any alphanumeric string (can also have a #)>
 Int := <any nonnegative integer literal>
 PitchClass := <a note name>                       ([a-gA-G][#b]?)
 Mode := <"major" or "minor">                      (TODO : add other capitalization/modes?)

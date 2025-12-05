@@ -64,7 +64,7 @@ We provide the following base functionality:
 - `contour-of`: takes in a `Voice` as input, and returns an `List of Interval`, which represents the intervals between consecutive pitches in the voice.
 - `diads-of`: takes in two `Voice`s as input, and returns an `List of Interval`, which represents the intervals between the two different voices.
 - `interval-bt`: takes in two `Pitch`es as input, and returns an `Interval`, which represents the interval between the two pitches.
-- `flatten`: takes in `List of Pitch` and returns a `List of Pitch` where the notion of an octave have been removed from the pitches (by moving the note to be in between `0p` and `11p` inclusive, e.g. turns `60p` into `0p`).
+- `flatten`: takes in a `Pitch` or an `Interval` and returns a `Pitch` or `Interval`, respectively, where the notion of an octave have been removed (e.g. for pitches by moving the note to be in between `0p` and `11p` inclusive, so turns `60p` into `0p`, and for intervals, makes it fit within one octave, a major 9th turns into a major 2nd).
 
 ### Other Expressions and Operations
 Most operations work as you would expect from math/other programming languages. We've highlighted a few key points to be aware of:

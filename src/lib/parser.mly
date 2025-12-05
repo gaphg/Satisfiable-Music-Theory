@@ -60,6 +60,7 @@
 %token FORALL
 %token EXISTS
 %token WHERE
+%token WEIGHT
 %token <string> ID
 %token <int> PITCHLIT
 %token <int> INTERVALLIT
@@ -107,10 +108,13 @@ formal:
 
 (* SPECIFICATION STATEMENTS *)
 specificationStmt:
-    REQUIRE expr                    { RequireStmt $2 }
-    | DISALLOW expr                 { DisallowStmt $2 }
-    | PREFER expr                   { PreferStmt ($2, 1) }
-    | AVOID expr                    { AvoidStmt ($2, 1) }
+    REQUIRE expr                            { RequireStmt $2 }
+    | DISALLOW expr                         { DisallowStmt $2 }
+    | PREFER WEIGHT INTLIT COMMA expr       { PreferStmt ($5, $3) }
+    | PREFER expr                           { PreferStmt ($2, -1) }
+    | AVOID WEIGHT INTLIT COMMA expr        { AvoidStmt ($5, $3) }
+    | AVOID expr                            { AvoidStmt ($2, -1) }
+
 
 (* EXPRESSIONS! *)
 expr:
@@ -151,8 +155,8 @@ misc_expr:
 prefix_ops:
     PITCHES prefix_ops                              { Pitches $2 }
     | CONTOUR prefix_ops                              { Contour $2 }
-    | DIADS LPAREN prefix_ops COMMA prefix_ops RPAREN       { Diads ($3, $5) }
-    | INTERVAL LPAREN prefix_ops COMMA prefix_ops RPAREN    { IntervalBetween ($3, $5) }
+    | DIADS LPAREN expr COMMA expr RPAREN       { Diads ($3, $5) }
+    | INTERVAL LPAREN expr COMMA expr RPAREN    { IntervalBetween ($3, $5) }
     | NOT prefix_ops                            { Not $2 }
     | FLATTEN prefix_ops                        { Flatten $2 }
     | atom                                      { $1 }

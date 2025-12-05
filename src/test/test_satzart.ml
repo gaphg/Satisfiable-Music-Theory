@@ -159,6 +159,7 @@ let string_of_token = function
   | Satzart.Parser.FORALL -> "FORALL"
   | Satzart.Parser.INCLUDE -> "INCLUDE"
   | Satzart.Parser.FILENAME f -> "FILENAME(" ^ f ^ ")"
+  | Satzart.Parser.WEIGHT -> "WEIGHT"
  
 (* let () =
   let rec print_tokens lexbuf =
