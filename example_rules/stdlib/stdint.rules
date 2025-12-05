@@ -1,8 +1,8 @@
 ; standard interval names
 
 ; TODO remove these
-DECLARE VOICES: voice
-DECLARE LENGTH: 3
+DECLARE VOICES: soprano, alto, tenor, bass
+DECLARE LENGTH: 7
 
 DEFINE: uni = 0i
 DEFINE: min2 = 1i

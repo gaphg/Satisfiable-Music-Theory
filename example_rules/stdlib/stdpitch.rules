@@ -1,8 +1,8 @@
 ; standard pitch names
 
 ; TODO remove these
-DECLARE VOICES: voice
-DECLARE LENGTH: 3
+DECLARE VOICES: soprano, alto, tenor, bass
+DECLARE LENGTH: 7
 
 ; note classes (essentially flattened)
 DEFINE: B = 11p
