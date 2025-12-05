@@ -49,13 +49,14 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
         match List.assoc_opt name ctx.fctx with
         | Some (arg_ts, ret_t) ->
             (* check children *)
-            let new_inferred =
+            if (List.length args) <> (List.length arg_ts)
+              then raise (TypeError (name ^ " expected " ^ (string_of_int (List.length arg_ts) ^ " arguments but got " ^ (string_of_int (List.length args)))))
+            else let new_inferred =
               List.fold_left2
                 (fun inferred e expected ->
                   accumulate_check inferred e expected)
                 inferred args
                 (List.map (fun t -> Some t) arg_ts)
-              (* TODO: deal with non-matching lengths*)
             in
             (ret_t, new_inferred)
         | None -> raise (TypeError ("Undefined function " ^ name)))

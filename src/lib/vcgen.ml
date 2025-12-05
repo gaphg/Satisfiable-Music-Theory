@@ -176,7 +176,7 @@ and branch_on_free_vars (env : dynamic_environment)
       |> List.fold_left ( @ ) []
 
 (* should only take in spec rule statements, outputs a list of smt-lib constraints *)
-let translate_spec_stmt (ctx : type_context) (env : dynamic_environment)
+let rec translate_spec_stmt (ctx : type_context) (env : dynamic_environment)
     (spec : specification_statement) : string list =
   match spec with
   | RequireStmt e ->
@@ -184,6 +184,8 @@ let translate_spec_stmt (ctx : type_context) (env : dynamic_environment)
       let vs = branch_on_free_vars env inferred e in
       if debug then vs |> List.map show_vc_term |> List.iter print_endline;
       List.map (fun v -> s_expr_of [ "assert"; smt_of_predicate v ]) vs
+  | DisallowStmt e -> translate_spec_stmt ctx env (RequireStmt (Not e))
+  
   | _ -> raise (Failure "interpret_spec_stmt: not yet implemented")
 
 let translate_def_stmt (ctx : type_context) (env : dynamic_environment)

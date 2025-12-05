@@ -70,8 +70,8 @@ type definition_statement =
 type specification_statement =
   | RequireStmt of expr
   | DisallowStmt of expr
-  | PreferStmt of expr
-  | AvoidStmt of expr
+  | PreferStmt of expr * int (* constraint, weight *)
+  | AvoidStmt of expr * int (* constraint, weight *)
 [@@deriving show]
 
 type statement =
