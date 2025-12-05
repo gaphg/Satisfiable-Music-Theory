@@ -1,0 +1,4 @@
+DECLARE VOICES: soprano, alto, tenor, bass
+DECLARE LENGTH: 7
+
+REQUIRE: interval-bt(pitches-of v at t, 60p) <= 12i

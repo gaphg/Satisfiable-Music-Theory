@@ -151,8 +151,8 @@ misc_expr:
 prefix_ops:
     PITCHES prefix_ops                              { Pitches $2 }
     | CONTOUR prefix_ops                              { Contour $2 }
-    | DIADS LPAREN prefix_ops COMMA prefix_ops RPAREN       { Diads ($3, $5) }
-    | INTERVAL LPAREN prefix_ops COMMA prefix_ops RPAREN    { IntervalBetween ($3, $5) }
+    | DIADS LPAREN expr COMMA expr RPAREN       { Diads ($3, $5) }
+    | INTERVAL LPAREN expr COMMA expr RPAREN    { IntervalBetween ($3, $5) }
     | NOT prefix_ops                            { Not $2 }
     | FLATTEN prefix_ops                        { Flatten $2 }
     | atom                                      { $1 }
