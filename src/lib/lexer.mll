@@ -5,7 +5,7 @@
 
 (* helper regex definitions *)
 let whitespace = [' ''\t''\n']
-let alphanumeric = ['0'-'9''a'-'z''A'-'Z']+
+let identifier = ['0'-'9''a'-'z''A'-'Z''#']+
 let number = ['0'-'9']+
 let comment = ";" [^'\n']* ('\n' | eof)
 let filename = [^' ''\t''\n']+ '.' [^' ''\t''\n']+
@@ -74,5 +74,5 @@ rule tokenize = parse
     | number as n ('t' | 'T')       { TIMESTEPLIT (int_of_string n) }                                    
     | number as n                   { INTLIT (int_of_string n)}
     | filename as f                 { FILENAME f }
-    | alphanumeric as s             { ID s }
+    | identifier as s             { ID s }
     | eof                           { EOF }

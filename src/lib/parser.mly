@@ -109,8 +109,8 @@ formal:
 specificationStmt:
     REQUIRE expr                    { RequireStmt $2 }
     | DISALLOW expr                 { DisallowStmt $2 }
-    | PREFER expr                   { PreferStmt $2 }
-    | AVOID expr                    { AvoidStmt $2 }
+    (* | PREFER expr                   { PreferStmt $2 } TODO fix *)
+    (* | AVOID expr                    { AvoidStmt $2 } TODO fix *)
 
 (* EXPRESSIONS! *)
 expr:
