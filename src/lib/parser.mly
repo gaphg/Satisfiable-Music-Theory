@@ -60,6 +60,7 @@
 %token FORALL
 %token EXISTS
 %token WHERE
+%token WEIGHT
 %token <string> ID
 %token <int> PITCHLIT
 %token <int> INTERVALLIT
@@ -107,10 +108,13 @@ formal:
 
 (* SPECIFICATION STATEMENTS *)
 specificationStmt:
-    REQUIRE expr                    { RequireStmt $2 }
-    | DISALLOW expr                 { DisallowStmt $2 }
-    (* | PREFER expr                   { PreferStmt $2 } TODO fix *)
-    (* | AVOID expr                    { AvoidStmt $2 } TODO fix *)
+    REQUIRE expr                            { RequireStmt $2 }
+    | DISALLOW expr                         { DisallowStmt $2 }
+    | PREFER WEIGHT INTLIT COMMA expr       { PreferStmt ($5, $3) }
+    | PREFER expr                           { PreferStmt ($2, -1) }
+    | AVOID WEIGHT INTLIT COMMA expr        { AvoidStmt ($5, $3) }
+    | AVOID expr                            { AvoidStmt ($2, -1) }
+
 
 (* EXPRESSIONS! *)
 expr:

@@ -69,6 +69,7 @@ rule tokenize = parse
     | "forall"                      { FORALL }
     | "exists"                      { EXISTS }
     | "where"                       { WHERE }
+    | "weight"                      { WEIGHT }
     | number as n ('p' | 'P')       { PITCHLIT (int_of_string n) }
     | number as n ('i' | 'I')       { INTERVALLIT (int_of_string n) }                                    
     | number as n ('t' | 'T')       { TIMESTEPLIT (int_of_string n) }                                    

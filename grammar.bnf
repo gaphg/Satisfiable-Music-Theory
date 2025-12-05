@@ -27,8 +27,8 @@ Formal := Id Type?
 SpecificationStmt := RequireStmt | DisallowStmt | PreferStmt | AvoidStmt
 RequireStmt := "REQUIRE:" Expr
 DisallowStmt := "DISALLOW:" Expr
-PreferStmt := "PREFER:" Expr
-AvoidStmt := "AVOID:" Expr
+PreferStmt := "PREFER:" ("weight" Int ",")? Expr
+AvoidStmt := "AVOID:" ("weight" Int ",")? Expr
 
 -- The expressions! --
 Expr := Literal
