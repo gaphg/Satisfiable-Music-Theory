@@ -39,6 +39,15 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   in
   (* signed mod *)
   let smod n d = ((n mod d) + d) mod d in
+  (* give wiggle room to intervals *)
+  let handle_interval_comparison e1 e2 combine_fun =
+      let v1, v2 = (translate_expr env e1, translate_expr env e2) in
+      (* deal with some wiggle room for equality *)
+      match (v1, v2) with
+      | Interval (_, None), _ -> combine_fun v1 (SymbolicAbs v2)
+      | _, Interval (_, None) -> combine_fun (SymbolicAbs v1) v2
+      | _ -> combine_fun v1 v2
+  in
   match e with
   | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
   | SymbolicIntervalExpr ((v1, t1), (v2, t2)) ->
@@ -123,24 +132,24 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       SymbolicAnd (branch_on_free_vars env annotated e);
   )
   (* comparisons *)
-  | Equals (e1, e2) -> (
-      let v1, v2 = (translate_expr env e1, translate_expr env e2) in
-      (* deal with some wiggle room for equality *)
-      match (v1, v2) with
-      | Interval (_, None), _ | _, Interval (_, None) ->
-          SymbolicEquals (SymbolicAbs v1, SymbolicAbs v2)
-      | _ -> SymbolicEquals (v1, v2))
+  | Equals (e1, e2) -> 
+      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicEquals (v1, v2))
   | NotEquals (e1, e2) -> translate_expr env (Not (Equals (e1, e2)))
-  | LessThan (e1, e2) -> SymbolicLt (translate_expr env e1, translate_expr env e2)
-  | LessThanEq (e1, e2) -> SymbolicLe (translate_expr env e1, translate_expr env e2)
-  | GreaterThan (e1, e2) -> SymbolicGt (translate_expr env e1, translate_expr env e2)
-  | GreaterThanEq (e1, e2) -> SymbolicGe (translate_expr env e1, translate_expr env e2)
+  | LessThan (e1, e2) -> 
+      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicLt (v1, v2))
+  | LessThanEq (e1, e2) -> 
+      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicLe (v1, v2))
+  | GreaterThan (e1, e2) ->
+      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicGt (v1, v2))
+  | GreaterThanEq (e1, e2) ->
+      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicGe (v1, v2))
   | Flatten e -> (
     let v = translate_expr env e in
     match v with
     | Pitch p -> Pitch (smod p 12)
     | Interval (i, d) -> Interval (smod i 12, d)
-    | SymbolicPitch _ -> SymbolicModOct v
+    | SymbolicPitch _
+    | SymbolicInterval _ -> SymbolicModOct v (*TODO: verify this is correct for sym interval? *)
     | _ -> raise (Failure "interpret_expr: flatten should only have interval or pitch")
   )
   | EqualsModOctave (e1, e2) -> translate_expr env (Equals (Flatten e1, Flatten e2))
@@ -178,14 +187,20 @@ and branch_on_free_vars (env : dynamic_environment)
 (* should only take in spec rule statements, outputs a list of smt-lib constraints *)
 let rec translate_spec_stmt (ctx : type_context) (env : dynamic_environment)
     (spec : specification_statement) : string list =
+  let branch e =
+    let _, inferred = type_check ctx [] e (Some BooleanType) in
+    let vs = branch_on_free_vars env inferred e in
+    if debug then vs |> List.map show_vc_term |> List.iter print_endline;
+    vs
+  in
   match spec with
-  | RequireStmt e ->
-      let _, inferred = type_check ctx [] e (Some BooleanType) in
-      let vs = branch_on_free_vars env inferred e in
-      if debug then vs |> List.map show_vc_term |> List.iter print_endline;
-      List.map (fun v -> s_expr_of [ "assert"; smt_of_predicate v ]) vs
+  | RequireStmt e -> List.map (fun v -> 
+      s_expr_of [ "assert"; smt_of_predicate v ]) (branch e)
   | DisallowStmt e -> translate_spec_stmt ctx env (RequireStmt (Not e))
-  
+  | PreferStmt (e, w) -> 
+    let vs = branch e in 
+    List.map (fun v -> 
+      s_expr_of [ "assert-soft"; smt_of_predicate v; ":weight"; string_of_float (float_of_int w /. float_of_int (List.length vs))]) vs
   | _ -> raise (Failure "interpret_spec_stmt: not yet implemented")
 
 let translate_def_stmt (ctx : type_context) (env : dynamic_environment)
@@ -282,6 +297,8 @@ updated context, environment, and smt program as a list of constraints *)
 let translate_stmt (ctx : type_context) (env : dynamic_environment)
     (smt : string list) (stmt : statement) :
     program * type_context * dynamic_environment * string list =
+          print_endline (show_type_context ctx);
+          print_endline (show_dynamic_environment env);
   match stmt with
   | ConfigurationStmt cfg ->
       let ctx, env = translate_cfg_stmt ctx env cfg in
