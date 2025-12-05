@@ -33,12 +33,12 @@ let main (rules_file : string) (input_midi : string option)
     match tracks_opt with
     | Some tracks ->
         ( {
-            Bachend.empty_env with
+            Bachend.initial_env with
             voice_count = Some (List.length tracks);
             song_length_units = Some (List.length (List.nth tracks 0));
           },
           Smt_lib_v2_utils.asserts_of_tracks tracks )
-    | None -> (Bachend.empty_env, [])
+    | None -> (Bachend.initial_env, [])
   in
 
   (* translate the program into smt-lib-v2! *)
