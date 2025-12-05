@@ -38,6 +38,7 @@ Expr := Literal
         | "contour-of" Expr
         | "diads-of" "(" Expr "," Expr ")"
         | "interval-bt" "(" Expr "," Expr ")"
+        | "flatten" Expr            ; put everything in same octave    
         | Expr "+" Expr
         | Expr "-" Expr
         | "not" Expr
@@ -45,21 +46,20 @@ Expr := Literal
         | Expr "or" Expr
         | Expr "=>" Expr
         | Expr "<=>" Expr
+        | "forall" "[" FormalList "]" "," Expr
+        | "exists" "[" FormalList "]" "where" Expr
         | Expr "=" Expr
         | Expr "!=" Expr
+        | Expr "is" Expr            ; loose equality (mod octave)
+        | Expr "is-not" Expr
         | Expr "<" Expr
         | Expr "<=" Expr
         | Expr ">" Expr
         | Expr ">=" Expr
-        | Expr "at" Expr
+        | Expr "at" Expr            ; list indexing
         | Expr "contains" Expr
         | Expr "in" Expr
-        | Expr "is" Expr            ; loose equality (mod octave)
-        | Expr "is-not" Expr
-        | "flatten" Expr            ; put everything in same octave    
         | "(" Expr ")"
-        | "forall" "[" FormalList "]" "," Expr
-        | "exists" "[" FormalList "]" "where" Expr
 
 Literal := Int ("p"|"P")                ; PitchLit
         | Int ("i"|"I") DirectionLit?   ; IntervalLit
