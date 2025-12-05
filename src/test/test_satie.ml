@@ -1,13 +1,13 @@
-open Satzart.Ast
-open Satzart.Vcgen
-open Satzart.Bachend
-open Satzart.Solver
-open Satzart.Smt_lib_v2_utils
-open Satzart.Process_midi
-open Satzart.Parser
-open Satzart.Lexer
-open Satzart
-open Satzart.Write_midi
+open Satie.Ast
+open Satie.Vcgen
+open Satie.Bachend
+open Satie.Solver
+open Satie.Smt_lib_v2_utils
+open Satie.Process_midi
+open Satie.Parser
+open Satie.Lexer
+open Satie
+open Satie.Write_midi
 
 let env : dynamic_environment =
   {
@@ -96,76 +96,76 @@ let program =
      List.iter print_endline (Option.get (get_model smt)) *)
 
 let string_of_token = function
-  | Satzart.Parser.EOF -> "EOF"
-  | Satzart.Parser.VOICE_DECL -> "VOICE_DECL"
-  | Satzart.Parser.TIME_UNIT_DECL -> "TIME_UNIT_DECL"
-  | Satzart.Parser.MEASURE_DECL -> "MEASURE_DECL"
-  | Satzart.Parser.KEY_DECL -> "KEY_DECL"
-  | Satzart.Parser.REQUIRE -> "REQUIRE"
-  | Satzart.Parser.DISALLOW -> "DISALLOW"
-  | Satzart.Parser.PREFER -> "PREFER"
-  | Satzart.Parser.AVOID -> "AVOID"
-  | Satzart.Parser.LPAREN -> "LPAREN"
-  | Satzart.Parser.RPAREN -> "RPAREN"
-  | Satzart.Parser.PITCHES -> "PITCHES"
-  | Satzart.Parser.CONTOUR -> "CONTOUR"
-  | Satzart.Parser.DIADS -> "DIADS"
-  | Satzart.Parser.INTERVAL -> "INTERVAL"
-  | Satzart.Parser.PLUS -> "PLUS"
-  | Satzart.Parser.MINUS -> "MINUS"
-  | Satzart.Parser.NOT -> "NOT"
-  | Satzart.Parser.AND -> "AND"
-  | Satzart.Parser.OR -> "OR"
-  | Satzart.Parser.IMPLIES -> "IMPLIES"
-  | Satzart.Parser.IFF -> "IFF"
-  | Satzart.Parser.EQUALS -> "EQUALS"
-  | Satzart.Parser.NOT_EQUALS -> "NOT_EQUALS"
-  | Satzart.Parser.LESS -> "LESS"
-  | Satzart.Parser.LEQ -> "LEQ"
-  | Satzart.Parser.GREATER -> "GREATER"
-  | Satzart.Parser.GEQ -> "GEQ"
-  | Satzart.Parser.AT -> "AT"
-  | Satzart.Parser.CONTAINS -> "CONTAINS"
-  | Satzart.Parser.IS -> "IS"
-  | Satzart.Parser.FLATTEN -> "FLATTEN"
-  | Satzart.Parser.VOICE_TYPE -> "VOICE_TYPE"
-  | Satzart.Parser.PITCH_TYPE -> "PITCH_TYPE"
-  | Satzart.Parser.INTERVAL_TYPE -> "INTERVAL_TYPE"
-  | Satzart.Parser.TIMESTEP_TYPE -> "TIMESTEP_TYPE"
-  | Satzart.Parser.BOOLEAN_TYPE -> "BOOLEAN_TYPE"
-  | Satzart.Parser.TIMESERIES_TYPE -> "TIMESERIES_TYPE"
-  | Satzart.Parser.INTEGER_TYPE -> "INTEGER_TYPE"
-  | Satzart.Parser.OF -> "OF"
-  | Satzart.Parser.DEFINE -> "DEFINE"
-  | Satzart.Parser.COMMA -> "COMMA"
-  | Satzart.Parser.LIST_TYPE -> "LIST_TYPE"
-  | Satzart.Parser.MAJOR -> "MAJOR"
-  | Satzart.Parser.MINOR -> "MINOR"
-  | Satzart.Parser.TRUE_TOKEN -> "TRUE_TOKEN"
-  | Satzart.Parser.FALSE_TOKEN -> "FALSE_TOKEN"
-  | Satzart.Parser.ID s -> "ID(" ^ s ^ ")"
-  | Satzart.Parser.INTLIT n -> "INTLIT(" ^ string_of_int n ^ ")"
-  | Satzart.Parser.LBRACK -> "LBRACK"
-  | Satzart.Parser.RBRACK -> "RBRACK"
-  | Satzart.Parser.PITCHLIT p -> "PITCHLIT(" ^ string_of_int p ^ ")"
-  | Satzart.Parser.INTERVALLIT p -> "INTERVALLIT(" ^ string_of_int p ^ ")"
-  | Satzart.Parser.TIMESTEPLIT p -> "TIMESTEPLIT(" ^ string_of_int p ^ ")"
-  | Satzart.Parser.IS_NOT   -> "IS_NOT"
-  | Satzart.Parser.UP -> "UP"
-  | Satzart.Parser.DOWN -> "DOWN"
-  | Satzart.Parser.IN -> "IN"
-  | Satzart.Parser.EXISTS -> "EXISTS"
-  | Satzart.Parser.WHERE -> "WHERE"
-  | Satzart.Parser.FORALL -> "FORALL"
-  | Satzart.Parser.INCLUDE -> "INCLUDE"
-  | Satzart.Parser.FILENAME f -> "FILENAME(" ^ f ^ ")"
-  | Satzart.Parser.WEIGHT -> "WEIGHT"
+  | Satie.Parser.EOF -> "EOF"
+  | Satie.Parser.VOICE_DECL -> "VOICE_DECL"
+  | Satie.Parser.TIME_UNIT_DECL -> "TIME_UNIT_DECL"
+  | Satie.Parser.MEASURE_DECL -> "MEASURE_DECL"
+  | Satie.Parser.KEY_DECL -> "KEY_DECL"
+  | Satie.Parser.REQUIRE -> "REQUIRE"
+  | Satie.Parser.DISALLOW -> "DISALLOW"
+  | Satie.Parser.PREFER -> "PREFER"
+  | Satie.Parser.AVOID -> "AVOID"
+  | Satie.Parser.LPAREN -> "LPAREN"
+  | Satie.Parser.RPAREN -> "RPAREN"
+  | Satie.Parser.PITCHES -> "PITCHES"
+  | Satie.Parser.CONTOUR -> "CONTOUR"
+  | Satie.Parser.DIADS -> "DIADS"
+  | Satie.Parser.INTERVAL -> "INTERVAL"
+  | Satie.Parser.PLUS -> "PLUS"
+  | Satie.Parser.MINUS -> "MINUS"
+  | Satie.Parser.NOT -> "NOT"
+  | Satie.Parser.AND -> "AND"
+  | Satie.Parser.OR -> "OR"
+  | Satie.Parser.IMPLIES -> "IMPLIES"
+  | Satie.Parser.IFF -> "IFF"
+  | Satie.Parser.EQUALS -> "EQUALS"
+  | Satie.Parser.NOT_EQUALS -> "NOT_EQUALS"
+  | Satie.Parser.LESS -> "LESS"
+  | Satie.Parser.LEQ -> "LEQ"
+  | Satie.Parser.GREATER -> "GREATER"
+  | Satie.Parser.GEQ -> "GEQ"
+  | Satie.Parser.AT -> "AT"
+  | Satie.Parser.CONTAINS -> "CONTAINS"
+  | Satie.Parser.IS -> "IS"
+  | Satie.Parser.FLATTEN -> "FLATTEN"
+  | Satie.Parser.VOICE_TYPE -> "VOICE_TYPE"
+  | Satie.Parser.PITCH_TYPE -> "PITCH_TYPE"
+  | Satie.Parser.INTERVAL_TYPE -> "INTERVAL_TYPE"
+  | Satie.Parser.TIMESTEP_TYPE -> "TIMESTEP_TYPE"
+  | Satie.Parser.BOOLEAN_TYPE -> "BOOLEAN_TYPE"
+  | Satie.Parser.TIMESERIES_TYPE -> "TIMESERIES_TYPE"
+  | Satie.Parser.INTEGER_TYPE -> "INTEGER_TYPE"
+  | Satie.Parser.OF -> "OF"
+  | Satie.Parser.DEFINE -> "DEFINE"
+  | Satie.Parser.COMMA -> "COMMA"
+  | Satie.Parser.LIST_TYPE -> "LIST_TYPE"
+  | Satie.Parser.MAJOR -> "MAJOR"
+  | Satie.Parser.MINOR -> "MINOR"
+  | Satie.Parser.TRUE_TOKEN -> "TRUE_TOKEN"
+  | Satie.Parser.FALSE_TOKEN -> "FALSE_TOKEN"
+  | Satie.Parser.ID s -> "ID(" ^ s ^ ")"
+  | Satie.Parser.INTLIT n -> "INTLIT(" ^ string_of_int n ^ ")"
+  | Satie.Parser.LBRACK -> "LBRACK"
+  | Satie.Parser.RBRACK -> "RBRACK"
+  | Satie.Parser.PITCHLIT p -> "PITCHLIT(" ^ string_of_int p ^ ")"
+  | Satie.Parser.INTERVALLIT p -> "INTERVALLIT(" ^ string_of_int p ^ ")"
+  | Satie.Parser.TIMESTEPLIT p -> "TIMESTEPLIT(" ^ string_of_int p ^ ")"
+  | Satie.Parser.IS_NOT   -> "IS_NOT"
+  | Satie.Parser.UP -> "UP"
+  | Satie.Parser.DOWN -> "DOWN"
+  | Satie.Parser.IN -> "IN"
+  | Satie.Parser.EXISTS -> "EXISTS"
+  | Satie.Parser.WHERE -> "WHERE"
+  | Satie.Parser.FORALL -> "FORALL"
+  | Satie.Parser.INCLUDE -> "INCLUDE"
+  | Satie.Parser.FILENAME f -> "FILENAME(" ^ f ^ ")"
+  | Satie.Parser.WEIGHT -> "WEIGHT"
  
 (* let () =
   let rec print_tokens lexbuf =
-    let token = Satzart.Lexer.tokenize lexbuf in
+    let token = Satie.Lexer.tokenize lexbuf in
     print_endline (string_of_token token);
-    if token <> Satzart.Parser.EOF then print_tokens lexbuf
+    if token <> Satie.Parser.EOF then print_tokens lexbuf
   in
 
   let filename = "../../../../example_rules/suspension_resolution.rules" in
@@ -174,7 +174,7 @@ let string_of_token = function
 
   (* print_tokens lexbuf; *)
   let results = prog tokenize lexbuf in
-  Printf.printf "%s\n" (Satzart.Ast.show_program results);
+  Printf.printf "%s\n" (Satie.Ast.show_program results);
 
   close_in chan *)
 

@@ -1,9 +1,5 @@
 ; common scales and modes 
 
-; TODO remove these
-DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 7
-
 ; these intervals are defined in respect to the FIRST pitch
 DEFINE: major = [ 0i, 2i, 4i, 5i, 7i, 9i, 11i ]
 DEFINE: minor = [ 0i, 2i, 3i, 5i, 7i, 8i, 10i ]

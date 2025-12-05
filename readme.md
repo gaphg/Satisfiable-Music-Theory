@@ -10,11 +10,11 @@ You may also need to install the following packages with `opam` (`opam install <
 - `llama_midi`
 - `re`
 
-To execute the program, run `dune exec -- satzart`. (You can also build and clean with `dune build` and `dune clean`, respectively). These commands should be run from within the `src` directory.
+To execute the program, run `dune exec -- satie`. (You can also build and clean with `dune build` and `dune clean`, respectively). These commands should be run from within the `src` directory.
 
 ## End-to-end Example
 Synthesizes a major scale:
-`dune exec -- satzart ../example_rules/major_scale.rules -synth out.mid`
+`dune exec -- satie ../example_rules/major_scale.rules -synth out.mid`
 
 To understand how to write your own rules files, read the following Documentation section.
 

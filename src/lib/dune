@@ -1,5 +1,5 @@
 (library
- (name satzart)
+ (name satie)
  (libraries unix llama_midi re)
  (preprocess
   (pps ppx_deriving.show)))

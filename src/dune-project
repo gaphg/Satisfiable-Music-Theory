@@ -1,6 +1,6 @@
 (lang dune 3.12)
 
-(name satzart)
+(name satie)
 
 (generate_opam_files true)
 
@@ -16,7 +16,7 @@
 (documentation https://url/to/documentation)
 
 (package
- (name satzart)
+ (name satie)
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends ocaml dune llama_midi)

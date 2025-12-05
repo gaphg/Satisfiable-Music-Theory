@@ -1,8 +1,6 @@
 ; standard interval names
 
 ; TODO remove these
-DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 7
 
 DEFINE: uni = 0i
 DEFINE: min2 = 1i
@@ -22,8 +20,8 @@ DEFINE: min7 = 10i
 DEFINE: maj7 = 11i
 DEFINE: oct = 12i
 
-DEFINE: consonantIntervals = [uni, min3, maj3, p4, p5, min6, maj6, oct]
-DEFINE: isConsonant(i) = i in consonantIntervals
+DEFINE: consonantIntervals = [uni, min3, maj3, p4, p5, min6, maj6]
+DEFINE: isConsonant(i) = flatten(i) in consonantIntervals
 DEFINE: isConsonantP(p1, p2) = isConsonant(interval-bt(p1, p2))
 DEFINE: isDissonant(i) = not isConsonant(i)
 DEFINE: isDissonantP(p1, p2) = not isConsonantP(p1, p2)

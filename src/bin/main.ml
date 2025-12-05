@@ -1,7 +1,7 @@
-open Satzart
+open Satie
 
 let usage_msg =
-  "satzart <rules_file> [-midi <midi_file>] [-synth <midi_file>] [-smt2]"
+  "satie <rules_file> [-midi <midi_file>] [-synth <midi_file>] [-smt2]"
 
 let rules_filename = ref ""
 let midi_filename = ref ""
@@ -17,6 +17,10 @@ let speclist =
       Arg.Set smt2_only,
       "Output an smt-lib script instead of directly solving" );
   ]
+
+let pitch_string_of_int p =
+  (List.nth ["C"; "C#"; "D"; "D#"; "E"; "F"; "F#"; "G"; "G#"; "A"; "A#"; "B"] (p mod 12))
+  ^ (string_of_int (p / 12 - 1))
 
 let main (rules_file : string) (input_midi : string option)
     (output_midi : string option) (smt_only : bool) =
@@ -65,7 +69,7 @@ let main (rules_file : string) (input_midi : string option)
         |> List.iteri (fun v track ->
                print_string ("voice " ^ string_of_int v ^ ":");
                track
-               |> List.iter (fun p -> print_string (" " ^ string_of_int p));
+               |> List.iter (fun p -> Printf.printf " %4s" (pitch_string_of_int p));
                print_newline ())
     | Some synth_tracks, _, Some fname ->
       Write_midi.write_file synth_tracks fname

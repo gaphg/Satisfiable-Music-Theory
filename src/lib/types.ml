@@ -1,4 +1,4 @@
-type sz_type =
+type st_type =
   | VoiceType
   | PitchType
   | IntervalType
@@ -7,12 +7,12 @@ type sz_type =
   | TimeStepType
   | IntegerType (* mostly used for indexing into list *)
   | BooleanType
-  | TimeSeriesType of sz_type
-  | ListType of sz_type
+  | TimeSeriesType of st_type
+  | ListType of st_type
 [@@deriving show]
 (*| Unknown (* only for use in intermediate states of typechecking *)*)
 
-let rec string_of_type (t : sz_type) =
+let rec string_of_type (t : st_type) =
   match t with
   | VoiceType -> "Voice"
   | PitchType -> "Pitch"
@@ -25,8 +25,8 @@ let rec string_of_type (t : sz_type) =
   | TimeSeriesType t -> string_of_type t ^ " TimeSeries"
   | ListType t -> string_of_type t ^ " List"
 
-type func_type = sz_type list * sz_type [@@deriving show]
-type var_type_context = (string * sz_type) list [@@deriving show]
+type func_type = st_type list * st_type [@@deriving show]
+type var_type_context = (string * st_type) list [@@deriving show]
 type func_type_context = (string * func_type) list [@@deriving show]
 
 type type_context = { vctx : var_type_context; fctx : func_type_context }

@@ -11,7 +11,7 @@ open Errors
 (* TODO: guarantee that returned inferred list has all distinct variable names (pretty sure it's true) *)
 (* type-checks expression, inferring the types of free variables *)
 let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
-    (expected : sz_type option) : sz_type * var_type_context =
+    (expected : st_type option) : st_type * var_type_context =
   (* helpers *)
   (* accumulates the inferred variables *)
   let accumulate_check inferred e expected =

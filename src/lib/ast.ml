@@ -32,8 +32,8 @@ type expr =
   | Implies of expr * expr
   | Iff of expr * expr
   (* exists/forall: list of quantified variables, predicate *)
-  | Exists of (string * sz_type option ref) list * expr
-  | Forall of (string * sz_type option ref) list * expr
+  | Exists of (string * st_type option ref) list * expr
+  | Forall of (string * st_type option ref) list * expr
   (* comparison operations *)
   | Equals of expr * expr
   | NotEquals of expr * expr
@@ -47,6 +47,7 @@ type expr =
   | Flatten of expr
   | EqualsModOctave of expr * expr (* pitch, pitch -> bool *)
   | NotEqualsModOctave of expr * expr
+  (*| TimeRange of expr * expr (* timestep, timestep -> timestep list *) *)
   (* for internal implementation *)
   | SymbolicPitchExpr of int * int
   | SymbolicIntervalExpr of (int * int) * (int * int)
@@ -63,7 +64,7 @@ type definition_statement =
   (* const name, const definition *)
   | ConstDefStmt of string * expr
   (* function name, function arguments/type annotations, function body *)
-  | FuncDefStmt of string * (string * sz_type option ref) list * expr
+  | FuncDefStmt of string * (string * st_type option ref) list * expr
 (* "expr" below should be type predicate *)
 [@@deriving show]
 

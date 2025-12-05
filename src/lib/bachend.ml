@@ -15,8 +15,8 @@ type vc_term =
   | Integer of int
   | Boolean of bool
   (* indexed via TimeStep *)
-  | TimeSeries of (* sz_type *? *) expr list (* element type?, values *)
-  | SzList of expr list
+  | TimeSeries of (* st_type *? *) expr list (* element type?, values *)
+  | StList of expr list
   (* logical/symbolic elements for solver *)
   | SymbolicPitch of int * int (* voice id, time step *)
   | SymbolicInterval of vc_term * vc_term (* pitch 1, pitch 2 *)

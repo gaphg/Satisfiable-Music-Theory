@@ -11,7 +11,7 @@ interpret will do the following
 e.g.
 if v1 -> [C D F#]
 
-look at readme in satzart for how to build
+look at readme in satie for how to build
 
 current issues:
 - support for comments

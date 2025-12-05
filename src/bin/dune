@@ -1,4 +1,4 @@
 (executable
- (public_name satzart)
+ (public_name satie)
  (name main)
- (libraries satzart unix))
+ (libraries satie unix))

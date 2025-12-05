@@ -5,7 +5,7 @@ open Errors
 open Type_checker
 open Smt_lib_v2_utils
 
-let possible_values_of_type (env : dynamic_environment) (t : sz_type) :
+let possible_values_of_type (env : dynamic_environment) (t : st_type) :
     vc_term list =
   match t with
   | VoiceType -> (
@@ -33,6 +33,7 @@ let possible_values_of_type (env : dynamic_environment) (t : sz_type) :
                "Song length units has not been configured/could not be \
                 determined"))
   | BooleanType -> [ Boolean true; Boolean false ]
+  | IntegerType -> List.init (1 lsl 8) (fun i -> Integer i)
   | _ -> raise (Failure "possible_values_of_type: not yet implemented")
 
 let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
@@ -77,7 +78,7 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       in
       let scoped_env = { env with venv = scoped_venv @ env.venv } in
       translate_expr scoped_env body
-  | ListExpr l -> SzList l
+  | ListExpr l -> StList l
   (* builtin functions on voices *)
   | Pitches v -> (
       match (translate_expr env v, env.song_length_units) with
@@ -162,14 +163,14 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   | NotEqualsModOctave (e1, e2) -> translate_expr env (Not (EqualsModOctave (e1, e2)))
   | ElementAt (list, idx) -> (
       match (translate_expr env list, translate_expr env idx) with
-      | TimeSeries l, TimeStep i | SzList l, Integer i ->
+      | TimeSeries l, TimeStep i | StList l, Integer i ->
           if i < 0 || List.length l <= i then (print_endline ("length: " ^ (string_of_int (List.length l)) ^ ", i: " ^ (string_of_int i));
           raise (InvalidIndexError i))
           else translate_expr env (List.nth l i)
       | _ -> raise (Failure "interpret_expr: impossible"))
   | Contains (list, elt) -> (
       match translate_expr env list with
-      | SzList es | TimeSeries es ->
+      | StList es | TimeSeries es ->
           SymbolicOr
             (List.map (fun e -> translate_expr env (Equals (e, elt))) es)
       | _ -> raise (Failure "interpret_expr: impossible"))
@@ -181,7 +182,7 @@ and branch_on_free_vars (env : dynamic_environment)
   match free_vars with
   | [] -> (
       (* does this catch too much? might want to restrict this a bit *)
-      try [ translate_expr env e ] with InvalidIndexError i -> print_endline (string_of_int i); [])
+      try [ translate_expr env e ] with InvalidIndexError _ -> [])
   | (name, t) :: vs ->
       possible_values_of_type env t
       |> List.map (fun v ->
@@ -189,6 +190,7 @@ and branch_on_free_vars (env : dynamic_environment)
                { env with venv = (name, v) :: env.venv }
                vs e)
       |> List.fold_left ( @ ) []
+  (* | _ -> raise (Failure "translate_expr: not yet implemented") *)
 
 (* should only take in spec rule statements, outputs a list of smt-lib constraints *)
 let rec translate_spec_stmt (ctx : type_context) (env : dynamic_environment)
@@ -293,7 +295,9 @@ let translate_cfg_stmt (ctx : type_context) (env : dynamic_environment)
                  then raise (RuntimeError "Song length ticks mismatch")
                else ctx, {env with song_length_units = l; song_length_ticks = } *)
       else 
-        (ctx, 
+        ({ ctx with
+          vctx = ("end", TimeStepType) :: ctx.vctx
+        }, 
         { env with 
           song_length_units = Some l;
           venv = ("end", TimeStep (l - 1)) :: env.venv })
@@ -351,5 +355,5 @@ let translate (env : dynamic_environment)
         let more_prog, new_ctx, new_env, new_smt = translate_stmt ctx env smt stmt in
         aux new_ctx new_env new_smt (more_prog @ prog)
   in
-  let empty_ctx = { vctx = []; fctx = [] } in
+  let empty_ctx = { vctx = [("start", TimeStepType)]; fctx = [] } in
   aux empty_ctx env [] prog

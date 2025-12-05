@@ -1,0 +1,8 @@
+INCLUDE: ../example_rules/stdlib/stdint.rules
+INCLUDE: ../example_rules/stdlib/stdkey.rules
+INCLUDE: ../example_rules/stdlib/stdpitch.rules
+
+DECLARE VOICES: voice
+DECLARE LENGTH: 9
+
+REQUIRE: 

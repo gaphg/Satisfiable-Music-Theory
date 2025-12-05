@@ -104,7 +104,7 @@ definitionStmt:
     | DEFINE ID LPAREN formalList RPAREN EQUALS expr    { FuncDefStmt ($2, $4, $7) }
 formal:
     ID                              { ($1, ref None) }
-    | ID sz_type                    { ($1, ref (Some $2)) }
+    | ID st_type                    { ($1, ref (Some $2)) }
 
 (* SPECIFICATION STATEMENTS *)
 specificationStmt:
@@ -196,12 +196,12 @@ exprList:
   | expr COMMA exprList       { $1 :: $3 }  
 
 (* TYPES *)
-sz_type:
+st_type:
     VOICE_TYPE                      { VoiceType }
     | PITCH_TYPE                    { PitchType }
     | INTERVAL_TYPE                 { IntervalType }
     | TIMESTEP_TYPE                 { TimeStepType }
     | INTEGER_TYPE                  { IntegerType }
     | BOOLEAN_TYPE                  { BooleanType }
-    | TIMESERIES_TYPE OF sz_type    { TimeSeriesType $3 }
-    | LIST_TYPE OF sz_type          { ListType $3 }
+    | TIMESERIES_TYPE OF st_type    { TimeSeriesType $3 }
+    | LIST_TYPE OF st_type          { ListType $3 }
