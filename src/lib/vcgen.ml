@@ -5,8 +5,6 @@ open Errors
 open Type_checker
 open Smt_lib_v2_utils
 
-let all_pitches = List.init 128 (fun n -> Pitch n)
-
 let possible_values_of_type (env : dynamic_environment) (t : sz_type) :
     vc_term list =
   match t with
@@ -17,7 +15,15 @@ let possible_values_of_type (env : dynamic_environment) (t : sz_type) :
           raise
             (RuntimeError
                "Voice count has not been configured/no midi file input"))
-  | PitchType -> all_pitches
+  | PitchType -> (
+    match env.voice_count, env.song_length_units with
+    | Some voice_count, Some song_length -> 
+      List.init voice_count (fun v -> 
+        List.init song_length (fun t -> 
+          SymbolicPitch (v, t)))
+      |> List.concat
+    | _ -> raise (RuntimeError "Song length or voice count has not been configured")
+  )
   | TimeStepType -> (
       match env.song_length_units with
       | Some n -> List.init n (fun i -> TimeStep i)
@@ -286,7 +292,11 @@ let translate_cfg_stmt (ctx : type_context) (env : dynamic_environment)
                        l * Option.get env.time_unit_ticks <> Option.get env.song_length_ticks
                  then raise (RuntimeError "Song length ticks mismatch")
                else ctx, {env with song_length_units = l; song_length_ticks = } *)
-      else (ctx, { env with song_length_units = Some l })
+      else 
+        (ctx, 
+        { env with 
+          song_length_units = Some l;
+          venv = ("end", TimeStep (l - 1)) :: env.venv })
   | TimeUnitTicksCfgStmt _ | KeyCfgStmt _ ->
       ignore ctx;
       raise (Failure "interpret_cfg_stmt: not yet implemented")
@@ -297,8 +307,6 @@ updated context, environment, and smt program as a list of constraints *)
 let translate_stmt (ctx : type_context) (env : dynamic_environment)
     (smt : string list) (stmt : statement) :
     program * type_context * dynamic_environment * string list =
-          print_endline (show_type_context ctx);
-          print_endline (show_dynamic_environment env);
   match stmt with
   | ConfigurationStmt cfg ->
       let ctx, env = translate_cfg_stmt ctx env cfg in

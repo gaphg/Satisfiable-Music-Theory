@@ -1,0 +1,15 @@
+INCLUDE: ../example_rules/stdlib/stdint.rules
+INCLUDE: ../example_rules/stdlib/stdkey.rules
+INCLUDE: ../example_rules/stdlib/stdpitch.rules
+
+DECLARE VOICES: soprano, alto, tenor, bass
+
+REQUIRE: pitches-of soprano at start > pitches-of alto at start
+REQUIRE: pitches-of alto at start > pitches-of tenor at start
+REQUIRE: pitches-of tenor at start > pitches-of bass at start
+
+REQUIRE: isDiatonic(C, major, p)
+REQUIRE: pitches-of bass at end is C
+
+REQUIRE: p > C2
+REQUIRE: p < C4

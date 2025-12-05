@@ -51,7 +51,7 @@ type dynamic_environment = {
 }
 [@@deriving show]
 
-let empty_env =
+let initial_env =
   {
     voices_declared = false;
     voice_count = None;
@@ -59,6 +59,6 @@ let empty_env =
     song_length_ticks = None;
     song_length_units = None;
     key = None;
-    venv = [];
+    venv = [("start", TimeStep 0)];
     fenv = [];
   }

@@ -5,19 +5,16 @@ DECLARE VOICES: soprano, alto, tenor, bass
 DECLARE LENGTH: 7
 
 ; these intervals are defined in respect to the FIRST pitch
-DEFINE: major = [ 2i, 4i, 5i, 7i, 9i, 11i, 12i ]
-DEFINE: minor = [ 2i, 3i, 5i, 7i, 8i, 10i, 12i ]
+DEFINE: major = [ 0i, 2i, 4i, 5i, 7i, 9i, 11i ]
+DEFINE: minor = [ 0i, 2i, 3i, 5i, 7i, 8i, 10i ]
 
 DEFINE: ionian = major
-DEFINE: dorian = [ 2i up, 3i, 5i, 7i, 9i, 10i, 12i ]
-DEFINE: phyrgian = [ 1i, 3i, 5i, 7i, 8i, 10i, 12i ]
-DEFINE: lydian = [ 2i, 4i, 6i, 7i, 9i, 11i, 12i ]
-DEFINE: mixolydian = [ 2i, 4i, 5i, 7i, 9i, 10i, 12i ]
+DEFINE: dorian = [ 0i, 2i, 3i, 5i, 7i, 9i, 10i ]
+DEFINE: phyrgian = [ 0i, 1i, 3i, 5i, 7i, 8i, 10i ]
+DEFINE: lydian = [ 0i, 2i, 4i, 6i, 7i, 9i, 11i ]
+DEFINE: mixolydian = [ 0i, 2i, 4i, 5i, 7i, 9i, 10i ]
 DEFINE: aeolian = minor
-DEFINE: locrian = [ 1i, 3i, 5i, 6i, 8i, 10i, 12i ]
+DEFINE: locrian = [ 0i, 1i, 3i, 5i, 6i, 8i, 10i ]
 
-DEFINE: isDiatonic(keyCenter Pitch, mode List of Interval, note Pitch) = 
-    interval-bt(flatten(keyCenter), flatten(note)) in mode or
-    interval-bt(flatten(note), flatten(keyCenter)) in mode
-
-REQUIRE: isDiatonic(0p, dorian, x)
+DEFINE: isDiatonic(keyCenter, mode, note) = 
+    flatten(interval-bt(keyCenter, note)) in mode
