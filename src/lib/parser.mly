@@ -51,7 +51,6 @@
 %token FALSE_TOKEN
 %token COMMA
 %token DEFINE
-%token D
 %token UP
 %token DOWN
 %token LBRACK
@@ -166,13 +165,14 @@ atom:
 literal:
     PITCHLIT                { PitchLit $1 }
     | INTERVALLIT           { IntervalLit ($1, None) }
-    | INTERVALLIT UP        { IntervalLit ($1, Some true) }
-    | INTERVALLIT DOWN      { IntervalLit ($1, Some false) }
+    | INTERVALLIT dir_lit   { IntervalLit ($1, Some $2) }
     | TIMESTEPLIT           { TimeStepLit $1 }
     | INTLIT                { IntegerLit $1 }
-    | UP                    { DirectionLit true }
-    | DOWN                  { DirectionLit false }
+    | dir_lit               { DirectionLit $1 }
     | bool_lit              { BooleanLit $1 }
+dir_lit:
+    UP                      { true }
+    | DOWN                  { false }
 bool_lit:
     TRUE_TOKEN            { true }
     | FALSE_TOKEN         { false }
