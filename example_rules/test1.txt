@@ -6,4 +6,9 @@ INCLUDE: ../example_rules/stdlib/stdkey.rules
 INCLUDE: ../example_rules/stdlib/stdpitch.rules
 
 REQUIRE: isDiatonic(C, major, (pitches-of v at t))
-REQUIRE: pitches-of v at t in [48p, 49p, 50p, 51p, 52p, 53p, 54p, 55p, 56p, 57p, 58p, 59p, 60p, 61p, 62p, 63p, 64p, 65p, 66p, 67p, 68p, 69p, 70p, 71p, 72p]
+REQUIRE: pitches-of bass at 6t is C
+
+; REQUIRE: pitches-of v at t in [48p, 49p, 50p, 51p, 52p, 53p, 54p, 55p, 56p, 57p, 58p, 59p, 60p, 61p, 62p, 63p, 64p, 65p, 66p, 67p, 68p, 69p, 70p, 71p, 72p]
+; REQUIRE: flatten(pitches-of v at 0t) in [ C, E, G]
+; REQUIRE: flatten(pitches-of v at 6t) in [ C, E, G]
+; REQUIRE: pitches-of bass at 0t is C
