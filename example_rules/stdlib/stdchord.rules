@@ -11,5 +11,9 @@ DEFINE: ch_maj7 = [0i, 4i, 7i, 11i]
 DEFINE: ch_min7 = [0i, 3i, 7i, 10i] 
 DEFINE: ch_minmaj7 = [0i, 3i, 7i, 11i] 
 
+DEFINE: ch_all = [ch_maj, ch_min, ch_dim, ch_aug, ch_dom7, ch_dim7, ch_maj7, ch_min7, ch_min7, ch_minmaj7]
+DEFINE: ch_triads = [ch_maj, ch_min, ch_dim, ch_aug]
+DEFINE: ch_sevenths = [ch_dom7, ch_dim7, ch_maj7, ch_min7, ch_min7, ch_minmaj7]
+
 DEFINE: isInChord(root Pitch, quality List of Interval, note Pitch) =
     flatten(interval-bt(root, note)) in quality

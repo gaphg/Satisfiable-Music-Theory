@@ -1,8 +1,5 @@
 ; standard pitch names
 
-; TODO remove these
-
-
 ; note classes (essentially flattened)
 DEFINE: B = 11p
 DEFINE: A# = 10p	
@@ -21,6 +18,8 @@ DEFINE: D = 2p
 DEFINE: C# = 1p 	
 DEFINE: Db = 1p 	
 DEFINE: C = 0p 	
+
+DEFINE: note_classes = [C, C#, D, D#, E, F, F#, G, G#, A, A#, B]
 
 ; specific notes
 DEFINE: G9 = 127p
