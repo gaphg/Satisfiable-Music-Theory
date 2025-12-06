@@ -1,22 +1,22 @@
 ; defines different types of motion
-; needs to be between two different voices at one time step
+; should be between two different voices at one time step
 
 DEFINE: isContraryMotion(v1 Voice, v2 Voice, t TimeStep) =
-    (v1 != v2) and
-    ((contour-of v1 at t > 0i and contour-of v2 at t < 0i) or
-    (contour-of v1 at t < 0i and contour-of v2 at t > 0i))
+    (contour-of v1 at t > 0i up) and (contour-of v2 at t < 0i up) or
+    (contour-of v1 at t < 0i up) and (contour-of v2 at t > 0i up) or
+    (contour-of v1 at t > 0i down) and (contour-of v2 at t < 0i down) or
+    (contour-of v1 at t < 0i down) and (contour-of v2 at t > 0i down)
 
 DEFINE: isObliqueMotion(v1 Voice, v2 Voice, t TimeStep) =
-    (v1 != v2) and
     (contour-of v1 at t = 0i or contour-of v2 at t = 0i)
 
 DEFINE: isParallelMotion(v1 Voice, v2 Voice, t TimeStep) =
-    (v1 != v2) and
     not isObliqueMotion(v1, v2, t) and
     contour-of v1 at t = contour-of v2 at t
 
 DEFINE: isSimilarMotion(v1 Voice, v2 Voice, t TimeStep) =
-    (v1 != v2) and
     (not isParallelMotion(v1, v2, t)) and
-    ((contour-of v1 at t > 0i and contour-of v2 at t > 0i) or
-     (contour-of v1 at t < 0i and contour-of v2 at t < 0i))
+    ((contour-of v1 at t > 0i up and contour-of v2 at t > 0i up) or
+     (contour-of v1 at t < 0i up and contour-of v2 at t < 0i up) or
+     (contour-of v1 at t > 0i down and contour-of v2 at t > 0i down) or
+     (contour-of v1 at t < 0i down and contour-of v2 at t < 0i down))
