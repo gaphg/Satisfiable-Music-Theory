@@ -39,6 +39,17 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
       let rhs_t, new_inferred = type_check ctx inferred rhs None in
       (rhs_t, accumulate_check new_inferred lhs (Some rhs_t))
   in
+  let quantifier_helper vars e ctor =
+    match vars with
+      | [] -> (BooleanType, accumulate_check inferred e (Some BooleanType))
+      | (name, list) :: vs -> 
+        let lhs_type, new_inferred = type_check ctx inferred list None in
+        match lhs_type with
+        | ListType t | TimeSeriesType t ->
+            let new_ctx = { ctx with vctx = (name, t) :: ctx.vctx } in
+            type_check new_ctx new_inferred (ctor (vs, e)) (Some BooleanType)
+        | _ -> raise (TypeError ("Expected " ^ (string_of_expr list) ^ " to be of type TimeSeries or List"))
+  in
   let checked_type, new_inferred =
     match e with
     | PitchLit _ -> (PitchType, inferred)
@@ -121,10 +132,10 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
     | Iff (e1, e2) ->
         ( BooleanType,
           check_lr e1 e2 BooleanType BooleanType )
-    | Exists (vars, e)
-    | Forall (vars, e) -> (
+    | Exists (vars, e) -> quantifier_helper vars e (fun (x, y) -> Exists (x, y))
+    | Forall (vars, e) -> quantifier_helper vars e (fun (x, y) -> Forall (x, y))
       (* add labeled var types to context *)
-      let annotated =
+      (* let annotated =
         vars
         |> List.filter_map (fun (v, t) ->
                Option.map (fun tconcrete -> (v, tconcrete)) !t)
@@ -144,8 +155,7 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
         | Some _ -> ()
         | None -> t := Some (List.assoc name inf)
       );
-      (BooleanType, pruned_inf)
-    )
+      (BooleanType, pruned_inf) *)
     (* operations where lhs and rhs must be the same type but o/w unknown *)
     | Plus (e1, e2) 
     | Minus (e1, e2) -> check_lr_same e1 e2

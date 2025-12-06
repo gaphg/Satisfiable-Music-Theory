@@ -118,8 +118,10 @@ specificationStmt:
 
 (* EXPRESSIONS! *)
 expr:
-    FORALL LBRACK formalList RBRACK COMMA expr     { Forall ($3, $6) }
-    | EXISTS LBRACK formalList RBRACK WHERE expr   { Exists ($3, $6) }
+    EXISTS varInCollection WHERE expr                       { Exists ([$2], $4) }
+    | EXISTS LBRACK varInCollectionList RBRACK WHERE expr   { Exists ($3, $6) }
+    | FORALL varInCollection COMMA expr                     { Forall ([$2], $4) }
+    | FORALL LBRACK varInCollectionList RBRACK COMMA expr   { Forall ($3, $6) }
     | logic_expr                                   { $1 } 
 logic_expr:
     logic_expr IMPLIES logic_expr       { Implies ($1, $3) }
@@ -194,6 +196,14 @@ formalList:
 exprList:
   expr                        { [$1] }  
   | expr COMMA exprList       { $1 :: $3 }  
+
+varInCollection:
+  ID IN expr                { ($1, $3) }
+varInCollectionList:
+  varInCollection                             { [$1] }
+  | varInCollection COMMA varInCollectionList { $1 :: $3 }
+
+
 
 (* TYPES *)
 st_type:

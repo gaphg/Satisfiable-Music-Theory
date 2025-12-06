@@ -61,6 +61,23 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       | _, Interval (_, None) -> symbolic_fun (SymbolicAbs v1) v2
       | _ -> symbolic_fun v1 v2
   in
+  let rec branch_quantifier env vars e =
+    match vars with
+    | [] -> raise (RuntimeError "translate_expr: impossible, vars should be nonempty")
+    | (name, list_e) :: vars -> (
+      match translate_expr env list_e with
+      | StList l | TimeSeries l ->
+        l |> List.map (fun var_e ->
+        let v = translate_expr env var_e in
+        let new_env = { env with
+          venv = (name, v) :: env.venv          
+        } in
+        if vars = [] 
+          then [translate_expr new_env e]
+        else branch_quantifier new_env vars e)
+        |> List.concat
+      | _ -> raise (Failure "translate_expr: impossible, expected list"))
+  in
   match e with
   | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
   | SymbolicIntervalExpr ((v1, t1), (v2, t2)) ->
@@ -130,20 +147,8 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   | Or (e1, e2) -> SymbolicOr [ translate_expr env e1; translate_expr env e2 ]
   | Implies (e1, e2) -> SymbolicImplies (translate_expr env e1, translate_expr env e2)
   | Iff (e1, e2) -> SymbolicEquals (translate_expr env e1, translate_expr env e2)
-  | Exists (vars, e) -> (
-      let annotated = vars
-        (* should be guaranteed by typechecker *)
-        |> List.map (fun (name, t) -> (name, Option.get !t))
-      in
-      SymbolicOr (branch_on_free_vars env annotated e);
-    )
-  | Forall (vars, e) -> (
-      let annotated = vars
-        (* should be guaranteed by typechecker *)
-        |> List.map (fun (name, t) -> (name, Option.get !t))
-      in
-      SymbolicAnd (branch_on_free_vars env annotated e);
-  )
+  | Exists (vars, e) -> SymbolicOr (branch_quantifier env vars e)
+  | Forall (vars, e) -> SymbolicAnd (branch_quantifier env vars e)
   (* comparisons *)
   | Equals (e1, e2) -> 
       handle_comparison e1 e2 (fun v1 v2 -> SymbolicEquals (v1, v2)) (=)
@@ -318,6 +323,7 @@ updated context, environment, and smt program as a list of constraints *)
 let translate_stmt (ctx : type_context) (env : dynamic_environment)
     (smt : string list) (stmt : statement) :
     program * type_context * dynamic_environment * string list =
+  if debug then print_endline (show_statement stmt);
   match stmt with
   | ConfigurationStmt cfg ->
       let ctx, env = translate_cfg_stmt ctx env cfg in

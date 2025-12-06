@@ -79,6 +79,9 @@ The arithmetic operators `+` and `-` must both have the same literal type on eit
 #### Equality
 The exact equals and not equals are indicated by `=` and `!=`, respectively. To check equality regardless of octave, use `is` and `is-not`. For example, `60p != 0p` but `60p is 0p`.
 
+#### Interval Comparisons
+Intervals
+
 ### Misc
 - Single-line comments are supported. A comment begins with a `;`
 - All variable names should be alphanumeric

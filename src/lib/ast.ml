@@ -31,9 +31,9 @@ type expr =
   | Or of expr * expr
   | Implies of expr * expr
   | Iff of expr * expr
-  (* exists/forall: list of quantified variables, predicate *)
-  | Exists of (string * st_type option ref) list * expr
-  | Forall of (string * st_type option ref) list * expr
+  (* exists/forall: variables in lists, predicate *)
+  | Exists of (string * expr) list * expr
+  | Forall of (string * expr) list * expr
   (* comparison operations *)
   | Equals of expr * expr
   | NotEquals of expr * expr
