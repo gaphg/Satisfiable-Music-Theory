@@ -57,8 +57,6 @@ rule tokenize = parse
     | "Boolean"                     { BOOLEAN_TYPE }
     | "TimeSeries"                  { TIMESERIES_TYPE }
     | "List"                        { LIST_TYPE }
-    (* | "major"                       { MAJOR } *)
-    (* | "minor"                       { MINOR } *)
     | "true"                        { TRUE_TOKEN }
     | "false"                       { FALSE_TOKEN }
     | ","                           { COMMA }

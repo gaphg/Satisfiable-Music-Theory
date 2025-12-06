@@ -45,8 +45,6 @@
 %token BOOLEAN_TYPE
 %token TIMESERIES_TYPE
 %token LIST_TYPE
-%token MAJOR
-%token MINOR
 %token TRUE_TOKEN
 %token FALSE_TOKEN
 %token COMMA

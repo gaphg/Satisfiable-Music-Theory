@@ -18,6 +18,7 @@ DEFINE: iv_min7 = 10i
 DEFINE: iv_maj7 = 11i
 DEFINE: iv_oct = 12i
 
+; TODO move this out, since this is defined by period
 DEFINE: consonantIntervals = [iv_uni, iv_min3, iv_maj3, iv_p4, iv_p5, iv_min6, iv_maj6]
 DEFINE: isConsonant(i) = flatten(i) in consonantIntervals
 DEFINE: isConsonantP(p1, p2) = isConsonant(interval-bt(p1, p2))

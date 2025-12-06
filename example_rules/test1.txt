@@ -1,5 +1,5 @@
-DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 7
+DECLARE VOICES: soprano, alto, bass
+DECLARE LENGTH: 5
 
 INCLUDE: ../example_rules/stdlib/stdint.rules
 INCLUDE: ../example_rules/stdlib/stdkey.rules
@@ -7,20 +7,32 @@ INCLUDE: ../example_rules/stdlib/stdpitch.rules
 INCLUDE: ../example_rules/stdlib/stdchord.rules
 
 REQUIRE: isDiatonic(C, sc_major, ANYPITCH)
-; REQUIRE: pitches-of bass at 6t = C4
-; REQUIRE: isInChord(C, maj, ANYPITCH)
 
-REQUIRE: ANYPITCH <= C5
+REQUIRE: ANYPITCH <= C6
 REQUIRE: ANYPITCH >= C3
 
-REQUIRE: isScaleDegree(C, sc_major, 1, pitches-of bass at start)
-REQUIRE: isScaleDegree(C, sc_major, 1, pitches-of bass at end)
-REQUIRE: isScaleDegree(C, sc_major, 4, pitches-of v at 3t)
+; REQUIRE: forall [chord in ch_all], 
+;     V1 != V2 => isInChord(ANY_PITCH, chord, pitches-of V1 at ANY_TIME) 
+;              => isInChord(ANY_PITCH, chord, pitches-of V2 at ANY_TIME) 
+
+; REQUIRE: forall [chord in ch_all], 
+;     V != bass => 
+;         isInChord(pitches-of bass at ANY_TIME, chord, pitches-of V at ANY_TIME) 
+;               => pitches-of bass at ANY_TIME is-not pitches-of V at ANY_TIME
 
 
-; REQUIRE: pitches-of v1 at t != pitches-of v1 at (t + 1t)
+; REQUIRE: forall timesteps, there exists a chord in 
+REQUIRE: forall t in [0t, 1t, 2t, 3t, 4t],
+    exists ch where isInChord(pitches-of V1 at t) and isInChord(pitches-of V2 at t)
 
-; REQUIRE: pitches-of v at t in [48p, 49p, 50p, 51p, 52p, 53p, 54p, 55p, 56p, 57p, 58p, 59p, 60p, 61p, 62p, 63p, 64p, 65p, 66p, 67p, 68p, 69p, 70p, 71p, 72p]
-; REQUIRE: flatten(pitches-of v at 0t) in [ C, E, G ]
-; REQUIRE: flatten(pitches-of v at 6t) in [ C, E, G ]
-; REQUIRE: pitches-of bass at 0t is C
+REQUIRE: pitches-of bass at 1t is G
+
+; REQUIRE: isInChord(G, ch_maj, pitches-of V at 3t)
+; REQUIRE: v1 != v2 => pitches-of v1 at t is-not pitches-of v2 at t
+; REQUIRE: interval-bt(G, C4) in ch_maj
+
+; REQUIRE: isInChord(G, ch_maj, pitches-of V1 at ANY_TIME) = isInChord(G, ch_maj, pitches-of V2 at ANY_TIME)
+
+; PREFER: weight 1, V1 != V2 => pitches-of V1 at t is-not pitches-of V2 at t
+; REQUIRE: pitches-of bass at 3t is G
+; REQUIRE: pitches-of bass at 1t is G

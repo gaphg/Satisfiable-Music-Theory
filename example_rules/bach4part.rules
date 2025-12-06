@@ -1,5 +1,5 @@
 DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 7
+DECLARE LENGTH: 5
 
 INCLUDE: ../example_rules/stdlib/stdint.rules
 INCLUDE: ../example_rules/stdlib/stdkey.rules
@@ -24,9 +24,8 @@ REQUIRE: pitches-of tenor at t >= C3 and pitches-of tenor at t <= G4
 REQUIRE: pitches-of bass at t >= E2 and pitches-of bass at t <= G3
 
 ; spacing
-; REQUIRE: forall [x in diads-of(alto, soprano)], x < oct
-; REQUIRE: forall [x diads-of(tenor, alto)], x < oct
-
+REQUIRE: forall i in diads-of(alto, soprano), i < (12i up) and i > (12i down)
+REQUIRE: forall i in diads-of(tenor, alto), i < (12i up) and i > (12i down)
 
 ;;;;;;; VOICE LEADING
 
@@ -53,9 +52,15 @@ REQUIRE: (v1 != v2) and (contour-of v1 at t is iv_oct) => (contour-of v2 at t is
 
 ;;;;;;;; HARMONY
 
-; requires 
+; start and end on I 
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at start)
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at end)
+
+; requires all voices to be in the same chord
+; REQUIRE: forall [chord in ch_all], 
+;     V1 != V2 => isInChord(ANY_PITCH, chord, pitches-of V1 at ANY_TIME) = isInChord(ANY_PITCH, chord, pitches-of V2 at ANY_TIME)
+
+
 
 ; TODO remove
 ; PREFER: weight 2, isConsonant(diads-of(v1, v2) at t)
@@ -64,4 +69,4 @@ REQUIRE: isInChord(tonic, ch_maj, pitches-of v at end)
 ;;;;;;;; MISC PREFERENCES
 
 ; try to get more variety in the voices
-PREFER: weight 1, v1 != v2 => pitches-of v1 at t is-not pitches-of v2 at t
+PREFER: v1 != v2 => pitches-of v1 at t != pitches-of v2 at t

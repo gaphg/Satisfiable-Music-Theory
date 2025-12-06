@@ -139,8 +139,6 @@ let string_of_token = function
   | Satie.Parser.DEFINE -> "DEFINE"
   | Satie.Parser.COMMA -> "COMMA"
   | Satie.Parser.LIST_TYPE -> "LIST_TYPE"
-  | Satie.Parser.MAJOR -> "MAJOR"
-  | Satie.Parser.MINOR -> "MINOR"
   | Satie.Parser.TRUE_TOKEN -> "TRUE_TOKEN"
   | Satie.Parser.FALSE_TOKEN -> "FALSE_TOKEN"
   | Satie.Parser.ID s -> "ID(" ^ s ^ ")"
@@ -161,22 +159,22 @@ let string_of_token = function
   | Satie.Parser.FILENAME f -> "FILENAME(" ^ f ^ ")"
   | Satie.Parser.WEIGHT -> "WEIGHT"
  
-(* let () =
+let () =
   let rec print_tokens lexbuf =
     let token = Satie.Lexer.tokenize lexbuf in
     print_endline (string_of_token token);
     if token <> Satie.Parser.EOF then print_tokens lexbuf
   in
 
-  let filename = "../../../../example_rules/suspension_resolution.rules" in
+  let filename = "../../../../example_rules/bach4part.rules" in
   let chan = open_in filename in
   let lexbuf = Lexing.from_channel chan in
 
-  (* print_tokens lexbuf; *)
+  print_tokens lexbuf;
   let results = prog tokenize lexbuf in
   Printf.printf "%s\n" (Satie.Ast.show_program results);
 
-  close_in chan *)
+  close_in chan
 
 (* let () =
    solve_print Test_major_scale.program; *)
@@ -197,9 +195,9 @@ let string_of_token = function
    let asserts = process_piece tracks in
    List.iter print_endline asserts *)
 
-let () =
+(* let () =
   let voices = [[60; 62; 64; 65; 67; 69; 71; 72]; [60; 60; 60; 60; 60; 60; 60; 60]] in
   let fname = "xxxx.mid" in
-  write_file voices fname;
+  write_file voices fname; *)
     
   (* process_file "../../../../examples/Correct4PartHarmony.mid"; *)
