@@ -141,7 +141,7 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       SymbolicInterval (translate_expr env p1, translate_expr env p2)
   | Plus (e1, e2) -> translate_numeric_bin_op (+) e1 e2
   | Minus (e1, e2) -> translate_numeric_bin_op (-) e1 e2
-  | Mod (e1, e2) -> translate_numeric_bin_op (smod) e1 e2
+  | Mod (e1, e2) -> translate_numeric_bin_op smod e1 e2
   (* boolean/predicate *)
   | Not e -> SymbolicNot (translate_expr env e)
   | And (e1, e2) -> SymbolicAnd [ translate_expr env e1; translate_expr env e2 ]
