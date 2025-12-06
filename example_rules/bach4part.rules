@@ -34,13 +34,42 @@ REQUIRE: forall i in diads-of(tenor, alto), i < (12i up) and i > (12i down)
 ; prefer stepwise motion
 PREFER: weight 3, contour-of v1 at t is iv_min2 or contour-of v1 at t is iv_maj2
 
+; resolving tendency tones
+REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
+PREFER: weight 1, isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
+
 ; no augmented intervals
 DISALLOW: contour-of v contains iv_aug4
 DISALLOW: contour-of v contains iv_aug2
 
-; leading tone resolves
-REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
-PREFER: weight 1, isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
+; leaps larger than a P4 should change direction
+REQUIRE: contour-of v at t > (5i up) => 
+    (exists step in [iv_min2, iv_maj2] 
+        where (contour-of v at (t + 1t) = step)) and
+            contour-of v at (t + 1t) < 0i up
+REQUIRE: contour-of v at t < (5i down) => 
+    (exists step in [iv_min2, iv_maj2] 
+        where (contour-of v at (t + 1t) = step)) and
+            contour-of v at (t + 1t) > 0i up
+
+; consecutive leaps should outline a triad
+REQUIRE: (contour-of v at t > (2i up) and contour-of v at (t + 1t) > (2i up)) =>
+    (exists [chord in ch_triads, 
+                root in [pitches-of v at t, pitches-of v at (t + 1t), pitches-of v at (t + 2t)]] 
+        where (isInChord(root, chord, pitches-of v at t) and
+              isInChord(root, chord, pitches-of v at (t + 1t)) and
+              isInChord(root, chord, pitches-of v at (t + 2t))))
+REQUIRE: (contour-of v at t < (2i down) and contour-of v at (t + 1t)  < (2i down)) =>
+    (exists [chord in ch_triads, 
+                root in [pitches-of v at t, pitches-of v at (t + 1t), pitches-of v at (t + 2t)]] 
+        where (isInChord(root, chord, pitches-of v at t) and
+              isInChord(root, chord, pitches-of v at (t + 1t)) and
+              isInChord(root, chord, pitches-of v at (t + 2t))))
+
+; no more than two leaps in a row
+REQUIRE: (contour-of v at t > 2i and contour-of v at (t + 1t) > 2i) =>
+            contour-of v at (t + 2t) in [iv_min2, iv_maj2]
+
 
 ; bass begins and ends on tonic
 REQUIRE: pitches-of bass at start is tonic
@@ -48,9 +77,14 @@ REQUIRE: pitches-of bass at end is tonic
 
 ;;;;;;;; MOTION 
 
-; no parallel 5ths or octaves!
-REQUIRE: (v1 != v2) and (diads-of(v1, v2) at t is iv_p5) => (diads-of(v1, v2) at (t + 1t) is-not iv_p5)
-REQUIRE: (v1 != v2) and (diads-of(v1, v2) at t is iv_oct) => (diads-of(v1, v2) at (t + 1t) is-not iv_oct)
+; no parallel 5ths or octaves! avoid parallel 2nds and 7ths
+REQUIRE: forall ival in [iv_oct, iv_p5],
+    (v1 != v2) and (diads-of(v1, v2) at t is ival) => (diads-of(v1, v2) at (t + 1t) is-not ival)
+PREFER: weight 3, forall ival in [iv_min2, iv_maj2, iv_min7, iv_maj7],
+    (v1 != v2) and (diads-of(v1, v2) at t is ival) => (diads-of(v1, v2) at (t + 1t) is-not ival)
+
+; prefer contrary motion between soprano and the bass
+PREFER: weight 1, isContraryMotion(soprano, bass, t)
 
 ;;;;;;;; HARMONY
 
