@@ -1,7 +1,7 @@
 ; common scales and modes 
 
 ; these intervals are defined in respect to the FIRST pitch
-DEFINE: sc_major = [ 0i, 2i, 4i, 5i, 7i, 9i, 11i ]
+DEFINE: sc_major = [ 0i up, 2i up, 4i up, 5i up, 7i up, 9i up, 11i up ]
 DEFINE: sc_minor = [ 0i, 2i, 3i, 5i, 7i, 8i, 10i ]
 
 DEFINE: sc_ionian = sc_major
