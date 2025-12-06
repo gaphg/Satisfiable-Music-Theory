@@ -1,24 +1,24 @@
 ; standard interval names
 
-DEFINE: uni = 0i
-DEFINE: min2 = 1i
-DEFINE: maj2 = 2i
-DEFINE: aug2 = 3i
-DEFINE: min3 = 3i
-DEFINE: maj3 = 4i
-DEFINE: p4 = 5i
-DEFINE: aug4 = 6i
-DEFINE: tritone = 6i
-DEFINE: dim5 = 6i
-DEFINE: p5 = 7i
-DEFINE: min6 = 8i
-DEFINE: maj6 = 9i
-DEFINE: aug6 = 10i
-DEFINE: min7 = 10i
-DEFINE: maj7 = 11i
-DEFINE: oct = 12i
+DEFINE: iv_uni = 0i
+DEFINE: iv_min2 = 1i
+DEFINE: iv_maj2 = 2i
+DEFINE: iv_aug2 = 3i
+DEFINE: iv_min3 = 3i
+DEFINE: iv_maj3 = 4i
+DEFINE: iv_p4 = 5i
+DEFINE: iv_aug4 = 6i
+DEFINE: iv_tritone = 6i
+DEFINE: iv_dim5 = 6i
+DEFINE: iv_p5 = 7i
+DEFINE: iv_min6 = 8i
+DEFINE: iv_maj6 = 9i
+DEFINE: iv_aug6 = 10i
+DEFINE: iv_min7 = 10i
+DEFINE: iv_maj7 = 11i
+DEFINE: iv_oct = 12i
 
-DEFINE: consonantIntervals = [uni, min3, maj3, p4, p5, min6, maj6]
+DEFINE: consonantIntervals = [iv_uni, iv_min3, iv_maj3, iv_p4, iv_p5, iv_min6, iv_maj6]
 DEFINE: isConsonant(i) = flatten(i) in consonantIntervals
 DEFINE: isConsonantP(p1, p2) = isConsonant(interval-bt(p1, p2))
 DEFINE: isDissonant(i) = not isConsonant(i)

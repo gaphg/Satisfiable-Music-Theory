@@ -1,16 +1,16 @@
 ; common scales and modes 
 
 ; these intervals are defined in respect to the FIRST pitch
-DEFINE: major = [ 0i, 2i, 4i, 5i, 7i, 9i, 11i ]
-DEFINE: minor = [ 0i, 2i, 3i, 5i, 7i, 8i, 10i ]
+DEFINE: sc_major = [ 0i, 2i, 4i, 5i, 7i, 9i, 11i ]
+DEFINE: sc_minor = [ 0i, 2i, 3i, 5i, 7i, 8i, 10i ]
 
-DEFINE: ionian = major
-DEFINE: dorian = [ 0i, 2i, 3i, 5i, 7i, 9i, 10i ]
-DEFINE: phyrgian = [ 0i, 1i, 3i, 5i, 7i, 8i, 10i ]
-DEFINE: lydian = [ 0i, 2i, 4i, 6i, 7i, 9i, 11i ]
-DEFINE: mixolydian = [ 0i, 2i, 4i, 5i, 7i, 9i, 10i ]
-DEFINE: aeolian = minor
-DEFINE: locrian = [ 0i, 1i, 3i, 5i, 6i, 8i, 10i ]
+DEFINE: sc_ionian = sc_major
+DEFINE: sc_dorian = [ 0i, 2i, 3i, 5i, 7i, 9i, 10i ]
+DEFINE: sc_phyrgian = [ 0i, 1i, 3i, 5i, 7i, 8i, 10i ]
+DEFINE: sc_lydian = [ 0i, 2i, 4i, 6i, 7i, 9i, 11i ]
+DEFINE: sc_mixolydian = [ 0i, 2i, 4i, 5i, 7i, 9i, 10i ]
+DEFINE: sc_aeolian = sc_minor
+DEFINE: sc_locrian = [ 0i, 1i, 3i, 5i, 6i, 8i, 10i ]
 
 DEFINE: isDiatonic(keyCenter, mode, note) = 
     flatten(interval-bt(keyCenter, note)) in mode

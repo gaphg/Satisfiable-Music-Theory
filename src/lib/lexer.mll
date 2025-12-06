@@ -5,7 +5,7 @@
 
 (* helper regex definitions *)
 let whitespace = [' ''\t''\n']
-let identifier = ['0'-'9''a'-'z''A'-'Z''#']+
+let identifier = ['0'-'9''a'-'z''A'-'Z''#''_']+
 let number = ['0'-'9']+
 let comment = ";" [^'\n']* ('\n' | eof)
 let filename = [^' ''\t''\n']+ '.' [^' ''\t''\n']+

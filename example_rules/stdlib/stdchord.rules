@@ -1,15 +1,15 @@
 ; defines chord qualities
 
 ; intervals from the root of the chord to the bass of the chord
-DEFINE: maj = [0i, 4i, 7i]
-DEFINE: min = [0i, 3i, 7i]
-DEFINE: dim = [0i, 3i, 6i]
-DEFINE: aug = [0i, 4i, 8i]
-DEFINE: dom7 = [0i, 4i, 7i, 10i]
-DEFINE: dim7 = [0i, 3i, 6i, 9i]
-DEFINE: maj7 = [0i, 4i, 7i, 11i]
-DEFINE: min7 = [0i, 3i, 7i, 10i] 
-DEFINE: minmaj7 = [0i, 3i, 7i, 11i] 
+DEFINE: ch_maj = [0i, 4i, 7i]
+DEFINE: ch_min = [0i, 3i, 7i]
+DEFINE: ch_dim = [0i, 3i, 6i]
+DEFINE: ch_aug = [0i, 4i, 8i]
+DEFINE: ch_dom7 = [0i, 4i, 7i, 10i]
+DEFINE: ch_dim7 = [0i, 3i, 6i, 9i]
+DEFINE: ch_maj7 = [0i, 4i, 7i, 11i]
+DEFINE: ch_min7 = [0i, 3i, 7i, 10i] 
+DEFINE: ch_minmaj7 = [0i, 3i, 7i, 11i] 
 
-DEFINE: isInChord(root Pitch, quality, note Pitch) =
+DEFINE: isInChord(root Pitch, quality List of Interval, note Pitch) =
     flatten(interval-bt(root, note)) in quality
