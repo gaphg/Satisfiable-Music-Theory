@@ -21,6 +21,7 @@ type expr =
   | Pitches of expr (* voice -> pitch list *)
   | Contour of expr (* voice -> interval list *)
   | Diads of expr * expr (* v1, v2 -> interval list *)
+  (*| Stack of expr (* timeStep -> pitch list *)*)
   | IntervalBetween of expr * expr (* p1, p2 -> interval *)
   (* int/timestep maybe can be extend to pitches/intervals too *)
   | Plus of expr * expr

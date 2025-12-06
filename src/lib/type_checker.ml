@@ -121,6 +121,8 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
     | Diads (e1, e2) ->
         ( TimeSeriesType IntervalType,
           check_lr e1 e2 VoiceType VoiceType )
+    (**| Stack e -> 
+        (ListType PitchType, accumulate_check inferred e (Some TimeStepType))*)
     | IntervalBetween (e1, e2) ->
         ( IntervalType,
           check_lr e1 e2 PitchType PitchType )
@@ -227,8 +229,18 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
                   ^ " to be of type TimeSeries or List"))
         with TypeInferenceError _ ->
           let rhs_type, new_inferred = type_check ctx inferred e2 None in
-          ( BooleanType,
-            accumulate_check new_inferred e1 (Some (ListType rhs_type)) ))
+          let list_inferred = try
+              Some (accumulate_check new_inferred e1 (Some (ListType rhs_type)))
+            with TypeInferenceError _ -> None
+          in
+          let time_series_inferred = try
+              Some (accumulate_check new_inferred e1 (Some (TimeSeriesType rhs_type)))
+            with TypeInferenceError _ -> None
+          in
+          match list_inferred, time_series_inferred with
+          | Some _, Some _ -> raise (TypeInferenceError ("Unable to determine if " ^ (string_of_expr e1) ^ " is of type TimeSeries or List"))
+          | Some inf, None | None, Some inf -> (BooleanType, inf)
+          | None, None -> raise (TypeInferenceError ("Unable to infer type of " ^ (string_of_expr e1))))
     (* dummy nodes *)
     | SymbolicPitchExpr _ -> (PitchType, inferred)
     | SymbolicIntervalExpr _ -> (IntegerType, inferred)
