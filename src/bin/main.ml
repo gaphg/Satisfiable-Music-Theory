@@ -61,7 +61,9 @@ let main (rules_file : string) (input_midi : string option)
          ^ rules_file)
     | None, None, _ ->
         print_endline ("specification in " ^ rules_file ^ " is not satisfiable")
-    | Some synth_tracks, _, None ->
+    | Some _, Some im_file, _ ->
+        print_endline ("music in " ^ im_file ^ " satisfies specification in " ^ rules_file)
+    | Some synth_tracks, None, None ->
         print_endline
           ("specification in " ^ rules_file
          ^ " is satisfied with below assignment");
