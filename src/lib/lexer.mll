@@ -4,7 +4,7 @@
 }
 
 (* helper regex definitions *)
-let whitespace = [' ''\t''\n']
+let whitespace = [' ''\t']
 let identifier = ['0'-'9''a'-'z''A'-'Z''#''_']+
 let number = ['0'-'9']+
 let comment = ";" [^'\n']* ('\n' | eof)
@@ -12,17 +12,18 @@ let filename = [^' ''\t''\n']+ '.' [^' ''\t''\n']+
 
 rule tokenize = parse
     whitespace                      { tokenize lexbuf }
-    | comment                       { tokenize lexbuf }
-    | "DECLARE TIME UNIT TICKS:"    { TIME_UNIT_DECL }
-    | "DECLARE LENGTH:"           { MEASURE_DECL }
-    | "DECLARE VOICES:"             { VOICE_DECL }
-    | "DECLARE KEY:"                { KEY_DECL }
-    | "DEFINE:"                     { DEFINE }
-    | "REQUIRE:"                    { REQUIRE }
-    | "DISALLOW:"                   { DISALLOW }
-    | "PREFER:"                     { PREFER }
-    | "AVOID:"                      { AVOID }
-    | "INCLUDE:"                    { INCLUDE }
+    | '\n'                          { Lexing.new_line lexbuf; tokenize lexbuf }
+    | comment                       { Lexing.new_line lexbuf; tokenize lexbuf }
+    | "DECLARE TIME UNIT TICKS:"    { TIME_UNIT_DECL (Lexing.lexeme_start_p lexbuf) }
+    | "DECLARE LENGTH:"             { MEASURE_DECL (Lexing.lexeme_start_p lexbuf) }
+    | "DECLARE VOICES:"             { VOICE_DECL (Lexing.lexeme_start_p lexbuf) }
+    | "DECLARE KEY:"                { KEY_DECL (Lexing.lexeme_start_p lexbuf) }
+    | "DEFINE:"                     { DEFINE (Lexing.lexeme_start_p lexbuf) }
+    | "REQUIRE:"                    { REQUIRE (Lexing.lexeme_start_p lexbuf) }
+    | "DISALLOW:"                   { DISALLOW (Lexing.lexeme_start_p lexbuf) }
+    | "PREFER:"                     { PREFER (Lexing.lexeme_start_p lexbuf) }
+    | "AVOID:"                      { AVOID (Lexing.lexeme_start_p lexbuf) }
+    | "INCLUDE:"                    { INCLUDE (Lexing.lexeme_start_p lexbuf) }
     | "("                           { LPAREN }
     | ")"                           { RPAREN }
     | "pitches-of"                  { PITCHES }

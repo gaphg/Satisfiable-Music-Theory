@@ -27,9 +27,10 @@ let main (rules_file : string) (input_midi : string option)
   (* 1. parse rules file *)
   let channel = open_in rules_file in
   let lexbuf = Lexing.from_channel channel in
+  Lexing.set_filename lexbuf rules_file;
   let program = Parser.prog Lexer.tokenize lexbuf in
 
-  if Bachend.debug then print_endline (Ast.show_program program);
+  if Bachend.debug then List.iter print_endline (List.map Ast.string_of_statement program);
 
   (* 2. process midi file *)
   let tracks_opt = Option.map Process_midi.process_file input_midi in

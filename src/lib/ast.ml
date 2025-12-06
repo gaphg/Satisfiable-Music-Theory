@@ -78,16 +78,23 @@ type specification_statement =
 [@@deriving show]
 
 type statement =
-  | ConfigurationStmt of configuration_statement
-  | DefinitionStmt of definition_statement
-  | SpecificationStmt of specification_statement
-  | IncludeStmt of string (* filename of included script *)
-[@@deriving show]
+  | ConfigurationStmt of configuration_statement * Lexing.position
+  | DefinitionStmt of definition_statement * Lexing.position
+  | SpecificationStmt of specification_statement * Lexing.position
+  | IncludeStmt of string * Lexing.position(* filename of included script *)
 
-type program = statement list [@@deriving show]
+
+type program = statement list
 
 let string_of_expr = show_expr
 
+let string_of_statement = function
+  | ConfigurationStmt (s, _) -> show_configuration_statement s
+  | DefinitionStmt (s, _) -> show_definition_statement s
+  | SpecificationStmt (s, _) -> show_specification_statement s
+  | IncludeStmt (s, _) -> "INCLUDE: " ^ s
+
+  
 (* TODO: change *)
 (* match e with
    | Var name -> name

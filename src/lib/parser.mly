@@ -4,15 +4,15 @@
 %}
 
 %token EOF
-%token VOICE_DECL
-%token TIME_UNIT_DECL
-%token MEASURE_DECL
-%token KEY_DECL 
-%token REQUIRE
-%token DISALLOW
-%token PREFER
-%token AVOID
-%token INCLUDE
+%token <Lexing.position> VOICE_DECL
+%token <Lexing.position> TIME_UNIT_DECL
+%token <Lexing.position> MEASURE_DECL
+%token <Lexing.position> KEY_DECL 
+%token <Lexing.position> REQUIRE
+%token <Lexing.position> DISALLOW
+%token <Lexing.position> PREFER
+%token <Lexing.position> AVOID
+%token <Lexing.position> INCLUDE
 %token LPAREN
 %token RPAREN
 %token PITCHES
@@ -48,7 +48,7 @@
 %token TRUE_TOKEN
 %token FALSE_TOKEN
 %token COMMA
-%token DEFINE
+%token <Lexing.position> DEFINE
 %token UP
 %token DOWN
 %token LBRACK
@@ -81,39 +81,39 @@
 %type <Ast.program> prog
 %%
 prog: 
-    stmtList EOF  { $1}
+    stmtList EOF  { $1 }
 ;
 stmt:
-    configurationStmt       { ConfigurationStmt $1 }
-    | definitionStmt        { DefinitionStmt $1}
-    | specificationStmt     { SpecificationStmt $1}
-    | INCLUDE FILENAME      { IncludeStmt $2 }
+    configurationStmt       { ConfigurationStmt ((fst $1), (snd $1)) }
+    | definitionStmt        { DefinitionStmt ((fst $1), (snd $1)) }
+    | specificationStmt     { SpecificationStmt ((fst $1), (snd $1)) }
+    | INCLUDE FILENAME      { IncludeStmt ($2, $1) }
 ;
 
 (* CONFIGURATION STATEMENTS *)
 configurationStmt:
-    VOICE_DECL varList          { VoiceCfgStmt $2 }
-    | TIME_UNIT_DECL INTLIT     { TimeUnitTicksCfgStmt $2 }
-    | MEASURE_DECL INTLIT       { SongLengthUnitsCfgStmt $2 }
-    | KEY_DECL PITCHLIT         { KeyCfgStmt (PitchLit $2) }    (* TODO allow 'C' instead of '60' *)
+    VOICE_DECL varList          { (VoiceCfgStmt $2, $1) }
+    | TIME_UNIT_DECL INTLIT     { (TimeUnitTicksCfgStmt $2, $1) }
+    | MEASURE_DECL INTLIT       { (SongLengthUnitsCfgStmt $2, $1) }
+    | KEY_DECL PITCHLIT         { (KeyCfgStmt (PitchLit $2), $1) }    (* TODO allow 'C' instead of '60' *)
 ;
 
 (* DEFINITION STATEMENTS *)
 definitionStmt:
-    DEFINE ID EQUALS expr                               { ConstDefStmt ($2, $4) }
-    | DEFINE ID LPAREN formalList RPAREN EQUALS expr    { FuncDefStmt ($2, $4, $7) }
+    DEFINE ID EQUALS expr                               { (ConstDefStmt ($2, $4), $1) }
+    | DEFINE ID LPAREN formalList RPAREN EQUALS expr    { (FuncDefStmt ($2, $4, $7), $1) }
 formal:
     ID                              { ($1, ref None) }
     | ID st_type                    { ($1, ref (Some $2)) }
 
 (* SPECIFICATION STATEMENTS *)
 specificationStmt:
-    REQUIRE expr                            { RequireStmt $2 }
-    | DISALLOW expr                         { DisallowStmt $2 }
-    | PREFER WEIGHT INTLIT COMMA expr       { PreferStmt ($5, $3) }
-    | PREFER expr                           { PreferStmt ($2, -1) }
-    | AVOID WEIGHT INTLIT COMMA expr        { AvoidStmt ($5, $3) }
-    | AVOID expr                            { AvoidStmt ($2, -1) }
+    REQUIRE expr                            { (RequireStmt $2, $1) }
+    | DISALLOW expr                         { (DisallowStmt $2, $1) }
+    | PREFER WEIGHT INTLIT COMMA expr       { (PreferStmt ($5, $3), $1) }
+    | PREFER expr                           { (PreferStmt ($2, -1), $1) }
+    | AVOID WEIGHT INTLIT COMMA expr        { (AvoidStmt ($5, $3), $1) }
+    | AVOID expr                            { (AvoidStmt ($2, -1), $1) }
 
 
 (* EXPRESSIONS! *)

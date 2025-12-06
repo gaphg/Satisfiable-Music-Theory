@@ -1,4 +1,4 @@
-open Satie.Ast
+(* open Satie.Ast
 open Satie.Vcgen
 open Satie.Bachend
 open Satie.Solver
@@ -200,4 +200,5 @@ let () =
   let fname = "xxxx.mid" in
   write_file voices fname; *)
     
-  (* process_file "../../../../examples/Correct4PartHarmony.mid"; *)
+  process_file "../../../../examples/Correct4PartHarmony.mid";
+*)

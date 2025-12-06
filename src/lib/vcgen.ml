@@ -324,21 +324,30 @@ updated context, environment, and smt program as a list of constraints *)
 let translate_stmt (ctx : type_context) (env : dynamic_environment)
     (smt : string list) (stmt : statement) :
     program * type_context * dynamic_environment * string list =
-  if debug then print_endline (show_statement stmt);
+  if debug then print_endline (string_of_statement stmt);
+  try
   match stmt with
-  | ConfigurationStmt cfg ->
+  | ConfigurationStmt (cfg, _) ->
       let ctx, env = translate_cfg_stmt ctx env cfg in
       ([], ctx, env, smt)
-  | DefinitionStmt def ->
+  | DefinitionStmt (def, _) ->
       let ctx, env = translate_def_stmt ctx env def in
       ([], ctx, env, smt)
-  | SpecificationStmt spec ->
+  | SpecificationStmt (spec, _) ->
       ([], ctx, env, smt @ ("; Specification" :: translate_spec_stmt ctx env spec))
-  | IncludeStmt filename ->
+  | IncludeStmt (filename, _) ->
       let channel = open_in filename in
       let lexbuf = Lexing.from_channel channel in
+      Lexing.set_filename lexbuf filename;
       let prog = Parser.prog Lexer.tokenize lexbuf in
       (prog, ctx, env, smt)
+  with e ->
+    let ConfigurationStmt (_, p) 
+    | DefinitionStmt (_, p)
+    | SpecificationStmt (_, p)
+    | IncludeStmt (_, p) = stmt in
+    print_endline ("Error at line " ^ (string_of_int p.pos_lnum) ^ " of " ^ p.pos_fname);
+    raise e
 
 (* returns an smt-lib program and the final dynamic environment 
 if synth is true, adds necessary constraints to synthesize
