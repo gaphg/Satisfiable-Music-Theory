@@ -12,9 +12,9 @@ DEFINE: sc_mixolydian = [ 0i, 2i, 4i, 5i, 7i, 9i, 10i ]
 DEFINE: sc_aeolian = sc_minor
 DEFINE: sc_locrian = [ 0i, 1i, 3i, 5i, 6i, 8i, 10i ]
 
-DEFINE: isDiatonic(keyCenter, mode, note) = 
+DEFINE: isDiatonic(keyCenter, mode List of Interval, note) = 
     flatten(interval-bt(keyCenter, note)) in mode
 
 ; follows convention where the tonic is 1
-DEFINE: isScaleDegree(keyCenter, mode, degree Integer, note) =
+DEFINE: isScaleDegree(keyCenter, mode List of Interval, degree Integer, note) =
     flatten(interval-bt(keyCenter, note)) = mode at (degree - 1)
