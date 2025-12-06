@@ -11,6 +11,8 @@ INCLUDE: ../example_rules/stdlib/stdmotion.rules
 DEFINE: tonic = D
 DEFINE: mode = sc_major
 
+DEFINE: all_voices = [soprano, alto, tenor, bass]
+
 ; set key
 REQUIRE: isDiatonic(tonic, sc_major, ANY_PITCH)
 ; TODO this will only allow v instead of V if minor
@@ -33,8 +35,8 @@ REQUIRE: forall i in diads-of(tenor, alto), i < (12i up) and i > (12i down)
 PREFER: weight 3, contour-of v1 at t is iv_min2 or contour-of v1 at t is iv_maj2
 
 ; no augmented intervals
-REQUIRE: not (contour-of v contains iv_aug4)
-REQUIRE: not (contour-of v contains iv_aug2)
+DISALLOW: contour-of v contains iv_aug4
+DISALLOW: contour-of v contains iv_aug2
 
 ; leading tone resolves
 REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
@@ -47,26 +49,22 @@ REQUIRE: pitches-of bass at end is tonic
 ;;;;;;;; MOTION 
 
 ; no parallel 5ths or octaves!
-REQUIRE: (v1 != v2) and (contour-of v1 at t is iv_p5) => (contour-of v2 at t is-not iv_p5)
-REQUIRE: (v1 != v2) and (contour-of v1 at t is iv_oct) => (contour-of v2 at t is-not iv_oct)
+REQUIRE: (v1 != v2) and (diads-of(v1, v2) at t is iv_p5) => (diads-of(v1, v2) at (t + 1t) is-not iv_p5)
+REQUIRE: (v1 != v2) and (diads-of(v1, v2) at t is iv_oct) => (diads-of(v1, v2) at (t + 1t) is-not iv_oct)
 
 ;;;;;;;; HARMONY
+
+; requires all voices to be in the same chord
+REQUIRE: exists [root in note_classes, chord in ch_all] where 
+    forall voice in all_voices, 
+        isInChord(root, chord, pitches-of voice at ANY_TIME) 
 
 ; start and end on I 
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at start)
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at end)
 
-; requires all voices to be in the same chord
-; REQUIRE: forall [chord in ch_all], 
-;     V1 != V2 => isInChord(ANY_PITCH, chord, pitches-of V1 at ANY_TIME) = isInChord(ANY_PITCH, chord, pitches-of V2 at ANY_TIME)
-
-
-
-; TODO remove
-; PREFER: weight 2, isConsonant(diads-of(v1, v2) at t)
-; REQUIRE: isConsonant(diads-of(v1, v2) at t)
 
 ;;;;;;;; MISC PREFERENCES
 
 ; try to get more variety in the voices
-PREFER: v1 != v2 => pitches-of v1 at t != pitches-of v2 at t
+PREFER: weight 1, v1 != v2 => pitches-of v1 at t != pitches-of v2 at t
