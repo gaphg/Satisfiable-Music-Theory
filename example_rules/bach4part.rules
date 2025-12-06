@@ -24,15 +24,26 @@ REQUIRE: pitches-of tenor at t >= C3 and pitches-of tenor at t <= G4
 REQUIRE: pitches-of bass at t >= E2 and pitches-of bass at t <= G3
 
 ; spacing
-; REQUIRE: forall x diads-of(alto, soprano), x < oct
-; REQUIRE: forall x diads-of(tenor, alto), x < oct
+; REQUIRE: forall [x in diads-of(alto, soprano)], x < oct
+; REQUIRE: forall [x diads-of(tenor, alto)], x < oct
 
 
 ;;;;;;; VOICE LEADING
 
+; prefer stepwise motion
+PREFER: weight 3, contour-of v1 at t is iv_min2 or contour-of v1 at t is iv_maj2
+
 ; no augmented intervals
-; TODO once forall is implemented, you can require consonant steps and bound jumps
 REQUIRE: not (contour-of v contains iv_aug4)
+REQUIRE: not (contour-of v contains iv_aug2)
+
+; leading tone resolves
+REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
+PREFER: weight 1, isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
+
+; bass begins and ends on tonic
+REQUIRE: pitches-of bass at start is tonic
+REQUIRE: pitches-of bass at end is tonic
 
 ;;;;;;;; MOTION 
 
@@ -45,3 +56,12 @@ REQUIRE: (v1 != v2) and (contour-of v1 at t is iv_oct) => (contour-of v2 at t is
 ; requires 
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at start)
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at end)
+
+; TODO remove
+; PREFER: weight 2, isConsonant(diads-of(v1, v2) at t)
+; REQUIRE: isConsonant(diads-of(v1, v2) at t)
+
+;;;;;;;; MISC PREFERENCES
+
+; try to get more variety in the voices
+PREFER: weight 1, v1 != v2 => pitches-of v1 at t is-not pitches-of v2 at t
