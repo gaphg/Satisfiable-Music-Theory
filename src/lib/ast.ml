@@ -47,7 +47,7 @@ type expr =
   | Flatten of expr
   | EqualsModOctave of expr * expr (* pitch, pitch -> bool *)
   | NotEqualsModOctave of expr * expr
-  (*| TimeRange of expr * expr (* timestep, timestep -> timestep list *) *)
+  | Range of expr * expr (* T, T -> T list, where T is an integer-like type *)
   (* for internal implementation *)
   | SymbolicPitchExpr of int * int
   | SymbolicIntervalExpr of (int * int) * (int * int)
