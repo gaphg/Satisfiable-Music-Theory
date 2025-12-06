@@ -1,8 +1,12 @@
-INCLUDE: ../example_rules/stdlib/stdint.rules
-INCLUDE: ../example_rules/stdlib/stdkey.rules
-INCLUDE: ../example_rules/stdlib/stdpitch.rules
+DECLARE VOICES: v1, v2
+DECLARE LENGTH: 7
 
-DECLARE VOICES: voice
-DECLARE LENGTH: 9
+INCLUDE: ../example_rules/stdlib/stdmotion.rules
 
-REQUIRE: 
+; DEFINE: v1pitches = pitches-of v1
+; DEFINE: v2pitches = pitches-of v2
+
+; REQUIRE: isSimilarMotion(v1pitches at t, v1pitches at t + 1t, 
+;    v2pitches at t, v2pitches at t + 1t)
+
+REQUIRE: isContraryMotion(voice1, voice2, t)
