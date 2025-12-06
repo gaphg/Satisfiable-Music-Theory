@@ -21,6 +21,16 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
   (* checks left and right side of a polymorphic expression that requires two sides to be of same type. 
     returns type and inferred variables
   *)
+  let check_lr lhs rhs ltype rtype =
+    try
+      accumulate_check
+        (accumulate_check inferred lhs (Some ltype))
+        rhs (Some rtype)
+    with TypeInferenceError _ ->
+      accumulate_check
+        (accumulate_check inferred rhs (Some rtype))
+        lhs (Some ltype)
+  in
   let check_lr_same lhs rhs =
     try
       let lhs_t, new_inferred = type_check ctx inferred lhs None in
@@ -99,14 +109,10 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
           accumulate_check inferred e (Some VoiceType) )
     | Diads (e1, e2) ->
         ( TimeSeriesType IntervalType,
-          accumulate_check
-            (accumulate_check inferred e1 (Some VoiceType))
-            e2 (Some VoiceType) )
+          check_lr e1 e2 VoiceType VoiceType )
     | IntervalBetween (e1, e2) ->
         ( IntervalType,
-          accumulate_check
-            (accumulate_check inferred e1 (Some PitchType))
-            e2 (Some PitchType) )
+          check_lr e1 e2 PitchType PitchType )
     (* boolean ops *)
     | Not e -> (BooleanType, accumulate_check inferred e (Some BooleanType))
     | And (e1, e2) 
@@ -114,9 +120,7 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
     | Implies (e1, e2) 
     | Iff (e1, e2) ->
         ( BooleanType,
-          accumulate_check
-            (accumulate_check inferred e1 (Some BooleanType))
-            e2 (Some BooleanType) )
+          check_lr e1 e2 BooleanType BooleanType )
     | Exists (vars, e)
     | Forall (vars, e) -> (
       (* add labeled var types to context *)

@@ -34,7 +34,7 @@ let possible_values_of_type (env : dynamic_environment) (t : st_type) :
                 determined"))
   | BooleanType -> [ Boolean true; Boolean false ]
   | IntegerType -> List.init (1 lsl 8) (fun i -> Integer i)
-  | _ -> raise (Failure "possible_values_of_type: not yet implemented")
+  | _ -> raise (Failure ("possible_values_of_type: not yet implemented for type " ^ (string_of_type t)))
 
 let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   (* helper functions *)
@@ -46,14 +46,18 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   in
   (* signed mod *)
   let smod n d = ((n mod d) + d) mod d in
-  (* give wiggle room to intervals *)
-  let handle_interval_comparison e1 e2 combine_fun =
+  (* give wiggle room to intervals, other stuff *)
+  let handle_comparison e1 e2 symbolic_fun concrete_fun =
       let v1, v2 = (translate_expr env e1, translate_expr env e2) in
       (* deal with some wiggle room for equality *)
       match (v1, v2) with
-      | Interval (_, None), _ -> combine_fun v1 (SymbolicAbs v2)
-      | _, Interval (_, None) -> combine_fun (SymbolicAbs v1) v2
-      | _ -> combine_fun v1 v2
+      | Voice i, Voice j 
+      | Pitch i, Pitch j
+      | TimeStep i, TimeStep j
+      | Integer i, Integer j -> Boolean (concrete_fun i j)
+      | Interval (_, None), _ -> symbolic_fun v1 (SymbolicAbs v2)
+      | _, Interval (_, None) -> symbolic_fun (SymbolicAbs v1) v2
+      | _ -> symbolic_fun v1 v2
   in
   match e with
   | SymbolicPitchExpr (v, t) -> SymbolicPitch (v, t)
@@ -140,16 +144,16 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   )
   (* comparisons *)
   | Equals (e1, e2) -> 
-      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicEquals (v1, v2))
+      handle_comparison e1 e2 (fun v1 v2 -> SymbolicEquals (v1, v2)) (=)
   | NotEquals (e1, e2) -> translate_expr env (Not (Equals (e1, e2)))
   | LessThan (e1, e2) -> 
-      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicLt (v1, v2))
+      handle_comparison e1 e2 (fun v1 v2 -> SymbolicLt (v1, v2)) (<)
   | LessThanEq (e1, e2) -> 
-      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicLe (v1, v2))
+      handle_comparison e1 e2 (fun v1 v2 -> SymbolicLe (v1, v2)) (<=)
   | GreaterThan (e1, e2) ->
-      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicGt (v1, v2))
+      handle_comparison e1 e2 (fun v1 v2 -> SymbolicGt (v1, v2)) (>)
   | GreaterThanEq (e1, e2) ->
-      handle_interval_comparison e1 e2 (fun v1 v2 -> SymbolicGe (v1, v2))
+      handle_comparison e1 e2 (fun v1 v2 -> SymbolicGe (v1, v2)) (>=)
   | Flatten e -> (
     let v = translate_expr env e in
     match v with
