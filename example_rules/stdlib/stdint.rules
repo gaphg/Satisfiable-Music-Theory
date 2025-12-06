@@ -1,7 +1,5 @@
 ; standard interval names
 
-; TODO remove these
-
 DEFINE: uni = 0i
 DEFINE: min2 = 1i
 DEFINE: maj2 = 2i

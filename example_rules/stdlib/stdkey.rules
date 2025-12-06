@@ -14,3 +14,7 @@ DEFINE: locrian = [ 0i, 1i, 3i, 5i, 6i, 8i, 10i ]
 
 DEFINE: isDiatonic(keyCenter, mode, note) = 
     flatten(interval-bt(keyCenter, note)) in mode
+
+; follows convention where the tonic is 1
+DEFINE: isScaleDegree(keyCenter, mode, degree Integer, note) =
+    flatten(interval-bt(keyCenter, note)) = mode at (degree - 1)
