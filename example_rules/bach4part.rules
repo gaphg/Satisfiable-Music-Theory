@@ -1,0 +1,22 @@
+DECLARE VOICES: soprano, alto, tenor, bass
+DECLARE LENGTH: 7
+
+INCLUDE: ../example_rules/stdlib/stdint.rules
+INCLUDE: ../example_rules/stdlib/stdkey.rules
+INCLUDE: ../example_rules/stdlib/stdpitch.rules
+INCLUDE: ../example_rules/stdlib/stdchord.rules
+
+; set key
+REQUIRE: isDiatonic(D, sc_major, ANYPITCH)
+; TODO this will only allow v instead of V if minor
+
+; ranges
+REQUIRE: pitches-of soprano at t >= C4 and pitches-of soprano at t <= G5
+REQUIRE: pitches-of alto at t >= G3 and pitches-of alto at t <= C5
+REQUIRE: pitches-of tenor at t >= C3 and pitches-of tenor at t <= G4
+REQUIRE: pitches-of bass at t >= E2 and pitches-of bass at t <= G3
+
+; careful to use maj instead of major!
+; Requires to begin and end on tonic
+REQUIRE: isInChord(D, ch_maj, pitches-of v at start)
+REQUIRE: isInChord(D, ch_maj, pitches-of v at end)

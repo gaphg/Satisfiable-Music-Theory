@@ -85,7 +85,7 @@ Type := "Voice"
         | "List" "of" Type
 
 -- Literals --
-Id := <any alphanumeric string (can also have a #)>
+Id := <any alphanumeric string (can also have a # or _)>
 Int := <any nonnegative integer literal>
 PitchClass := <a note name>                       ([a-gA-G][#b]?)
 Mode := <"major" or "minor">                      (TODO : add other capitalization/modes?)

@@ -6,16 +6,16 @@ INCLUDE: ../example_rules/stdlib/stdkey.rules
 INCLUDE: ../example_rules/stdlib/stdpitch.rules
 INCLUDE: ../example_rules/stdlib/stdchord.rules
 
-REQUIRE: isDiatonic(C, major, ANYPITCH)
+REQUIRE: isDiatonic(C, sc_major, ANYPITCH)
 ; REQUIRE: pitches-of bass at 6t = C4
 ; REQUIRE: isInChord(C, maj, ANYPITCH)
 
 REQUIRE: ANYPITCH <= C5
 REQUIRE: ANYPITCH >= C3
 
-REQUIRE: isScaleDegree(C, major, 1, pitches-of bass at start)
-REQUIRE: isScaleDegree(C, major, 1, pitches-of bass at end)
-REQUIRE: isScaleDegree(C, major, 4, pitches-of v at 3t)
+REQUIRE: isScaleDegree(C, sc_major, 1, pitches-of bass at start)
+REQUIRE: isScaleDegree(C, sc_major, 1, pitches-of bass at end)
+REQUIRE: isScaleDegree(C, sc_major, 4, pitches-of v at 3t)
 
 
 ; REQUIRE: pitches-of v1 at t != pitches-of v1 at (t + 1t)
