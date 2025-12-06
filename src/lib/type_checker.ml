@@ -221,6 +221,7 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
     (* dummy nodes *)
     | SymbolicPitchExpr _ -> (PitchType, inferred)
     | SymbolicIntervalExpr _ -> (IntegerType, inferred)
+    | _ -> raise (Failure "translate_expr: not yet implemented")
   in
   match expected with
   | Some t ->

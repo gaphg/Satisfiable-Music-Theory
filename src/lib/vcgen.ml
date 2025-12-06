@@ -55,6 +55,8 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       | Pitch i, Pitch j
       | TimeStep i, TimeStep j
       | Integer i, Integer j -> Boolean (concrete_fun i j)
+      | Interval (i1, Some d1), Interval (i2, Some d2) ->
+          Boolean (d1 = d2 && i1 = i2)
       | Interval (_, None), _ -> symbolic_fun v1 (SymbolicAbs v2)
       | _, Interval (_, None) -> symbolic_fun (SymbolicAbs v1) v2
       | _ -> symbolic_fun v1 v2
@@ -178,6 +180,7 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
           SymbolicOr
             (List.map (fun e -> translate_expr env (Equals (e, elt))) es)
       | _ -> raise (Failure "interpret_expr: impossible"))
+  | _ -> raise (Failure "translate_expr: not yet implemented")
 
 (* for each free variable, interprets the expression for all possible values of that variable, outputting a list of values 
 TODO: decide whether to use forall smt quantifier (not sure if it's supported as well, gotta research )*)
