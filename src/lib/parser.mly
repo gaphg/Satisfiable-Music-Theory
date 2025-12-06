@@ -59,6 +59,7 @@
 %token EXISTS
 %token WHERE
 %token WEIGHT
+%token MOD
 %token <string> ID
 %token <int> PITCHLIT
 %token <int> INTERVALLIT
@@ -72,6 +73,7 @@
 %left EQUALS NOT_EQUALS IS IS_NOT
 %left LESS LEQ GREATER GEQ
 %left PLUS MINUS
+%left MOD
 %left CONTAINS AT IN
 %right NOT
 %nonassoc PITCHES CONTOUR DIADS INTERVAL FLATTEN
@@ -146,6 +148,9 @@ cmp_expr:
 arith_expr:
     arith_expr PLUS arith_expr      { Plus ($1, $3) }
     | arith_expr MINUS arith_expr   { Minus ($1, $3) }
+    | mult_expr                     { $1 }
+mult_expr:
+    mult_expr MOD mult_expr         { Mod ($1, $3)}
     | misc_expr                     { $1 }
 misc_expr:
     misc_expr AT misc_expr          { ElementAt ($1, $3)}

@@ -6,4 +6,7 @@ DECLARE LENGTH: 7
 INCLUDE: ../example_rules/stdlib/stdpitch.rules
 ;INCLUDE: ../example_rules/stdlib/stdchord.rules
 
-REQUIRE: exists [p in pitches-of soprano, i in [interval-bt(p, C4)]] where p = C5 and i = 0i
+; REQUIRE: exists [p in pitches-of soprano, i in [interval-bt(p, C4)]] where p = C5 and i = 0i
+
+REQUIRE: (0-5) mod 5 = 0
+REQUIRE: 5t mod 5t = 0t

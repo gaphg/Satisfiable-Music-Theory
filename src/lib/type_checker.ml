@@ -159,6 +159,7 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
     (* operations where lhs and rhs must be the same type but o/w unknown *)
     | Plus (e1, e2) 
     | Minus (e1, e2) -> check_lr_same e1 e2
+    | Mod (e1, e2) -> check_lr_same e1 e2
     | Equals (e1, e2) 
     | NotEquals (e1, e2)
     | LessThan (e1, e2)

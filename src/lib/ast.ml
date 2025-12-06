@@ -25,6 +25,7 @@ type expr =
   (* int/timestep maybe can be extend to pitches/intervals too *)
   | Plus of expr * expr
   | Minus of expr * expr (* perhaps pitch - pitch gives interval? *)
+  | Mod of expr * expr
   (* boolean/predicate operations *)
   | Not of expr
   | And of expr * expr
