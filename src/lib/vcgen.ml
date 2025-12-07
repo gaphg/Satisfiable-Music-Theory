@@ -64,8 +64,8 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       if new_p < 0 || new_p >= 128 then
         raise (RuntimeError ("Pitch " ^ (string_of_int new_p) ^ " is out of bounds"))
       else Pitch new_p
-    | (SymbolicPitch _ as p), (_ as i) 
-    | (_ as p), (SymbolicInterval _ as i) -> symb_op p i
+    | ((SymbolicInterval _ | SymbolicPitch _) as v1), (_ as v2)
+    | (_ as v1), ((SymbolicInterval _ | SymbolicPitch _) as v2) -> symb_op v1 v2
     | _ -> raise (Failure "interpret_expr: not yet implemented")
   in
   (* signed mod *)
