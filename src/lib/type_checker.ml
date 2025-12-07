@@ -159,8 +159,11 @@ let rec type_check (ctx : type_context) (inferred : var_type_context) (e : expr)
       );
       (BooleanType, pruned_inf) *)
     (* operations where lhs and rhs must be the same type but o/w unknown *)
-    | Plus (e1, e2) 
-    | Minus (e1, e2) -> check_lr_same e1 e2
+    | Plus (e1, e2)
+    | Minus (e1, e2) -> (
+      try check_lr_same e1 e2 
+      with TypeError _ -> (PitchType, check_lr e1 e2 PitchType IntervalType))
+      
     | Mod (e1, e2) -> check_lr_same e1 e2
     | Equals (e1, e2) 
     | NotEquals (e1, e2)

@@ -1,7 +1,7 @@
 DECLARE VOICES: soprano, alto, tenor, bass
 DECLARE LENGTH: 7
 
-;INCLUDE: ../example_rules/stdlib/stdint.rules
+INCLUDE: ../example_rules/stdlib/stdint.rules
 ;INCLUDE: ../example_rules/stdlib/stdkey.rules
 INCLUDE: ../example_rules/stdlib/stdpitch.rules
 ;INCLUDE: ../example_rules/stdlib/stdchord.rules
@@ -9,4 +9,5 @@ INCLUDE: ../example_rules/stdlib/stdpitch.rules
 ; REQUIRE: exists [p in pitches-of soprano, i in [interval-bt(p, C4)]] where p = C5 and i = 0i
 
 REQUIRE: (0-5) mod 5 = 0
-REQUIRE: 5t mod 5t = 0t
+REQUIRE: 9t mod 5t = 4t
+REQUIRE: (pitches-of soprano at start) + iv_maj2 = D3

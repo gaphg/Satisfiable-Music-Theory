@@ -49,6 +49,8 @@ let rec smt_of_predicate (v : vc_term) : string =
   | Boolean b -> if b then "true" else "false"
   | SymbolicPitch (v, t) -> const_name_of_voice_time v t
   | SymbolicInterval (v1, v2) -> bin_op "bvsub" v2 v1
+  | SymbolicPlus (v1, v2) -> bin_op "bvadd" v1 v2
+  | SymbolicMinus (v1, v2) -> bin_op "bvsub" v2 v2
   | SymbolicModOct v ->
       s_expr_of [ "bvsmod"; smt_of_predicate v; bv_decimal 12 ]
   | SymbolicEquals (v1, v2) -> bin_op "=" v1 v2
