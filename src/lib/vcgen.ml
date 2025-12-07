@@ -208,8 +208,8 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   | ElementAt (list, idx) -> (
       match (translate_expr env list, translate_expr env idx) with
       | TimeSeries l, TimeStep i | StList l, Integer i ->
-          if i < 0 || List.length l <= i then (print_endline ("length: " ^ (string_of_int (List.length l)) ^ ", i: " ^ (string_of_int i));
-          raise (InvalidIndexError i))
+          if i < 0 || List.length l <= i then 
+          raise (InvalidIndexError i)
           else translate_expr env (List.nth l i)
       | _ -> raise (Failure "interpret_expr: impossible"))
   | Contains (list, elt) -> (
