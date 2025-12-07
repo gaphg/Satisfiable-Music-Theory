@@ -1,0 +1,79 @@
+; first species counterpoint in C major, cantus firmus in the lower part
+; very basic set of rules
+
+INCLUDE: ../example_rules/stdlib/stdint.rules
+INCLUDE: ../example_rules/stdlib/stdpitch.rules
+INCLUDE: ../example_rules/stdlib/stdkey.rules
+INCLUDE: ../example_rules/stdlib/stdmotion.rules
+
+DECLARE VOICES: upper, cf
+DECLARE LENGTH: 10
+
+DEFINE: tonic = C
+DEFINE: mode = sc_major
+DEFINE: all_voices =  [cf, upper]
+
+REQUIRE: isDiatonic(tonic, mode, ANY_PITCH)
+
+; voice ranges
+REQUIRE: pitches-of upper at t >= C4 and pitches-of upper at t <= G5
+REQUIRE: pitches-of cf at t >= C3 and pitches-of cf at t <= G4
+
+; no voice crossing
+REQUIRE: pitches-of cf at t <= pitches-of upper at t
+
+; begin and end on tonic
+REQUIRE: pitches-of cf at start is tonic and pitches-of cf at end is tonic
+
+; begin with octave or unison
+REQUIRE: diads-of(cf, upper) at start in [iv_oct, iv_uni]
+REQUIRE: diads-of(cf, upper) at end in [iv_oct, iv_uni]
+
+; approach end with contrary motion by step
+REQUIRE: isContraryMotion(cf, upper, end - 1t)
+REQUIRE: forall voice in all_voices,
+    contour-of(voice) at (end - 1t) in iv_step
+
+; only consonant intervals allowed
+REQUIRE: forall ival in diads-of(cf, upper),
+            ival in [ iv_uni, iv_min3, iv_maj3, iv_p5, iv_min6, iv_maj6, iv_oct ]
+
+; perfect consonances aproached in contrary motion
+REQUIRE: forall ival in [iv_uni, iv_p5, iv_oct],
+            diads-of(cf, upper) at t = ival 
+                => isContraryMotion(cf, upper, t - 1t)
+
+; no more than 3 consecutive 3rd or 6ths
+REQUIRE:diads-of(cf, upper) at t in [iv_min3, iv_maj3]  and
+        diads-of(cf, upper) at (t + 1t) in [iv_min3, iv_maj3] =>
+            not (diads-of(cf, upper) at (t + 2t) in [iv_min3, iv_maj3])
+REQUIRE:diads-of(cf, upper) at t in [iv_min6, iv_maj6]  and
+        diads-of(cf, upper) at (t + 1t) in [iv_min6, iv_maj6] =>
+            not (diads-of(cf, upper) at (t + 2t) in [iv_min6, iv_maj6])
+
+; only allow these leaps
+REQUIRE: contour-of v at t > (2i up) => 
+    contour-of v at t in [iv_min3, iv_maj3, iv_p4, iv_p5, iv_min6, iv_oct]
+REQUIRE: contour-of v at t < (2i down) => 
+    contour-of v at t in [iv_min3, iv_maj3, iv_p4, iv_p5, iv_min6, iv_oct]
+
+; leaps larger than a P4 should change direction
+REQUIRE: contour-of v at t > (5i up) => 
+    (exists step in [iv_min2, iv_maj2] 
+        where (contour-of v at (t + 1t) = step)) and
+            contour-of v at (t + 1t) < 0i up
+REQUIRE: contour-of v at t < (5i down) => 
+    (exists step in [iv_min2, iv_maj2] 
+        where (contour-of v at (t + 1t) = step)) and
+            contour-of v at (t + 1t) > 0i up
+
+; disallow repeated notes
+REQUIRE: pitches-of voice at t != pitches-of voice at (t + 1t) 
+
+; no parallel octaves and 5ths!
+REQUIRE: forall ival in [iv_oct, iv_p5],
+    diads-of(cf, upper) at t is ival => diads-of(cf, upper) at (t + 1t) is-not ival
+
+
+; prefer stepwise motion
+PREFER: weight 3, contour-of v1 at t is iv_min2 or contour-of v1 at t is iv_maj2
