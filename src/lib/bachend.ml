@@ -20,6 +20,8 @@ type vc_term =
   (* logical/symbolic elements for solver *)
   | SymbolicPitch of int * int (* voice id, time step *)
   | SymbolicInterval of vc_term * vc_term (* pitch 1, pitch 2 *)
+  | SymbolicPlus of vc_term * vc_term
+  | SymbolicMinus of vc_term * vc_term
   | SymbolicModOct of vc_term (* mod by 12 *)
   | SymbolicEquals of vc_term * vc_term
   | SymbolicLt of vc_term * vc_term

@@ -38,10 +38,34 @@ let possible_values_of_type (env : dynamic_environment) (t : st_type) :
 
 let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
   (* helper functions *)
-  let translate_numeric_bin_op op e1 e2 =
+  let translate_plus_minus e1 e2 op symb_op =
     match (translate_expr env e1, translate_expr env e2) with
     | TimeStep t1, TimeStep t2 -> TimeStep (op t1 t2)
     | Integer i1, Integer i2 -> Integer (op i1 i2)
+    | Interval (i1, d1), Interval (i2, d2) ->
+      (
+        match d1, d2 with
+        | Some _, None | None, Some _ -> raise (RuntimeError "Cannot add or subtract two intervals where one has specified direction and the other does not")
+        | Some b1, Some b2 -> 
+          let v1 = if b1 then i1 else -i1 in
+          let v2 = if b2 then i2 else -i2 in
+          let v = op v1 v2 in
+          if v < 0 then Interval (-v, Some false)
+          else Interval (v, Some true)
+        | None, None -> Interval (op i1 i2, None)
+      )
+    | Pitch p, Interval (i, d) ->
+      let new_p =
+      match d with
+      | Some b -> 
+        if b then (op p i) else (op p (-i))
+      | None -> op p i
+      in
+      if new_p < 0 || new_p >= 128 then
+        raise (RuntimeError ("Pitch " ^ (string_of_int new_p) ^ " is out of bounds"))
+      else Pitch new_p
+    | (SymbolicPitch _ as p), (_ as i) 
+    | (_ as p), (SymbolicInterval _ as i) -> symb_op p i
     | _ -> raise (Failure "interpret_expr: not yet implemented")
   in
   (* signed mod *)
@@ -139,9 +163,17 @@ let rec translate_expr (env : dynamic_environment) (e : expr) : vc_term =
       | _ -> raise (Failure "interpret_expr: impossible"))
   | IntervalBetween (p1, p2) ->
       SymbolicInterval (translate_expr env p1, translate_expr env p2)
-  | Plus (e1, e2) -> translate_numeric_bin_op (+) e1 e2
-  | Minus (e1, e2) -> translate_numeric_bin_op (-) e1 e2
-  | Mod (e1, e2) -> translate_numeric_bin_op smod e1 e2
+  | Plus (e1, e2) -> 
+      translate_plus_minus e1 e2 (+) (fun v1 v2 -> SymbolicPlus (v1, v2))
+  | Minus (e1, e2) ->
+      translate_plus_minus e1 e2 (-) (fun v1 v2 -> SymbolicMinus (v1, v2))
+  | Mod (e1, e2) -> (
+    match (translate_expr env e1, translate_expr env e2) with
+    | TimeStep t1, TimeStep t2 -> TimeStep (smod t1 t2)
+    | Integer i1, Integer i2 -> Integer (smod i1 i2)
+    (* TODO: is this right? *)
+    | Interval (i1, d), Interval (i2, _) -> Interval (smod i1 i2, d)
+    | _ -> raise (Failure "translate_expr: not yet implemented"))
   (* boolean/predicate *)
   | Not e -> SymbolicNot (translate_expr env e)
   | And (e1, e2) -> SymbolicAnd [ translate_expr env e1; translate_expr env e2 ]
