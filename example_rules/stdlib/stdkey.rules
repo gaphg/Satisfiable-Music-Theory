@@ -18,3 +18,6 @@ DEFINE: isDiatonic(keyCenter, mode List of Interval, note) =
 ; follows convention where the tonic is 1
 DEFINE: isScaleDegree(keyCenter, mode List of Interval, degree Integer, note) =
     flatten(interval-bt(keyCenter, note)) = mode at (degree - 1)
+
+DEFINE: getScaleDegree(keyCenter Pitch, mode List of Interval, degree Integer) =
+    keyCenter + (mode at (degree - 1))
