@@ -18,6 +18,8 @@ DEFINE: iv_min7 = 10i
 DEFINE: iv_maj7 = 11i
 DEFINE: iv_oct = 12i
 
+DEFINE: iv_step = [iv_maj2, iv_min2]
+
 ; TODO move this out, since this is defined by period
 DEFINE: consonantIntervals = [iv_uni, iv_min3, iv_maj3, iv_p4, iv_p5, iv_min6, iv_maj6]
 DEFINE: isConsonant(i) = flatten(i) in consonantIntervals

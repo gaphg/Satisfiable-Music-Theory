@@ -97,6 +97,47 @@ REQUIRE: exists [root in note_classes, chord in ch_all] where
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at start)
 REQUIRE: isInChord(tonic, ch_maj, pitches-of v at end)
 
+;;;; these are for major
+DEFINE: sd_1 = getScaleDegree(tonic, mode, 1)
+DEFINE: sd_2 = getScaleDegree(tonic, mode, 2)
+DEFINE: sd_3 = getScaleDegree(tonic, mode, 3)
+DEFINE: sd_4 = getScaleDegree(tonic, mode, 4)
+DEFINE: sd_5 = getScaleDegree(tonic, mode, 5)
+DEFINE: sd_6 = getScaleDegree(tonic, mode, 6)
+DEFINE: sd_7 = getScaleDegree(tonic, mode, 7)
+
+; tonics: [I, iii, vi]
+DEFINE: isTonic(p Pitch) = 
+    isInChord(sd_1, ch_maj, p) or
+    isInChord(sd_3, ch_min, p) or
+    isInChord(sd_6, ch_min, p)
+
+; subdominants: [ii, ii7, IV]
+DEFINE: isSubdominant(p Pitch) = 
+    isInChord(sd_2, ch_min, p) or 
+    isInChord(sd_2, ch_min7, p) or 
+    isInChord(sd_4, ch_maj, p)
+
+; dominants: [V, V7, vii^o, vii^o7]
+DEFINE: isDominant(p Pitch) =
+    isInChord(sd_5, ch_maj, p) or 
+    isInChord(sd_5, ch_dom7, p) or 
+    isInChord(sd_7, ch_dim, p) or 
+    isInChord(sd_7, ch_dim7, p)
+
+REQUIRE: isTonic(pitches-of v at t) => 
+                isTonic(pitches-of v at (t + 1t)) or
+                isSubdominant(pitches-of v at (t + 1t)) or
+                isDominant(pitches-of v at (t + 1t))
+
+REQUIRE: isSubdominant(pitches-of v at t) => 
+                isTonic(pitches-of v at (t + 1t)) or
+                isSubdominant(pitches-of v at (t + 1t)) or
+                isDominant(pitches-of v at (t + 1t))
+
+REQUIRE: isSubdominant(pitches-of v at t) => 
+                isTonic(pitches-of v at (t + 1t)) or
+                isDominant(pitches-of v at (t + 1t))
 
 ;;;;;;;; MISC PREFERENCES
 
