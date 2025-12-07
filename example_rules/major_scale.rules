@@ -1,7 +1,7 @@
 DECLARE VOICES: v1, v2
 DECLARE LENGTH: 8
 
-INCLUDE: ../example_rules/stdlib.rules
+INCLUDE: ../example_rules/western_stdlib.rules
 
 REQUIRE: pitches-of v1 at 0t = 60p
 REQUIRE: contour-of v1 at 0t = M2 up

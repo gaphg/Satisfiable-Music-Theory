@@ -1,7 +1,7 @@
 DECLARE VOICES: voice1, voice2, voice3
 DECLARE LENGTH: 9
 
-INCLUDE: ../example_rules/stdlib.rules
+INCLUDE: ../example_rules/western_stdlib.rules
 
 DEFINE: isConsonant(p1, p2) = 
     flatten(interval-bt(p1, p2)) in [ unison, m3, M3, P4, P5, m6, M6, octave ]

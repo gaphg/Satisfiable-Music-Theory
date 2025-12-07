@@ -1,6 +1,6 @@
-INCLUDE: ../example_rules/stdlib/stdint.rules
-INCLUDE: ../example_rules/stdlib/stdkey.rules
-INCLUDE: ../example_rules/stdlib/stdpitch.rules
+INCLUDE: ../example_rules/western_stdlib/stdint.rules
+INCLUDE: ../example_rules/western_stdlib/stdkey.rules
+INCLUDE: ../example_rules/western_stdlib/stdpitch.rules
 
 DECLARE VOICES: soprano, alto, tenor, bass
 DECLARE LENGTH: 7

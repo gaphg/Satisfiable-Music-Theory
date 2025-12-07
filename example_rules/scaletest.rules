@@ -1,7 +1,7 @@
 DECLARE VOICES: soprano, alto
 DECLARE LENGTH: 7
 
-INCLUDE: ../example_rules/stdlib/stdmotion.rules
+INCLUDE: ../example_rules/western_stdlib/stdmotion.rules
 
 
 REQUIRE: pitches-of soprano at t > 50p and pitches-of soprano at t < 72p

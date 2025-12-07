@@ -1,52 +1,20 @@
 DECLARE VOICES: soprano, alto, bass
 DECLARE LENGTH: 5
 
-INCLUDE: ../example_rules/stdlib/stdint.rules
-INCLUDE: ../example_rules/stdlib/stdkey.rules
-INCLUDE: ../example_rules/stdlib/stdpitch.rules
-INCLUDE: ../example_rules/stdlib/stdchord.rules
+INCLUDE: ../example_rules/western_stdlib/stdint.rules
+INCLUDE: ../example_rules/western_stdlib/stdkey.rules
+INCLUDE: ../example_rules/western_stdlib/stdpitch.rules
+INCLUDE: ../example_rules/western_stdlib/stdchord.rules
 
-REQUIRE: isDiatonic(C, sc_major, ANYPITCH)
-
-REQUIRE: ANYPITCH <= C6
-REQUIRE: ANYPITCH >= C3
-
-; REQUIRE: forall [chord in ch_all], 
-;     V1 != V2 => isInChord(ANY_PITCH, chord, pitches-of V1 at ANY_TIME) 
-;              => isInChord(ANY_PITCH, chord, pitches-of V2 at ANY_TIME) 
-
-; REQUIRE: forall [chord in ch_all], 
-;     V != bass => 
-;         isInChord(pitches-of bass at ANY_TIME, chord, pitches-of V at ANY_TIME) 
-;               => pitches-of bass at ANY_TIME is-not pitches-of V at ANY_TIME
+REQUIRE: isDiatonic(C, sc_major, ANY_PITCH)
+REQUIRE: pitches-of soprano at t >= C4 and pitches-of soprano at t <= G5
+REQUIRE: pitches-of alto at t >= G3 and pitches-of alto at t <= C5
+REQUIRE: pitches-of bass at t >= E2 and pitches-of bass at t <= G3
 
 
-; REQUIRE: forall [chord in ch_all],
-;     isInChord(flatten(ANY_PITCH), chord, pitches-of soprano at ANY_TIME) =>
-;     isInChord(flatten(ANY_PITCH), chord, pitches-of alto at ANY_TIME) =>
-;     isInChord(flatten(ANY_PITCH), chord, pitches-of bass at ANY_TIME)  
-
-; REQUIRE: forall timesteps, there exists a chord in 
-REQUIRE: exists [root in note_classes, chord in ch_triads] where 
-        isInChord(root, chord, pitches-of soprano at ANY_TIME) and
-        isInChord(root, chord, pitches-of alto at ANY_TIME) and
-        isInChord(root, chord, pitches-of bass at ANY_TIME)
-
-; REQUIRE: isInChord(G, ch_maj, ANYPITCH)
-; REQUIRE: pitches-of bass at 0t is C
-; REQUIRE: pitches-of bass at 1t is F
-; REQUIRE: pitches-of bass at 2t is G
-; REQUIRE: pitches-of bass at 3t is C
+; test chord level resolutions
+REQUIRE: (isInChord(G, ch_maj, pitches-of v at t))
+    => isInChord(C, ch_maj, pitches-of v at (t + 1t))
 
 
-; REQUIRE: isInChord(G, ch_maj, pitches-of V at 3t)
-; REQUIRE: v1 != v2 => pitches-of v1 at t is-not pitches-of v2 at t
-; REQUIRE: interval-bt(G, C4) in ch_maj
-
-; REQUIRE: isInChord(G, ch_maj, pitches-of V1 at ANY_TIME) = isInChord(G, ch_maj, pitches-of V2 at ANY_TIME)
-
-REQUIRE: V1 != V2 => pitches-of V1 at t is-not pitches-of V2 at t
-
-; PREFER: weight 1, V1 != V2 => pitches-of V1 at t is-not pitches-of V2 at t
-; REQUIRE: pitches-of bass at 3t is G
-; REQUIRE: pitches-of bass at 1t is G
+REQUIRE: getScaleDegree(C, sc_major, 1) is C

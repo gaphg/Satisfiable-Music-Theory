@@ -1,13 +1,13 @@
 ; first species counterpoint in C major, cantus firmus in the lower part
 ; very basic set of rules
 
-INCLUDE: ../example_rules/stdlib/stdint.rules
-INCLUDE: ../example_rules/stdlib/stdpitch.rules
-INCLUDE: ../example_rules/stdlib/stdkey.rules
-INCLUDE: ../example_rules/stdlib/stdmotion.rules
+INCLUDE: ../example_rules/western_stdlib/stdint.rules
+INCLUDE: ../example_rules/western_stdlib/stdpitch.rules
+INCLUDE: ../example_rules/western_stdlib/stdkey.rules
+INCLUDE: ../example_rules/western_stdlib/stdmotion.rules
 
 DECLARE VOICES: upper, cf
-DECLARE LENGTH: 10
+DECLARE LENGTH: 5
 
 DEFINE: tonic = C
 DEFINE: mode = sc_major
