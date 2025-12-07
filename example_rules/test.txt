@@ -10,4 +10,4 @@ INCLUDE: ../example_rules/stdlib/stdpitch.rules
 
 REQUIRE: (0-5) mod 5 = 0
 REQUIRE: 9t mod 5t = 4t
-REQUIRE: (pitches-of soprano at start) + iv_maj2 = D3
+REQUIRE: (pitches-of soprano at start) + iv_maj2 = C4

@@ -366,7 +366,7 @@ let translate_stmt (ctx : type_context) (env : dynamic_environment)
       let ctx, env = translate_def_stmt ctx env def in
       ([], ctx, env, smt)
   | SpecificationStmt (spec, _) ->
-      ([], ctx, env, smt @ ("; Specification" :: translate_spec_stmt ctx env spec))
+      ([], ctx, env, smt @ (("\n; " ^ string_of_spec_stmt spec) :: translate_spec_stmt ctx env spec))
   | IncludeStmt (filename, _) ->
       let channel = open_in filename in
       let lexbuf = Lexing.from_channel channel in
@@ -405,7 +405,7 @@ let translate (env : dynamic_environment)
             if synth then assert_pitch_bounds (Option.get env.voice_count) (Option.get env.song_length_units)
             else []
         in
-        (initialize_smt env @ smt @ pitch_bounds, env)
+        (initialize_smt env @ smt @ ("\n; Pitch bounds:" :: pitch_bounds), env)
     | stmt :: prog ->
         let more_prog, new_ctx, new_env, new_smt = translate_stmt ctx env smt stmt in
         aux new_ctx new_env new_smt (more_prog @ prog)

@@ -18,10 +18,6 @@ let speclist =
       "Output an smt-lib script instead of directly solving" );
   ]
 
-let pitch_string_of_int p =
-  (List.nth ["C"; "C#"; "D"; "D#"; "E"; "F"; "F#"; "G"; "G#"; "A"; "A#"; "B"] (p mod 12))
-  ^ (string_of_int (p / 12 - 1))
-
 let main (rules_file : string) (input_midi : string option)
     (output_midi : string option) (smt_only : bool) =
   (* 1. parse rules file *)
@@ -72,7 +68,7 @@ let main (rules_file : string) (input_midi : string option)
         |> List.iteri (fun v track ->
                print_string ("voice " ^ string_of_int v ^ ":");
                track
-               |> List.iter (fun p -> Printf.printf " %4s" (pitch_string_of_int p));
+               |> List.iter (fun p -> Printf.printf " %4s" (Ast.pitch_string_of_int p));
                print_newline ())
     | Some synth_tracks, _, Some fname ->
       Write_midi.write_file synth_tracks fname

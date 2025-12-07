@@ -86,19 +86,88 @@ type statement =
 
 type program = statement list
 
-let string_of_expr = show_expr
+let pitch_string_of_int p =
+  (List.nth ["C"; "C#"; "D"; "D#"; "E"; "F"; "F#"; "G"; "G#"; "A"; "A#"; "B"] (p mod 12))
+  ^ (string_of_int (p / 12 - 1))
+let rec string_of_expr = function
+| PitchLit p -> (string_of_int p) ^ "p"
+| IntervalLit (i, None) -> (string_of_int i) ^ "i"
+| IntervalLit (i, Some true) -> (string_of_int i) ^ "i up"
+| IntervalLit (i, Some false) -> (string_of_int i) ^ "i down"
+| TimeStepLit t -> (string_of_int t) ^ "t"
+| IntegerLit n -> string_of_int n
+| BooleanLit b -> string_of_bool b
+| DirectionLit d -> if d then "up" else "down"
+| Var name -> name
+| FuncCall (name, args) ->
+    name ^ "(" ^ (String.concat ", " (List.map string_of_expr args)) ^ ")"
+| ListExpr lst ->
+    "[" ^ (String.concat ", " (List.map string_of_expr lst)) ^ "]"
+| Pitches e -> "pitches-of " ^ string_of_expr e
+| Contour e -> "contour-of " ^ string_of_expr e
+| Diads (e1, e2) -> "diads-of " ^ string_of_expr e1 ^ ", " ^ string_of_expr e2
+| IntervalBetween (e1, e2) ->
+    "interval-bt (" ^ string_of_expr e1 ^ ", " ^ string_of_expr e2 ^ ")"
+| Plus (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " + " ^ string_of_expr e2 ^ ")"
+| Minus (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " - " ^ string_of_expr e2 ^ ")"
+| Mod (e1, e2) -> 
+    "(" ^ string_of_expr e1 ^ " mod " ^ string_of_expr e2 ^ ")"
+| Not e -> "not (" ^ string_of_expr e ^ ")"
+| And (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " and " ^ string_of_expr e2 ^ ")"
+| Or (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " or " ^ string_of_expr e2 ^ ")"
+| Implies (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " => " ^ string_of_expr e2 ^ ")"
+| Iff (e1, e2) -> 
+    "(" ^ string_of_expr e1 ^ " <=> " ^ string_of_expr e2 ^ ")"
+| Exists (vars, pred) ->
+    "(exists " ^
+    (String.concat ", " (List.map (fun (name, list) -> name ^ " in " ^ string_of_expr list) vars)) ^
+    "where " ^ string_of_expr pred ^ ")"
+| Forall (vars, pred) ->
+    "(forall " ^
+    (String.concat ", " (List.map (fun (name, list) -> name ^ " in " ^ string_of_expr list) vars)) ^
+    ", " ^ string_of_expr pred ^ ")"
+| Equals (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " = " ^ string_of_expr e2 ^ ")"
+| NotEquals (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " != " ^ string_of_expr e2 ^ ")"
+| LessThan (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " < " ^ string_of_expr e2 ^ ")"
+| LessThanEq (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " <= " ^ string_of_expr e2 ^ ")"
+| GreaterThan (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " > " ^ string_of_expr e2 ^ ")"
+| GreaterThanEq (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " >= " ^ string_of_expr e2 ^ ")"
+| ElementAt (list_expr, index_expr) ->
+    string_of_expr list_expr ^ " at " ^ string_of_expr index_expr
+| Contains (list_expr, element_expr) ->
+    string_of_expr list_expr ^ " contains " ^ string_of_expr element_expr
+| Flatten e -> "flatten(" ^ string_of_expr e ^ ")"
+| EqualsModOctave (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " is " ^ string_of_expr e2 ^ ")"
+| NotEqualsModOctave (e1, e2) ->
+    "(" ^ string_of_expr e1 ^ " is-not " ^ string_of_expr e2 ^ ")"
+| Range (e1, e2) ->
+    "range(" ^ string_of_expr e1 ^ ", " ^ string_of_expr e2 ^ ")"
+| SymbolicPitchExpr _ 
+| SymbolicIntervalExpr _ ->
+    "<symbolic expression>"
+
+let string_of_spec_stmt = function
+  | RequireStmt e -> "REQUIRE: " ^ string_of_expr e
+  | DisallowStmt e -> "DISALLOW: " ^ string_of_expr e
+  | PreferStmt (e, w) -> "PREFER: weight " ^ string_of_int w ^ ", " ^ string_of_expr e
+  | AvoidStmt (e, w) -> "AVOID: weight " ^ string_of_int w ^ ", " ^ string_of_expr e
 
 let string_of_statement = function
   | ConfigurationStmt (s, _) -> show_configuration_statement s
   | DefinitionStmt (s, _) -> show_definition_statement s
-  | SpecificationStmt (s, _) -> show_specification_statement s
+  | SpecificationStmt (s, _) -> string_of_spec_stmt s
   | IncludeStmt (s, _) -> "INCLUDE: " ^ s
 
-  
-(* TODO: change *)
-(* match e with
-   | Var name -> name
-   | _ -> "<not yet implemented>" *)
 
-(* TODO: change *)
-let string_of_spec_stmt = show_specification_statement

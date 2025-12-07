@@ -1,7 +1,7 @@
 open Ast
 (* open Types *)
 
-let debug = true
+let debug = false
 
 type vc_term =
   | Voice of int (* int id of voice *)
