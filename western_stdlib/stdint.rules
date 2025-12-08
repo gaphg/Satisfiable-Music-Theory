@@ -14,6 +14,7 @@ DEFINE: iv_p5 = 7i
 DEFINE: iv_min6 = 8i
 DEFINE: iv_maj6 = 9i
 DEFINE: iv_aug6 = 10i
+DEFINE: iv_dim7 = 9i
 DEFINE: iv_min7 = 10i
 DEFINE: iv_maj7 = 11i
 DEFINE: iv_oct = 12i
