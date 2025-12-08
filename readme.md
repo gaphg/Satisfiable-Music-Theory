@@ -32,7 +32,7 @@ We support the following types:
 - `TimeStep`: the time unit. Currently all notes are 1 TimeStep length. A **time step literal** is indicated by a number followed by a **t** or **T**. For example, `0t` indicates the beginning of the piece (the first note is played at `0t`).
 - `Voice`: one voice part or ``instrument''. Only one note per voice is allowed at any given time.
 - `List`: an immutable list of any type. A list is comma-separated and surrounded by brackets `[]`. Lists cannot be empty. When indicating types, `List` should be followed by the type, so a list of intervals is indicated by `List of Interval`.
-- `TimeSeries`: TODO. When indicating types, `TimeSeries` should be followed by the type, so a TimeSeries of pitches should be indicated by `TimeSeries of Pitch`.
+- `TimeSeries`: Timeseries represent a sequence of values, each associated with a time step in a time range. Built-in functions like `pitches-of`, `contour-of`, or `diads-of` all return values of type `TimeSeries`. When indicating types, `TimeSeries` should be followed by the type, so a TimeSeries of pitches should be indicated by `TimeSeries of Pitch`.
 
 
 ### Statements
@@ -81,6 +81,12 @@ The exact equals and not equals are indicated by `=` and `!=`, respectively. To 
 
 #### Interval Comparisons
 Intervals
+
+### Western Standard Terminology
+
+Definitions and bindings for common concepts in Western music theory are included in the `western_stdlib` directory. To use these these definitions, add the line `INCLUDE: ../western_stdlib/stdlib.rules` to your rules file. The include statement should be added before any references to the definitions in the library. Below is an overview of the definitions provided by `western_stdlib`:
+
+TODO
 
 ### Misc
 - Single-line comments are supported. A comment begins with a `;`

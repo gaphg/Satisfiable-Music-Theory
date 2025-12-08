@@ -35,7 +35,7 @@ PREFER: weight 3, contour-of v1 at t in [iv_min2, iv_maj2]
 
 ; resolving tendency tones
 REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
-PREFER: weight 1, isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
+REQUIRE: isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
 
 ; no augmented intervals
 DISALLOW: contour-of v contains iv_aug4
