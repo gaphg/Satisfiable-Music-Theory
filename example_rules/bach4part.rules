@@ -1,5 +1,5 @@
 DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 5
+DECLARE LENGTH: 9
 
 INCLUDE: ../example_rules/western_stdlib/stdint.rules
 INCLUDE: ../example_rules/western_stdlib/stdkey.rules
@@ -32,11 +32,11 @@ REQUIRE: forall i in diads-of(tenor, alto), i < (12i up) and i > (12i down)
 ;;;;;;; VOICE LEADING
 
 ; prefer stepwise motion
-PREFER: weight 3, contour-of v1 at t is iv_min2 or contour-of v1 at t is iv_maj2
+REQUIRE: contour-of v1 at t in [iv_min2, iv_maj2]
 
 ; resolving tendency tones
 REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
-PREFER: weight 1, isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
+REQUIRE: isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
 
 ; no augmented intervals
 DISALLOW: contour-of v contains iv_aug4
