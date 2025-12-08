@@ -11,7 +11,7 @@ ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl
 VoiceDecl := "DECLARE VOICES:" Id ("," Id)*
 TimeUnitDecl := "DECLARE TIME UNIT TICKS:" Int            ;  TODO: unsupported feature
 SongLengthDecl := "DECLARE LENGTH:" Int
-KeyDecl := "DECLARE KEY:" PitchClass Mode                 ; TODO: KeyDecl does not work like this, it's just an int rn 
+KeyDecl := "DECLARE KEY:" PitchClass Mode                 ; TODO: unsupported feature
 
 -- Definitions --
 DefinitionStmt := ConstDef | FuncDef
@@ -84,6 +84,5 @@ Type := "Voice"
 -- Literals --
 Id := <any alphanumeric string (can also have a # or _)>
 Int := <any nonnegative integer literal>
-PitchClass := <a note name>                       ([a-gA-G][#b]?)
 Boolean := <"true" or "false">
 Filename := <any non-whitespace string> "." <any non-whitespace string>
