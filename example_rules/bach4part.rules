@@ -77,7 +77,7 @@ REQUIRE: forall ival in [iv_oct, iv_p5],
         => (diads-of(v1, v2) at (t + 1t) is-not ival) 
             
 PREFER: weight 3, forall ival in [iv_min2, iv_maj2, iv_min7, iv_maj7],
-    (v1 != v2) and (diads-of(v1, v2) at t is ival) => (diads-of(v1, v2) at (t + 1t) is-not ival)
+    (v1 != v2) and (diads-of(v1, v2) at t is ival) and not isObliqueMotion(v1, v2, t) => (diads-of(v1, v2) at (t + 1t) is-not ival)
 
 ; prefer contrary motion between soprano and the bass
 PREFER: weight 1, isContraryMotion(soprano, bass, t)
