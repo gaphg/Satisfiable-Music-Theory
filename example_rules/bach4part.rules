@@ -1,5 +1,5 @@
 DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 5
+DECLARE LENGTH: 7
 
 INCLUDE: ../example_rules/western_stdlib/stdint.rules
 INCLUDE: ../example_rules/western_stdlib/stdkey.rules
@@ -8,7 +8,7 @@ INCLUDE: ../example_rules/western_stdlib/stdchord.rules
 INCLUDE: ../example_rules/western_stdlib/stdmotion.rules
 
 ; makes it easy to configure key
-DEFINE: tonic = D
+DEFINE: tonic = C
 DEFINE: mode = sc_major
 
 DEFINE: all_voices = [soprano, alto, tenor, bass]
@@ -30,9 +30,8 @@ REQUIRE: forall i in diads-of(alto, soprano), i < (12i up) and i > (12i down)
 REQUIRE: forall i in diads-of(tenor, alto), i < (12i up) and i > (12i down)
 
 ;;;;;;; VOICE LEADING
-
 ; prefer stepwise motion
-PREFER: weight 3, contour-of v1 at t is iv_min2 or contour-of v1 at t is iv_maj2
+PREFER: weight 3, contour-of v1 at t in [iv_min2, iv_maj2]
 
 ; resolving tendency tones
 REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
@@ -121,7 +120,7 @@ DEFINE: isSubdominant(p Pitch) =
 ; dominants: [V, V7, vii^o, vii^o7]
 DEFINE: isDominant(p Pitch) =
     isInChord(sd_5, ch_maj, p) or 
-    isInChord(sd_5, ch_dom7, p) or 
+    isInChord(sd_5, ch_dom7, p) or
     isInChord(sd_7, ch_dim, p) or 
     isInChord(sd_7, ch_dim7, p)
 
