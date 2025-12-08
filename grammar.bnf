@@ -1,9 +1,7 @@
 -- Comments --
 Single line comments begin with a ";"
 
-Program := IncludeStmt* ConfigurationStmt* DefinitionStmt* SpecificationStmt*
-        TODO: this is not quite accurate -- as of right now there must be at least
-        one of each
+Program := IncludeStmt* ConfigurationStmt* DefinitionStmt* SpecificationStmt*   ; TODO: this is not quite accurate -- a program has to have at least one of them
 
 -- Includes --
 IncludeStmt := "INCLUDE:" Filename
@@ -11,10 +9,9 @@ IncludeStmt := "INCLUDE:" Filename
 -- Configurations --
 ConfigurationStmt := VoiceDecl | TimeUnitDecl | SongLengthDecl | KeyDecl
 VoiceDecl := "DECLARE VOICES:" Id ("," Id)*
-TimeUnitDecl := "DECLARE TIME UNIT TICKS:" Int
+TimeUnitDecl := "DECLARE TIME UNIT TICKS:" Int            ;  TODO: unsupported feature
 SongLengthDecl := "DECLARE LENGTH:" Int
-KeyDecl := "DECLARE KEY:" PitchClass Mode
-        TODO: KeyDecl does not work like this, it's just an int rn 
+KeyDecl := "DECLARE KEY:" PitchClass Mode                 ; TODO: unsupported feature
 
 -- Definitions --
 DefinitionStmt := ConstDef | FuncDef
@@ -87,7 +84,5 @@ Type := "Voice"
 -- Literals --
 Id := <any alphanumeric string (can also have a # or _)>
 Int := <any nonnegative integer literal>
-PitchClass := <a note name>                       ([a-gA-G][#b]?)
-Mode := <"major" or "minor">                      (TODO : add other capitalization/modes?)
 Boolean := <"true" or "false">
 Filename := <any non-whitespace string> "." <any non-whitespace string>

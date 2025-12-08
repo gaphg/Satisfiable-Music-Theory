@@ -1,13 +1,10 @@
 ; first species counterpoint in C major, cantus firmus in the lower part
 ; very basic set of rules
 
-INCLUDE: ../example_rules/western_stdlib/stdint.rules
-INCLUDE: ../example_rules/western_stdlib/stdpitch.rules
-INCLUDE: ../example_rules/western_stdlib/stdkey.rules
-INCLUDE: ../example_rules/western_stdlib/stdmotion.rules
+INCLUDE: ../western_stdlib/stdlib.rules
 
 DECLARE VOICES: upper, cf
-DECLARE LENGTH: 5
+DECLARE LENGTH: 60
 
 DEFINE: tonic = C
 DEFINE: mode = sc_major
@@ -76,4 +73,4 @@ REQUIRE: forall ival in [iv_oct, iv_p5],
 
 
 ; prefer stepwise motion
-PREFER: weight 3, contour-of v1 at t is iv_min2 or contour-of v1 at t is iv_maj2
+PREFER: weight 3, contour-of v1 at t in [iv_min2, iv_maj2]
