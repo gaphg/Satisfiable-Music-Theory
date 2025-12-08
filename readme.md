@@ -3,7 +3,9 @@ Satie is a constraint-based music verification and synthesis tool.
 
 # Building and Running
 ### Install and Build
-Make sure OCaml (> 5.1.1 definitely works) and `Z3` are installed. The `Z3` executable should be included in your `$PATH`. (Note that this is NOT the OCaml `z3` package).
+Make sure OCaml (> 5.1.1 definitely works) and `Z3` are installed. 
+
+The `Z3` executable should be included in your `$PATH`. (Note that this is NOT the OCaml `z3` package). This can be done, for example, by addding `export PATH=$PATH:/home/username/.local/share/racket/8.18/pkgs/rosette/bin` to your `~/.bashrc`, using your file path.
 
 You may also need to install the following packages with `opam` (`opam install <packagename>`):
 - `dune`
@@ -38,7 +40,7 @@ should output
 `music in ../example_midi/ParallelOctavesFixed.mid satisfies specification in ../example_rules/no_parallel_octaves.rules`.
 
 #### Creating your own examples!
-To understand how to write your own rules files, read the following Documentation section.
+To understand how to write your own rules files, read the following Documentation section. Also take a look at the `example_rules` directory, particularly the `bach4part.rules` file, which contains the most complex logic so far, as examples for how to form proper rules files.
 
 # Documentation
 We assume a twelve-tone framework. We currently do not support rhythmic constructs--we assume every note is the same length, and there are no rests.
@@ -65,20 +67,18 @@ A configuration statement configures information about the piece (for checking, 
 - `DECLARE VOICES:` this declares the names of the voice parts in the piece. The declaration should be followed with alphanumeric names, separated by commas.
 - `DECLARE LENGTH:` this declares the number of notes in the piece (per voice--with the current restrictions this is the number of measures in the piece). The declaration should be followed by a number.
 
-TODO: other decls aren't really useful rn?
-- `DECLARE KEY:`
-- `DECLARE TIME UNIT TICKS:`
+A well-formed rules file (that isn't just a ''header'' to be `INCLUDE`d in another file) must contain these statements.
 
 #### Specification statement
 A specification statement specifies the rules that the piece must follow. There are four types of specifications: require, disallow, prefer, and avoid. A require statement requires that a piece follows the given expression, and a disallow statement means a piece cannot satisfy the following expression. Prefer and avoid means that a piece maximizes/minimizes the following expression, respectively. An example syntax is `REQUIRE: pitches-of soprano at 0t = 60p`, which requires the soprano voice to begin with middle C.
 
-Free variables in a specification statement are implicitly assumed to apply to all values of that type. The previous explanation of `REQUIRE: pitches-of soprano at 0t = 60p` assumed that `soprano` was a voice declared with `DECLARE VOICES:`. However, if `soprano` was not bound to an existing voice, then this statement requires that for ALL voices, the voice begins with middle C.
+Free variables in a specification statement are implicitly assumed to apply to all values of that type. The previous explanation of `REQUIRE: pitches-of soprano at 0t = 60p` assumed that `soprano` was a voice declared with `DECLARE VOICES:`. However, if we instead wrote `REQUIRE: pitches-of v at 0t = 60p`, where `v` is not an existing voice, then this statement requires that for ALL voices, the voice begins with middle C.
 
 #### Definition statement
-Definition statements allow users to bind expression to a name, or to define a custom function. Definitions should come before their usages in specifications. For example, `DEFINE: m3 = 3i` means that `m3` is bound to the interval of a minor third (`3i`). For functions, types are optionally declared since they can be inferred from the body. For example, `DEFINE: isConsonant(p1, p2) = interval-bt(p1, p2) in [ unison, m3, M3, P4, P5, m6, M6, octave ]` is how one could specify the idea of consonance for a certain style.  
+Definition statements allow users to bind expression to a name, or to define a custom function. Definitions should come before their usages in specifications. For example, `DEFINE: iv_min3 = 3i` means that `iv_min3` is bound to the interval of a minor third (`3i`). For functions, types are optionally declared since they can be inferred from the body. For example, `DEFINE: isConsonant(p1, p2) = interval-bt(p1, p2) in [ iv_uni, iv_min3, iv_maj3, iv_p4, iv_p5, iv_min6, iv_maj6, iv_oct ]` is how one could specify the idea of consonance for a certain style.  
 
 #### Include statement
-Includes includes all of the information from another file into the current file. There is no notion of namespace, so make sure that names and variable names do not collide with the ones in the current file. Filepaths are relative to where you are running the program from. For example, `INCLUDE: std_intervals.rules` would include all of the constructs in `std_intervals.rules`.
+Includes includes all of the information from another file into the current file. There is no notion of namespace, so make sure that names and variable names do not collide with the ones in the current file. Filepaths are relative to where you are running the program from. For example, `INCLUDE: stdchord.rules` would include all of the constructs in `stdchord.rules`.
 
 ### Music-specific Constructs
 We provide the following base functionality:
@@ -98,6 +98,8 @@ Most operations work as you would expect from math/other programming languages. 
 #### Arithmetic operators
 The arithmetic operators `+` and `-` must both have the same literal type on either side (e.g. to indicate the next time step after `TimeStep t`, you have to write `t + 1t`, NOT `t + 1`).
 
+One exception is that a `Pitch` and `Interval` can be added together to get another `Pitch`. 
+
 #### Equality
 The exact equals and not equals are indicated by `=` and `!=`, respectively. To check equality regardless of octave, use `is` and `is-not`. For example, `60p != 0p` but `60p is 0p`.
 
@@ -108,10 +110,16 @@ Intervals
 
 Definitions and bindings for common concepts in Western music theory are included in the `western_stdlib` directory. To use these these definitions, add the line `INCLUDE: ../western_stdlib/stdlib.rules` to your rules file. The include statement should be added before any references to the definitions in the library. Below is an overview of the definitions provided by `western_stdlib`:
 
-TODO
+- `stdchord.rules`: provides standard chord definitions of chord qualities (e.g. major, minor, dominant seventh, etc.)
+- `stdint.rules`: provides bindings for common interval names (e.g. unison, minor second, etc.) 
+- `stdkey.rules`: provides standard keys and modes (e.g. major, minor, lydian, etc.) and functions to get the scale degree of a certain scale
+- `stdmotion.rules`: defines ideas of contrary, oblique, parallel, and similar motion
+- `stdpitch.rules`: provides bindings for midi pitch literals to human-readable names (e.g. `C4` instead of `60p`)
+
+`stdlib.rules` is a "header" file that includes all of these files.
 
 ### Misc
 - Single-line comments are supported. A comment begins with a `;`
-- All variable names should be alphanumeric
+- All variable names should be alphanumeric. Additionally, `#` and `_` are allowed
 - The full grammar is provided in `grammar.bnf`
 - Example well-formed rules files are in the `example_rules` folder
