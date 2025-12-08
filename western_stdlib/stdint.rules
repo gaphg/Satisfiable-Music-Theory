@@ -20,7 +20,9 @@ DEFINE: iv_oct = 12i
 
 DEFINE: iv_step = [iv_maj2, iv_min2]
 
-; TODO move this out, since this is defined by period
+; this is fairly standard across Western music, but certain
+; time periods use definitely definitions of consonance (e.g. a 4th)
+; Use with caution!
 DEFINE: consonantIntervals = [iv_uni, iv_min3, iv_maj3, iv_p4, iv_p5, iv_min6, iv_maj6]
 DEFINE: isConsonant(i) = flatten(i) in consonantIntervals
 DEFINE: isConsonantP(p1, p2) = isConsonant(interval-bt(p1, p2))
