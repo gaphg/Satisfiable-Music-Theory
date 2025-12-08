@@ -39,6 +39,8 @@ should output
 
 `music in ../example_midi/ParallelOctavesFixed.mid satisfies specification in ../example_rules/no_parallel_octaves.rules`.
 
+For a more complex example, run `Correct4PartHarmony.mid` against the `bach4part.rules` file. Fun fact: Karen wrote a previous version she thought was correct, but being a little rusty in theory, made some spacing errors, which this tool caught!
+
 #### Creating your own examples!
 To understand how to write your own rules files, read the following Documentation section. Also take a look at the `example_rules` directory, particularly the `bach4part.rules` file, which contains the most complex logic so far, as examples for how to form proper rules files.
 
