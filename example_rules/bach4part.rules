@@ -35,7 +35,6 @@ REQUIRE: isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic
 
 ; no augmented intervals
 DISALLOW: contour-of v contains iv_aug4
-DISALLOW: contour-of v contains iv_aug2
 
 ; leaps larger than a P4 should change direction
 REQUIRE: contour-of v at t > (5i up) => 
