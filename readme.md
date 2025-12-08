@@ -1,5 +1,5 @@
 # Overview
-TODO write explanation of what this is
+Satie is a constraint-based music verification and synthesis tool.
 
 # Building and Running
 ### Install and Build
@@ -13,9 +13,31 @@ You may also need to install the following packages with `opam` (`opam install <
 To execute the program, run `dune exec -- satie`. (You can also build and clean with `dune build` and `dune clean`, respectively). These commands should be run from within the `src` directory.
 
 ## End-to-end Example
-Synthesizes a major scale:
-`dune exec -- satie ../example_rules/major_scale.rules -synth out.mid`
+Again, make sure to run these from your `src` file.
 
+#### Synthesis
+`dune exec -- satie ../example_rules/bach4part.rules -synth bach.mid`
+
+This synthesizes a 4-part chorale in the style of Bach and outputs it to a file called `bach.mid`. You can open the MIDI file in a music-playing application or a score-reading application like MuseScore. Other example rules are included in the `example_rules` directory.
+
+#### Verification
+The file `example_midi/ParallelOctaves.mid` contains a simple musical example that features a parallel octave in the last two measures (a PDF of the score is in `example_midi/ParallelOctaves.pdf`). The `example_rules/no_parallel_octaves.rules` file contains a simple statement disallowing parallel octaves and fifths. To verify that it catches the error, run:
+
+`dune exec -- satie ../example_rules/no_parallel_octaves.rules -midi ../example_midi/ParallelOctaves.mid `
+
+which should output
+
+`music in ../example_midi/ParallelOctaves.mid does not satisfy specification in ../example_rules/no_parallel_octaves.rules`.
+
+Meanwhile, a fixed version updating the octaves is in `ParallelOctavesFixed.mid` (and the corresponding `pdf`) file, and running
+
+`dune exec -- satie ../example_rules/no_parallel_octaves.rules -midi ../example_midi/ParallelOctavesFixed.mid `
+
+should output
+
+`music in ../example_midi/ParallelOctavesFixed.mid satisfies specification in ../example_rules/no_parallel_octaves.rules`.
+
+#### Creating your own examples!
 To understand how to write your own rules files, read the following Documentation section.
 
 # Documentation
