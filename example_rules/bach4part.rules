@@ -22,8 +22,8 @@ REQUIRE: pitches-of tenor at t >= C3 and pitches-of tenor at t <= G4
 REQUIRE: pitches-of bass at t >= E2 and pitches-of bass at t <= G3
 
 ; spacing
-REQUIRE: forall i in diads-of(alto, soprano), i < (12i up) and i > (12i down)
-REQUIRE: forall i in diads-of(tenor, alto), i < (12i up) and i > (12i down)
+REQUIRE: forall i in diads-of(alto, soprano), i <= (12i up) and i >= (12i down)
+REQUIRE: forall i in diads-of(tenor, alto), i <= (12i up) and i >= (12i down)
 
 ;;;;;;; VOICE LEADING
 ; prefer stepwise motion
@@ -31,7 +31,7 @@ PREFER: weight 3, contour-of v1 at t in [iv_min2, iv_maj2]
 
 ; resolving tendency tones
 REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
-REQUIRE: isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
+PREFER: isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic, mode, 3, pitches-of v at (t + 1t))
 
 ; no augmented intervals
 DISALLOW: contour-of v contains iv_aug4
@@ -73,7 +73,9 @@ REQUIRE: pitches-of bass at end is tonic
 
 ; no parallel 5ths or octaves! avoid parallel 2nds and 7ths
 REQUIRE: forall ival in [iv_oct, iv_p5],
-    (v1 != v2) and (diads-of(v1, v2) at t is ival) => (diads-of(v1, v2) at (t + 1t) is-not ival)
+    (v1 != v2) and (diads-of(v1, v2) at t is ival) and not isObliqueMotion(v1, v2, t)
+        => (diads-of(v1, v2) at (t + 1t) is-not ival) 
+            
 PREFER: weight 3, forall ival in [iv_min2, iv_maj2, iv_min7, iv_maj7],
     (v1 != v2) and (diads-of(v1, v2) at t is ival) => (diads-of(v1, v2) at (t + 1t) is-not ival)
 
