@@ -1,5 +1,5 @@
-INCLUDE: ../example_rules/western_stdlib/stdint.rules
-INCLUDE: ../example_rules/western_stdlib/stdkey.rules
-INCLUDE: ../example_rules/western_stdlib/stdpitch.rules
-INCLUDE: ../example_rules/western_stdlib/stdchord.rules
-INCLUDE: ../example_rules/western_stdlib/stdmotion.rules
+INCLUDE: ../western_stdlib/stdint.rules
+INCLUDE: ../western_stdlib/stdkey.rules
+INCLUDE: ../western_stdlib/stdpitch.rules
+INCLUDE: ../western_stdlib/stdchord.rules
+INCLUDE: ../western_stdlib/stdmotion.rules
