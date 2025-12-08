@@ -26,8 +26,9 @@ REQUIRE: forall i in diads-of(alto, soprano), i <= (12i up) and i >= (12i down)
 REQUIRE: forall i in diads-of(tenor, alto), i <= (12i up) and i >= (12i down)
 
 ;;;;;;; VOICE LEADING
-; prefer stepwise motion
-PREFER: weight 3, contour-of v1 at t in [iv_min2, iv_maj2]
+
+; prefer small motion
+PREFER: weight 3, contour-of v at t <= iv_maj3
 
 ; resolving tendency tones
 REQUIRE: isScaleDegree(tonic, mode, 7, pitches-of v at t) => isScaleDegree(tonic, mode, 1, pitches-of v at (t + 1t))
@@ -103,37 +104,37 @@ DEFINE: sd_6 = getScaleDegree(tonic, mode, 6)
 DEFINE: sd_7 = getScaleDegree(tonic, mode, 7)
 
 ; tonics: [I, iii, vi]
-DEFINE: isTonic(p Pitch) = 
-    isInChord(sd_1, ch_maj, p) or
-    isInChord(sd_3, ch_min, p) or
-    isInChord(sd_6, ch_min, p)
+DEFINE: isTonic(t TimeStep) =
+    (forall voice in all_voices, isInChord(sd_1, ch_maj, pitches-of voice at t)) or
+    (forall voice in all_voices, isInChord(sd_3, ch_min, pitches-of voice at t)) or
+    (forall voice in all_voices, isInChord(sd_6, ch_min, pitches-of voice at t))
 
 ; subdominants: [ii, ii7, IV]
-DEFINE: isSubdominant(p Pitch) = 
-    isInChord(sd_2, ch_min, p) or 
-    isInChord(sd_2, ch_min7, p) or 
-    isInChord(sd_4, ch_maj, p)
+DEFINE: isSubdominant(t TimeStep) =
+    (forall voice in all_voices, isInChord(sd_2, ch_min, pitches-of voice at t)) or
+    (forall voice in all_voices, isInChord(sd_2, ch_min7, pitches-of voice at t)) or
+    (forall voice in all_voices, isInChord(sd_4, ch_maj, pitches-of voice at t))
 
 ; dominants: [V, V7, vii^o, vii^o7]
-DEFINE: isDominant(p Pitch) =
-    isInChord(sd_5, ch_maj, p) or 
-    isInChord(sd_5, ch_dom7, p) or
-    isInChord(sd_7, ch_dim, p) or 
-    isInChord(sd_7, ch_dim7, p)
+DEFINE: isDominant(t TimeStep) =
+    (forall voice in all_voices, isInChord(sd_5, ch_maj, pitches-of voice at t)) or
+    (forall voice in all_voices, isInChord(sd_5, ch_dom7, pitches-of voice at t)) or
+    (forall voice in all_voices, isInChord(sd_7, ch_dim, pitches-of voice at t)) or
+    (forall voice in all_voices, isInChord(sd_7, ch_dim7, pitches-of voice at t))
 
-REQUIRE: isTonic(pitches-of v at t) => 
-                isTonic(pitches-of v at (t + 1t)) or
-                isSubdominant(pitches-of v at (t + 1t)) or
-                isDominant(pitches-of v at (t + 1t))
+REQUIRE: isTonic(t) => 
+                isTonic(t + 1t) or
+                isSubdominant(t + 1t) or
+                isDominant(t + 1t)
 
-REQUIRE: isSubdominant(pitches-of v at t) => 
-                isTonic(pitches-of v at (t + 1t)) or
-                isSubdominant(pitches-of v at (t + 1t)) or
-                isDominant(pitches-of v at (t + 1t))
+REQUIRE: isSubdominant(t) => 
+                isTonic(t + 1t) or
+                isSubdominant(t + 1t) or
+                isDominant(t + 1t)
 
-REQUIRE: isSubdominant(pitches-of v at t) => 
-                isTonic(pitches-of v at (t + 1t)) or
-                isDominant(pitches-of v at (t + 1t))
+REQUIRE: isDominant(t) => 
+                isTonic(t + 1t) or
+                isDominant(t + 1t)
 
 ;;;;;;;; MISC PREFERENCES
 
