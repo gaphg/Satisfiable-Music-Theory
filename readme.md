@@ -15,12 +15,12 @@ You may also need to install the following packages with `opam` (`opam install <
 To execute the program, run `dune exec -- satie`. (You can also build and clean with `dune build` and `dune clean`, respectively). These commands should be run from within the `src` directory.
 
 ## End-to-end Example
-Again, make sure to run these from your `src` file.
+Again, make sure to run these from your `src` directory.
 
 #### Synthesis
 `dune exec -- satie ../example_rules/bach4part.rules -synth bach.mid`
 
-This synthesizes a 4-part chorale in the style of Bach and outputs it to a file called `bach.mid`. You can open the MIDI file in a music-playing application or a score-reading application like MuseScore. Other example rules are included in the `example_rules` directory.
+This synthesizes a 4-part chorale in the style of Bach and outputs it to a file called `bach.mid`. You can open the MIDI file in a music-playing application or a score-reading application like MuseScore. Other example rules are included in the `example_rules` directory. This will take a few seconds to run, and the file will be output in the `src` directory. 
 
 #### Verification
 The file `example_midi/ParallelOctaves.mid` contains a simple musical example that features a parallel octave in the last two measures (a PDF of the score is in `example_midi/ParallelOctaves.pdf`). The `example_rules/no_parallel_octaves.rules` file contains a simple statement disallowing parallel octaves and fifths. To verify that it catches the error, run:
