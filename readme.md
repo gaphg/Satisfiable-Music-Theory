@@ -125,3 +125,7 @@ Definitions and bindings for common concepts in Western music theory are include
 - All variable names should be alphanumeric. Additionally, `#` and `_` are allowed
 - The full grammar is provided in `grammar.bnf`
 - Example well-formed rules files are in the `example_rules` folder
+
+# Future Work
+- Support more rhythms!
+- Better error messages to figure out exactly which rule is not satisfied and where
