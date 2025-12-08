@@ -1,0 +1,9 @@
+; simple example to show that parallel octaves and fifths are detectable
+
+INCLUDE: ../western_stdlib/stdlib.rules
+
+DECLARE VOICES: soprano, bass
+DECLARE LENGTH: 7
+
+REQUIRE: forall ival in [iv_oct, iv_p5],
+    (v1 != v2) and (diads-of(v1, v2) at t is ival) => (diads-of(v1, v2) at (t + 1t) is-not ival)

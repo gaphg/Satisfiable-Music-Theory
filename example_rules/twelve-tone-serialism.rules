@@ -1,4 +1,4 @@
-INCLUDE: ../example_rules/western_stdlib/stdpitch.rules
+INCLUDE: ../western_stdlib/stdlib.rules
 
 DECLARE VOICES: voice
 DECLARE LENGTH: 12

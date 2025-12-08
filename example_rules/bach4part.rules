@@ -1,11 +1,7 @@
 DECLARE VOICES: soprano, alto, tenor, bass
 DECLARE LENGTH: 7
 
-INCLUDE: ../example_rules/western_stdlib/stdint.rules
-INCLUDE: ../example_rules/western_stdlib/stdkey.rules
-INCLUDE: ../example_rules/western_stdlib/stdpitch.rules
-INCLUDE: ../example_rules/western_stdlib/stdchord.rules
-INCLUDE: ../example_rules/western_stdlib/stdmotion.rules
+INCLUDE: ../western_stdlib/stdlib.rules
 
 ; makes it easy to configure key
 DEFINE: tonic = C
