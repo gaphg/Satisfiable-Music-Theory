@@ -1,10 +1,10 @@
 DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 5
+DECLARE LENGTH: 7
 
 INCLUDE: ../western_stdlib/stdlib.rules
 
 ; makes it easy to configure key
-DEFINE: tonic = E
+DEFINE: tonic = C
 DEFINE: mode = sc_major
 
 DEFINE: all_voices = [soprano, alto, tenor, bass]
@@ -22,8 +22,8 @@ REQUIRE: pitches-of tenor at t >= C3 and pitches-of tenor at t <= G4
 REQUIRE: pitches-of bass at t >= E2 and pitches-of bass at t <= G3
 
 ; spacing
-REQUIRE: forall i in diads-of(alto, soprano), i <= iv_oct
-REQUIRE: forall i in diads-of(tenor, alto), i <= iv_oct
+REQUIRE: forall i in diads-of(alto, soprano), i <= (12i up) and i >= (12i down)
+REQUIRE: forall i in diads-of(tenor, alto), i <= (12i up) and i >= (12i down)
 
 ;;;;;;; VOICE LEADING
 
@@ -38,11 +38,14 @@ PREFER: isScaleDegree(tonic, mode, 4, pitches-of v at t) => isScaleDegree(tonic,
 DISALLOW: contour-of v contains iv_aug4
 
 ; leaps larger than a P4 should change direction
-
 REQUIRE: contour-of v at t > (5i up) => 
-    (contour-of v at (t + 1t) < 0i up) and (contour-of v at (t + 1t) in iv_step) 
+    (exists step in [iv_min2, iv_maj2] 
+        where (contour-of v at (t + 1t) = step)) and
+            contour-of v at (t + 1t) < 0i up
 REQUIRE: contour-of v at t < (5i down) => 
-    (contour-of v at (t + 1t) > 0i up) and (contour-of v at (t + 1t) in iv_step) 
+    (exists step in [iv_min2, iv_maj2] 
+        where (contour-of v at (t + 1t) = step)) and
+            contour-of v at (t + 1t) > 0i up
 
 ; consecutive leaps should outline a triad
 REQUIRE: (contour-of v at t > (2i up) and contour-of v at (t + 1t) > (2i up)) =>
@@ -120,27 +123,20 @@ DEFINE: isDominant(t TimeStep) =
     (forall voice in all_voices, isInChord(sd_7, ch_dim7, pitches-of voice at t))
 
 REQUIRE: isTonic(t) => 
+                isTonic(t + 1t) or
                 isSubdominant(t + 1t) or
                 isDominant(t + 1t)
 
 REQUIRE: isSubdominant(t) => 
                 isTonic(t + 1t) or
+                isSubdominant(t + 1t) or
                 isDominant(t + 1t)
 
-;REQUIRE: isDominant(t) => 
-;                isTonic(t + 1t) or
-;                isDominant(t + 1t)
-
-REQUIRE: isDominant(t) => isTonic(t + 1t)
+REQUIRE: isDominant(t) => 
+                isTonic(t + 1t) or
+                isDominant(t + 1t)
 
 ;;;;;;;; MISC PREFERENCES
 
 ; try to get more variety in the voices
-;PREFER: weight 1, v1 != v2 => pitches-of v1 at t != pitches-of v2 at t
-
-
-REQUIRE: pitches-of soprano at 0t is sd_1
-REQUIRE: pitches-of soprano at 1t is sd_3
-REQUIRE: pitches-of soprano at 2t is sd_4
-REQUIRE: pitches-of soprano at 3t is sd_2
-REQUIRE: pitches-of soprano at 4t is sd_1
+PREFER: weight 1, v1 != v2 => pitches-of v1 at t != pitches-of v2 at t
