@@ -4,7 +4,7 @@
 INCLUDE: ../western_stdlib/stdlib.rules
 
 DECLARE VOICES: upper, cf
-DECLARE LENGTH: 60
+DECLARE LENGTH: 10
 
 DEFINE: tonic = C
 DEFINE: mode = sc_major
