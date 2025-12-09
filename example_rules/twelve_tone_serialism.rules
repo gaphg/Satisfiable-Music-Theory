@@ -1,26 +1,57 @@
 INCLUDE: ../western_stdlib/stdlib.rules
 
+; TODO once range and more math constructs are implemented, 
+; can simplify a lot of these constructs greatly
+
 DECLARE VOICES: voice
-DECLARE LENGTH: 12
+DECLARE LENGTH: 36
 
 DEFINE: isSubset(s1 List of Pitch, s2 List of Pitch) =
     forall item in s1, item in s2
 
-DEFINE: isEqual(s1 List of Pitch, s2 List of Pitch) = isSubset(s1, s2) and isSubset(s2, s1)
+DEFINE: isSubsetEqual(s1 List of Pitch, s2 List of Pitch) = isSubset(s1, s2) and isSubset(s2, s1)
 
-; TODO once range is implemented, can simplify this
-REQUIRE: t mod 12t = 0t
-    => isEqual([flatten(pitches-of v at t),
-                flatten(pitches-of v at (t + 1t)), 
-                flatten(pitches-of v at (t + 2t)), 
-                flatten(pitches-of v at (t + 3t)), 
-                flatten(pitches-of v at (t + 4t)), 
-                flatten(pitches-of v at (t + 5t)), 
-                flatten(pitches-of v at (t + 6t)), 
-                flatten(pitches-of v at (t + 7t)), 
-                flatten(pitches-of v at (t + 8t)), 
-                flatten(pitches-of v at (t + 9t)), 
-                flatten(pitches-of v at (t + 10t)), 
-                flatten(pitches-of v at (t + 11t))],
-                note_classes)
+; time steps t thru t + 11 have all 12 tones
+DEFINE: hasTwelveTones(t TimeStep, v Voice) =
+    isSubsetEqual([flatten(pitches-of v at t), flatten(pitches-of v at (t + 1t)), 
+              flatten(pitches-of v at (t + 2t)), flatten(pitches-of v at (t + 3t)), 
+              flatten(pitches-of v at (t + 4t)), flatten(pitches-of v at (t + 5t)), 
+              flatten(pitches-of v at (t + 6t)), flatten(pitches-of v at (t + 7t)), 
+              flatten(pitches-of v at (t + 8t)), flatten(pitches-of v at (t + 9t)), 
+              flatten(pitches-of v at (t + 10t)), flatten(pitches-of v at (t + 11t))],
+            note_classes)
 
+; pitches are exactly equal (modulo octave) to first tone row
+DEFINE: isEqual(t TimeStep, v Voice) =
+    forall timestep in [t, t + 1t, t + 2t, t + 3t, t + 4t, t + 5t, t + 6t, t + 7t, t + 8t, 
+                         t + 9t, t + 10t, t + 11t],
+        pitches-of v at timestep is (pitches-of voice at (timestep - t))
+
+; pitches are the original tone row backwards
+DEFINE: isRetrograde(t TimeStep, v Voice) =
+    forall timestep in [t, t + 1t, t + 2t, t + 3t, t + 4t, t + 5t, t + 6t, t + 7t, t + 8t, 
+                         t + 9t, t + 10t, t + 11t],
+        pitches-of v at timestep is (pitches-of voice at (11t - (timestep - t)))
+
+
+
+DEFINE: flipDirection(i Interval) = 0i up - i
+
+; pitches are the first tone row inverted
+; DEFINE: isInverted(t TimeStep, v Voice) =
+;     ; (pitches-of v at t is pitches-of voice at (0t)) and
+;     (forall timestep in [t, t + 1t, t + 2t, t + 3t, t + 4t, t + 5t, t + 6t, t + 7t, t + 8t, 
+;                          t + 9t],
+;         contour-of v at timestep = flipDirection(contour-of voice at (timestep - t)))
+
+
+; DEFINE: isRetrogradeInversion(t TimeStep, v Voice) =
+;     forall timestep in [t, t + 1t, t + 2t, t + 3t, t + 4t, t + 5t, t + 6t, t + 7t, t + 8t, 
+;                          t + 9t, t + 10t, t + 11t],
+;         contour-of v at timestep is 0i - (contour-of voice at (11t - (timestep - t)))
+
+; first 12 must have all twelve tones
+REQUIRE: hasTwelveTones(0t, voice)
+
+REQUIRE: (ANY_TIME mod 12t = 0t) and (ANY_TIME != 0t)
+    =>  isEqual(ANY_TIME, voice) or isRetrograde(ANY_TIME, voice)
