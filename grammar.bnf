@@ -38,6 +38,7 @@ Expr := Literal
         | "flatten" Expr            ; put everything in same octave    
         | Expr "+" Expr
         | Expr "-" Expr
+        | Expr "mod" Expr
         | "not" Expr
         | Expr "and" Expr
         | Expr "or" Expr
