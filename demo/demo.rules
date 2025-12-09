@@ -7,4 +7,7 @@ DECLARE LENGTH: 5
 ; are certain jumps too difficult to sing?
 ; what makes the two voices harmonize well?
 ; what makes a good melody?
- 
+
+DEFINE: pentatonic = [ 0i up, 2i up, 4i up, 7i up, 9i up]
+
+REQUIRE: isDiatonic(C, pentatonic, pitches-of v at t)
