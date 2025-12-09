@@ -1,5 +1,5 @@
 DECLARE VOICES: soprano, alto, tenor, bass
-DECLARE LENGTH: 5
+DECLARE LENGTH: 7
 
 INCLUDE: ../western_stdlib/stdlib.rules
 
@@ -138,9 +138,3 @@ REQUIRE: isDominant(t) => isTonic(t + 1t)
 ; try to get more variety in the voices
 ;PREFER: weight 1, v1 != v2 => pitches-of v1 at t != pitches-of v2 at t
 
-
-REQUIRE: pitches-of soprano at 0t is sd_1
-REQUIRE: pitches-of soprano at 1t is sd_3
-REQUIRE: pitches-of soprano at 2t is sd_4
-REQUIRE: pitches-of soprano at 3t is sd_2
-REQUIRE: pitches-of soprano at 4t is sd_1
