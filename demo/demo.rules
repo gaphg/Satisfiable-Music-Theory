@@ -7,5 +7,4 @@ DECLARE LENGTH: 5
 ; are certain jumps too difficult to sing?
 ; what makes the two voices harmonize well?
 ; what makes a good melody?
-
-REQUIRE: contour-of v at t > 0i up
+ 
