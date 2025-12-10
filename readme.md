@@ -84,9 +84,9 @@ Includes includes all of the information from another file into the current file
 
 ### Music-specific Constructs
 We provide the following base functionality:
-- `pitches-of`: takes in a `Voice` as input, and returns a `List of Pitch`, which represents of all of its pitches.
-- `contour-of`: takes in a `Voice` as input, and returns an `List of Interval`, which represents the intervals between consecutive pitches in the voice.
-- `diads-of`: takes in two `Voice`s as input, and returns an `List of Interval`, which represents the intervals between the two different voices.
+- `pitches-of`: takes in a `Voice` as input, and returns a `TimeSeries of Pitch`, which represents of all of its pitches.
+- `contour-of`: takes in a `Voice` as input, and returns an `TimeSeries of Interval`, which represents the intervals between consecutive pitches in the voice.
+- `diads-of`: takes in two `Voice`s as input, and returns an `TimeSeries of Interval`, which represents the intervals between the two different voices.
 - `interval-bt`: takes in two `Pitch`es as input, and returns an `Interval`, which represents the interval between the two pitches.
 - `flatten`: takes in a `Pitch` or an `Interval` and returns a `Pitch` or `Interval`, respectively, where the notion of an octave have been removed (e.g. for pitches by moving the note to be in between `0p` and `11p` inclusive, so turns `60p` into `0p`, and for intervals, makes it fit within one octave, a major 9th turns into a major 2nd).
 
@@ -106,7 +106,7 @@ One exception is that a `Pitch` and `Interval` can be added together to get anot
 The exact equals and not equals are indicated by `=` and `!=`, respectively. To check equality regardless of octave, use `is` and `is-not`. For example, `60p != 0p` but `60p is 0p`.
 
 #### Interval Comparisons
-Intervals
+Intervals can either have specified direction (`up` meaning "ascending," and `down` meaning descending). Since direction-specified intervals and direction-unspecified intervals both fall under the type `Interval`, they can be compared with each other. If two intervals that both have specified direction are compared, then the semantics of the comparison are as expected. For example, the expression `5i down < 2i up` evaluates to `true` and the expression `3i down = 3i up` evaluates to `false`. If both intervals have unspecified direction, comparisons behave as one would expect comparisons between positive integers to be. For example, `5i < 2i` would evaluate to `false` and `3i = 3i` to `true`. If one interval has specified direction and the other does not, both intervals are treated as having unspecified direction. Thus, `5i down < 2i` evaluates to `false` and `3i down = 3i` evaluates to `true`.
 
 ### Western Standard Terminology
 
